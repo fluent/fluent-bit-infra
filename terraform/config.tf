@@ -1,17 +1,17 @@
 terraform {
   required_providers {
     packet = {
-      source = "packethost/packet"
+      source  = "packethost/packet"
       version = "3.2.1"
     }
     cloudflare = {
-      source = "cloudflare/cloudflare"
+      source  = "cloudflare/cloudflare"
       version = "2.18.0"
     }
   }
   backend "remote" {
     organization = "calyptia"
-    hostname = "app.terraform.io"
+    hostname     = "app.terraform.io"
 
     workspaces {
       name = "fluent-bit-infra"
@@ -20,7 +20,7 @@ terraform {
 }
 
 provider "cloudflare" {
-  email = var.cloudflare_email
+  email     = var.cloudflare_email
   api_token = var.cloudflare_token
 }
 
