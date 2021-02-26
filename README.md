@@ -11,7 +11,8 @@ with the terraform checks (lint/fmt/validate).
 
 Currently managed secrets are:
 
+```yaml
 TF_API_TOKEN
 CLOUDFLARE_TOKEN
 PACKET_NET_TOKEN
-
+```
