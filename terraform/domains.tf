@@ -32,7 +32,7 @@ resource "cloudflare_record" "root-www" {
   name    = "fluentbit.io"
   value   = data.packet_device.www.access_public_ipv4
   type    = "A"
-  proxied = false
+  proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
