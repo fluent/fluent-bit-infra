@@ -15,7 +15,7 @@ resource "cloudflare_page_rule" "docs-fluentbitio" {
 #Redirect fluentbit.io/downloads to https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit
 resource "cloudflare_page_rule" "downloads-fluentbitio" {
   zone_id  = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-  target   = "https://${var.cloudflare_domain}/downloads*"
+  target   = "https://${var.cloudflare_domain}/download*"
   priority = 1
 
   actions {
