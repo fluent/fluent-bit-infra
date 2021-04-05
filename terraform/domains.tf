@@ -60,6 +60,14 @@ resource "cloudflare_record" "packages" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
+resource "cloudflare_record" "apt" {
+  name    = "apt"
+  value   = data.packet_device.www.access_public_ipv4
+  type    = "A"
+  proxied = false
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
 resource "cloudflare_record" "docs" {
   name    = "docs"
   value   = "hosting.gitbook.com"
