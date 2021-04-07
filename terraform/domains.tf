@@ -76,6 +76,14 @@ resource "cloudflare_record" "config-validator-dev" {
   ttl = 3600
 }
 
+resource "cloudflare_record" "config-validator" {
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+  name = "config-validator"
+  type = "TXT"
+  value = "google-site-verification=1TdzXCdR-l4olN5FH32pJeLp4jygGM5DXJo3YgS0L20"
+  ttl = 3600
+}
+
 resource "cloudflare_record" "docs" {
   name    = "docs"
   value   = "hosting.gitbook.com"
