@@ -68,6 +68,14 @@ resource "cloudflare_record" "apt" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
+resource "cloudflare_record" "config-validator-dev" {
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+  name = "config-validator-dev"
+  type = "TXT"
+  value = "google-site-verification=3LKmK6H60ZzDiqsRV_gzyMZUPBLyo_8spm020ec0wTc"
+  ttl = 3600
+}
+
 resource "cloudflare_record" "docs" {
   name    = "docs"
   value   = "hosting.gitbook.com"
