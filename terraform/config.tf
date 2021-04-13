@@ -31,3 +31,10 @@ provider "cloudflare" {
 provider "packet" {
   auth_token = var.packet_net_token
 }
+
+# Configure the GitHub Provider
+provider "github" {
+  token        = var.github_token
+  owner        = var.github_owner
+  organization = "fluent"
+}
