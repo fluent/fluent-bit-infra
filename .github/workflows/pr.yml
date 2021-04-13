@@ -2,9 +2,10 @@ on:
   pull_request:
     branches:
       - main
+
 name: Tests for pull requests
 jobs:
-  test:
+  run-tests:
     name: update fluentbit infra with terraform
     runs-on: ubuntu-latest
     steps:
@@ -24,10 +25,17 @@ jobs:
         run: sed -i -e "s/\$PACKET_NET_TOKEN/${{ secrets.PACKET_NET_TOKEN }}/g" default.auto.tfvars
         working-directory: terraform
 
+      - name: Replace the github.com token
+        run: sed -i -e "s/\$GITHUB_TOKEN/${{ secrets.GH_PA_TOKEN }}/g" default.auto.tfvars
+        working-directory: terraform
+
+      - name: Replace the github.com owner
+        run: sed -i -e "s/\$GITHUB_OWNER/${{ secrets.GH_PA_OWNER }}/g" default.auto.tfvars
+        working-directory: terraform
+
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
-        continue-on-error: false
         working-directory: terraform
 
       - name: Terraform Init
@@ -43,5 +51,4 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color
-        continue-on-error: false
         working-directory: terraform

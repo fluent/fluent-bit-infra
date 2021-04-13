@@ -25,6 +25,14 @@ jobs:
         run: sed -i -e "s/\$PACKET_NET_TOKEN/${{ secrets.PACKET_NET_TOKEN }}/g" default.auto.tfvars
         working-directory: terraform
 
+      - name: Replace the github.com token
+        run: sed -i -e "s/\$GITHUB_TOKEN/${{ secrets.GH_PA_TOKEN }}/g" default.auto.tfvars
+        working-directory: terraform
+
+      - name: Replace the github.com owner
+        run: sed -i -e "s/\$GITHUB_OWNER/${{ secrets.GH_PA_OWNER }}/g" default.auto.tfvars
+        working-directory: terraform
+
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
