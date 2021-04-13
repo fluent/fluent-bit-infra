@@ -8,6 +8,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "2.18.0"
     }
+    github = {
+      source  = "integrations/github"
+      version = "4.5.2"
+    }
   }
   backend "remote" {
     organization = "calyptia"
