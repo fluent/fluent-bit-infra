@@ -88,7 +88,7 @@ resource "cloudflare_record" "fluentd-config-validator" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
   name    = "fluentd-config-validator"
   type    = "TXT"
-  value   = "google-site-verification=1s_WLkyRBIzVqkgflYJaMEdUrVNj61vOhGDfo2tnh94"
+  value   = "google-site-verification=so1hhyKbW4Iz2Yvm6kgXvy3C1HTXK6jmyDQNvlUO4TM"
   ttl     = 3600
 }
 
