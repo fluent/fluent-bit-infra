@@ -84,6 +84,22 @@ resource "cloudflare_record" "config-validator" {
   ttl     = 3600
 }
 
+resource "cloudflare_record" "fluentd-config-validator" {
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+  name    = "fluentd-config-validator"
+  type    = "TXT"
+  value   = "google-site-verification=1s_WLkyRBIzVqkgflYJaMEdUrVNj61vOhGDfo2tnh94"
+  ttl     = 3600
+}
+
+resource "cloudflare_record" "fluentd-config-validator-dev" {
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+  name    = "fluentd-config-validator-dev"
+  type    = "TXT"
+  value   = "google-site-verification=874rZ1WmtdJ3IY3K-81LQHBdkZFVd0ABXdtu6HKv6A8"
+  ttl     = 3600
+}
+
 resource "cloudflare_record" "docs" {
   name    = "docs"
   value   = "hosting.gitbook.com"
