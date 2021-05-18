@@ -60,7 +60,7 @@ resource "google_compute_disk" "test-data" {
   name  = "test-data"
   type  = "pd-ssd"
   zone  = var.gcp-default-zone
-  size  = "4T"
+  size  = "4000"
 }
 
 resource "google_compute_instance" "long-running-test" {
