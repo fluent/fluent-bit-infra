@@ -12,6 +12,10 @@ terraform {
       source  = "integrations/github"
       version = "4.5.2"
     }
+    google = {
+      source  = "hashicorp/google"
+      version = "3.59.0"
+    }
   }
   backend "remote" {
     organization = "calyptia"
