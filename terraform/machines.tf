@@ -52,6 +52,10 @@ resource "google_compute_firewall" "ssh_default" {
   target_tags = ["public-ssh"]
 }
 
+resource "google_compute_address" "static" {
+  name = "ipv4-address"
+}
+
 resource "google_compute_instance" "long-running-test" {
   name         = "long-running-test"
   machine_type = var.gcp-default-machine-type
@@ -69,10 +73,15 @@ resource "google_compute_instance" "long-running-test" {
   network_interface {
     subnetwork = google_compute_subnetwork.default-services-subnet.name
     access_config {
+      nat_ip = google_compute_address.static.address
     }
   }
 
   metadata = {
     ssh-keys = join("\n", [for user, key in var.gcp-ssh-keys : "${user}:${key}"])
   }
+}
+
+output "gcp-instance-ipv4" {
+  value = google_compute_address.static.address
 }
