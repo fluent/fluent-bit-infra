@@ -56,11 +56,74 @@ resource "google_compute_address" "static" {
   name = "ipv4-address"
 }
 
+resource "google_compute_address" "static-01" {
+  name = "ipv4-address"
+}
+
 resource "google_compute_disk" "test-data" {
   name  = "test-data"
   type  = "pd-ssd"
   zone  = var.gcp-default-zone
+  size  = "4000"
+}
+
+resource "google_compute_disk" "test-data-01" {
+  name  = "test-data-01"
+  type  = "pd-ssd"
+  zone  = var.gcp-default-zone
   size  = "500"
+}
+
+resource "google_compute_instance" "long-running-test-01" {
+  name         = "long-running-test-01"
+  machine_type = var.gcp-default-machine-type
+  zone         = var.gcp-default-zone
+
+  tags = ["public-ssh"]
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2004-lts"
+      size = 200
+    }
+  }
+
+  attached_disk {
+    source = google_compute_disk.test-data-01.self_link
+  }
+
+  network_interface {
+    subnetwork = google_compute_subnetwork.default-services-subnet.name
+    access_config {
+      nat_ip = google_compute_address.static-01.address
+    }
+  }
+
+  metadata = {
+    ssh-keys = join("\n", [for user, key in var.gcp-ssh-keys : "${user}:${key}"])
+    user-data = <<EOF
+#cloud-config
+package_update: true
+packages:
+  - docker-compose
+disk_setup:
+  /dev/sdb:
+     table_type: 'gpt'
+     layout: True
+     overwrite: True
+fs_setup:
+  - label: None
+    filesystem: 'ext4'
+    device: '/dev/sdb'
+    partition: 'auto'
+mounts:
+- [ sdb, /data ]
+EOF
+  }
+
+  lifecycle {
+    ignore_changes = [attached_disk]
+  }
 }
 
 resource "google_compute_instance" "long-running-test" {
@@ -115,6 +178,10 @@ EOF
   }
 }
 
-output "gcp-instance-ipv4" {
+output "gcp-long-running-instance-ipv4" {
   value = google_compute_address.static.address
+}
+
+output "gcp-long-running-instance-01-ipv4" {
+  value = google_compute_address.static-01.address
 }
