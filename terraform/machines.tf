@@ -80,7 +80,7 @@ resource "google_compute_instance" "long-running-test-01" {
   zone         = var.gcp-default-zone
 
   tags = ["public-ssh"]
-
+  allow_stopping_for_update = true
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2004-lts"
@@ -130,6 +130,7 @@ resource "google_compute_instance" "long-running-test" {
   name         = "long-running-test"
   machine_type = var.gcp-default-machine-type
   zone         = var.gcp-default-zone
+  allow_stopping_for_update = true
 
   tags = ["public-ssh"]
 

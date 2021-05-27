@@ -60,7 +60,7 @@ variable "gcp-sa-key" {
 
 variable "gcp-default-machine-type" {
   type = string
-  default = "e2-standard-16"
+  default = "e2-highmem-8"
 }
 
 variable "gcp-ssh-keys" {
