@@ -57,7 +57,7 @@ resource "google_compute_address" "static" {
 }
 
 resource "google_compute_address" "static-01" {
-  name = "ipv4-address"
+  name = "ipv4-address-01"
 }
 
 resource "google_compute_disk" "test-data" {
