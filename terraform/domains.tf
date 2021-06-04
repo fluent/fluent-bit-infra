@@ -100,6 +100,14 @@ resource "cloudflare_record" "fluentd-config-validator-dev" {
   ttl     = 3600
 }
 
+resource "cloudflare_record" "cloud-monitoring-api-dev" {
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+  name    = "cloud-monitoring-api-dev"
+  type    = "TXT"
+  value   = "google-site-verification=BQjlPyq12ejI6whu1AjeSvBKLXRXg_eh4sHtyHTOB9o"
+  ttl     = 3600
+}
+
 resource "cloudflare_record" "docs" {
   name    = "docs"
   value   = "hosting.gitbook.com"
