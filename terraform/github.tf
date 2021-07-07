@@ -6,7 +6,7 @@ resource "github_branch_protection_v3" "default-branch-protection" {
 
   repository     = data.github_repository.fluentbit.name
   branch         = data.github_repository.fluentbit.default_branch
-  enforce_admins = true
+  enforce_admins = false
 
   required_pull_request_reviews {
     dismiss_stale_reviews           = true
