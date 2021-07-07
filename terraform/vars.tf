@@ -59,7 +59,7 @@ variable "gcp-sa-key" {
 }
 
 variable "gcp-default-machine-type" {
-  type = string
+  type    = string
   default = "e2-highmem-8"
 }
 

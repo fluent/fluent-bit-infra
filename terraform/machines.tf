@@ -61,17 +61,17 @@ resource "google_compute_address" "static-01" {
 }
 
 resource "google_compute_disk" "test-data" {
-  name  = "test-data"
-  type  = "pd-ssd"
-  zone  = var.gcp-default-zone
-  size  = "4000"
+  name = "test-data"
+  type = "pd-ssd"
+  zone = var.gcp-default-zone
+  size = "4000"
 }
 
 resource "google_compute_disk" "test-data-01" {
-  name  = "test-data-01"
-  type  = "pd-ssd"
-  zone  = var.gcp-default-zone
-  size  = "500"
+  name = "test-data-01"
+  type = "pd-ssd"
+  zone = var.gcp-default-zone
+  size = "500"
 }
 
 resource "google_compute_instance" "long-running-test-01" {
@@ -79,12 +79,12 @@ resource "google_compute_instance" "long-running-test-01" {
   machine_type = var.gcp-default-machine-type
   zone         = var.gcp-default-zone
 
-  tags = ["public-ssh"]
+  tags                      = ["public-ssh"]
   allow_stopping_for_update = true
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2004-lts"
-      size = 200
+      size  = 200
     }
   }
 
@@ -100,7 +100,7 @@ resource "google_compute_instance" "long-running-test-01" {
   }
 
   metadata = {
-    ssh-keys = join("\n", [for user, key in var.gcp-ssh-keys : "${user}:${key}"])
+    ssh-keys  = join("\n", [for user, key in var.gcp-ssh-keys : "${user}:${key}"])
     user-data = <<EOF
 #cloud-config
 package_update: true
@@ -127,9 +127,9 @@ EOF
 }
 
 resource "google_compute_instance" "long-running-test" {
-  name         = "long-running-test"
-  machine_type = var.gcp-default-machine-type
-  zone         = var.gcp-default-zone
+  name                      = "long-running-test"
+  machine_type              = var.gcp-default-machine-type
+  zone                      = var.gcp-default-zone
   allow_stopping_for_update = true
 
   tags = ["public-ssh"]
@@ -137,7 +137,7 @@ resource "google_compute_instance" "long-running-test" {
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2004-lts"
-      size = 200
+      size  = 200
     }
   }
 
@@ -153,7 +153,7 @@ resource "google_compute_instance" "long-running-test" {
   }
 
   metadata = {
-    ssh-keys = join("\n", [for user, key in var.gcp-ssh-keys : "${user}:${key}"])
+    ssh-keys  = join("\n", [for user, key in var.gcp-ssh-keys : "${user}:${key}"])
     user-data = <<EOF
 #cloud-config
 package_update: true
