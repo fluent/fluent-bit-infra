@@ -17,6 +17,15 @@ jobs:
           cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
+      - name: Replace the GCP service account key
+        run: |
+          cat <<EOT >> default.auto.tfvars
+          gcp-sa-key    =  <<-EOF
+          ${{ secrets.GCP_SA_KEY }}
+          EOF
+          EOT
+        working-directory: terraform
+
       - name: Replace the cloudflare token
         run: sed -i -e "s/\$CLOUDFLARE_TOKEN/${{ secrets.CLOUDFLARE_TOKEN }}/g" default.auto.tfvars
         working-directory: terraform
@@ -36,6 +45,7 @@ jobs:
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
+        continue-on-error: true
         working-directory: terraform
 
       - name: Terraform Init
