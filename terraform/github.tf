@@ -15,7 +15,7 @@ resource "github_branch_protection_v3" "default-branch-protection" {
   }
 
   required_status_checks {
-    strict   = true
+    strict   = false
     contexts = ["Unit tests (matrix)", "Check Commit Message"]
   }
 
