@@ -8,7 +8,7 @@ name: Deploy fluent-bit infra
 jobs:
   update-infra-common:
     # TODO: replace staging_infra_updates with main
-    uses: calyptia/fluent-bit-infra/.github/workflows/call-build-images.yaml@staging_infra_updates
+    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@staging_infra_updates
     with:
       continue-on-error: true
     secrets:
