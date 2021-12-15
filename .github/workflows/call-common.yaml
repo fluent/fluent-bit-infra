@@ -23,6 +23,8 @@ jobs:
   run-tests:
     name: update fluentbit infra with terraform
     runs-on: ubuntu-latest
+    env:
+      ignore_errors: ${{ inputs.ignore_errors }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -60,7 +62,7 @@ jobs:
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
-        continue-on-error: ${{ inputs.ignore_errors == 'true' }}
+        continue-on-error: ${{ env.ignore_errors == 'true' }}
         working-directory: terraform
 
       - name: Terraform Init
@@ -77,4 +79,4 @@ jobs:
         id: plan
         run: terraform plan -no-color
         working-directory: terraform
-        continue-on-error: ${{ inputs.ignore_errors == 'true' }}
+        continue-on-error: ${{ env.ignore_errors }}
