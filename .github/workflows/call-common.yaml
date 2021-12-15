@@ -60,7 +60,7 @@ jobs:
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
-        continue-on-error: ${{ inputs.ignore_errors }}
+        continue-on-error: ${{ inputs.ignore_errors == 'true' }}
         working-directory: terraform
 
       - name: Terraform Init
@@ -77,4 +77,4 @@ jobs:
         id: plan
         run: terraform plan -no-color
         working-directory: terraform
-        continue-on-error: ${{ inputs.ignore_errors }}
+        continue-on-error: ${{ inputs.ignore_errors == 'true' }}
