@@ -1,0 +1,82 @@
+on:
+  workflow_call:
+    inputs:
+      ignore_errors:
+        type: boolean
+        required: true
+    secrets:
+      gcp_sa_key:
+        required: true
+      terraform_cloud_api_token:
+        required: true
+      cloudflare_token:
+        required: true
+      packet_net_token:
+        required: true
+      github_personal_access_token:
+        required: true
+      github_owner:
+        required: true
+
+name: Tests for pull requests
+jobs:
+  run-tests:
+    name: update fluentbit infra with terraform
+    runs-on: ubuntu-latest
+    env:
+      ignore_errors: ${{ inputs.ignore_errors }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_hostname: 'app.terraform.io'
+          cli_config_credentials_token: ${{ secrets.terraform_cloud_api_token }}
+
+      - name: Replace the GCP service account key
+        run: |
+          cat <<EOT >> default.auto.tfvars
+          gcp-sa-key    =  <<-EOF
+          ${{ secrets.gcp_sa_key }}
+          EOF
+          EOT
+        working-directory: terraform
+
+      - name: Replace the cloudflare token
+        run: sed -i -e "s/\$CLOUDFLARE_TOKEN/${{ secrets.cloudflare_token }}/g" default.auto.tfvars
+        working-directory: terraform
+
+      - name: Replace the packet.net token
+        run: sed -i -e "s/\$PACKET_NET_TOKEN/${{ secrets.packet_net_token }}/g" default.auto.tfvars
+        working-directory: terraform
+
+      - name: Replace the github.com token
+        run: sed -i -e "s/\$GITHUB_TOKEN/${{ secrets.github_personal_access_token }}/g" default.auto.tfvars
+        working-directory: terraform
+
+      - name: Replace the github.com owner
+        run: sed -i -e "s/\$GITHUB_OWNER/${{ secrets.github_owner }}/g" default.auto.tfvars
+        working-directory: terraform
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+        working-directory: terraform
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: terraform
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color
+        working-directory: terraform
+        continue-on-error: ${{ env.ignore_errors }}
