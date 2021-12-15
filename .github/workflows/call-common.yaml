@@ -62,7 +62,7 @@ jobs:
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
-        continue-on-error: ${{ env.ignore_errors == 'true' }}
+        continue-on-error: true
         working-directory: terraform
 
       - name: Terraform Init
