@@ -69,3 +69,25 @@ variable "gcp-ssh-keys" {
     "niedbalski" = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCzZuSdTxnKLzhps2W6ECMS6CCPFj6HaS7gxSkBsYFqOudbiJerQ+mhnXBa1EOESc461F3HgWko6XsnSMGu2K7x+7TKqxzOfzBTlD5ohzO8YzGBHN1t7yNBvQS3bPZ7gsd7TqpseZzmvbis8tZjyWzhuMxAUvKEuA6fjMdH6ndjSbmvAdjpKEVZxFvBMY1NwzazPkNKcMSXAxIbY5jPxbim/xVd8kbXG8z8ltF8IYxLLuKiYrMeiV6hI80tA8QS91uwP6WBmeY+7iG9sLd7atyc2KSo3qsWJvOlLq1o+M54HzxEcpk48Wnwg0Z5oxK/PAv1ncxfuO2Mjus9KRGimEPn niedbalski@theos-mobile"
   }
 }
+
+variable "release-s3-bucket" {
+  type = string
+}
+variable "staging-s3-bucket" {
+  type = string
+}
+
+variable "staging-s3-access-id" {
+  type = string
+  sensitive = true
+}
+
+variable "staging-s3-secret-access-key" {
+  type = string
+  sensitive = true
+}
+
+variable "staging-gpg-key" {
+  type = string
+  sensitive = true
+}
