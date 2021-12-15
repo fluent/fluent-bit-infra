@@ -2,63 +2,18 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 name: Tests for pull requests
 jobs:
   run-tests:
-    name: update fluentbit infra with terraform
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          cli_config_credentials_hostname: 'app.terraform.io'
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
-      - name: Replace the GCP service account key
-        run: |
-          cat <<EOT >> default.auto.tfvars
-          gcp-sa-key    =  <<-EOF
-          ${{ secrets.GCP_SA_KEY }}
-          EOF
-          EOT
-        working-directory: terraform
-
-      - name: Replace the cloudflare token
-        run: sed -i -e "s/\$CLOUDFLARE_TOKEN/${{ secrets.CLOUDFLARE_TOKEN }}/g" default.auto.tfvars
-        working-directory: terraform
-
-      - name: Replace the packet.net token
-        run: sed -i -e "s/\$PACKET_NET_TOKEN/${{ secrets.PACKET_NET_TOKEN }}/g" default.auto.tfvars
-        working-directory: terraform
-
-      - name: Replace the github.com token
-        run: sed -i -e "s/\$GITHUB_TOKEN/${{ secrets.GH_PA_TOKEN }}/g" default.auto.tfvars
-        working-directory: terraform
-
-      - name: Replace the github.com owner
-        run: sed -i -e "s/\$GITHUB_OWNER/${{ secrets.GH_PA_OWNER }}/g" default.auto.tfvars
-        working-directory: terraform
-
-      - name: Terraform fmt
-        id: fmt
-        run: terraform fmt -check
-        continue-on-error: true
-        working-directory: terraform
-
-      - name: Terraform Init
-        id: init
-        run: terraform init
-        working-directory: terraform
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
-        working-directory: terraform
-
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -no-color
-        working-directory: terraform
+    uses: calyptia/fluent-bit-infra/.github/workflows/call-build-images.yaml@main
+    with:
+      continue-on-error: false
+    secrets:
+      gcp_sa_key: ${{ secrets.GCP_SA_KEY }}
+      terraform_cloud_api_token: ${{ secrets.TF_API_TOKEN }}
+      cloudflare_token: ${{ secrets.CLOUDFLARE_TOKEN }}
+      packet_net_token: ${{ secrets.PACKET_NET_TOKEN }}
+      github_personal_access_token: ${{ secrets.GH_PA_TOKEN }}
+      github_owner: ${{ secrets.GH_PA_OWNER }}
