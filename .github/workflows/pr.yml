@@ -10,7 +10,7 @@ jobs:
     # TODO: replace staging_infra_updates with main
     uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@staging_infra_updates
     with:
-      continue-on-error: false
+      ignore_errors: false
     secrets:
       gcp_sa_key: ${{ secrets.GCP_SA_KEY }}
       terraform_cloud_api_token: ${{ secrets.TF_API_TOKEN }}
