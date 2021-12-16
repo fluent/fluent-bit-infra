@@ -7,8 +7,7 @@ on:
 name: Tests for pull requests
 jobs:
   run-tests:
-    # TODO: remove
-    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@staging_infra_setup
+    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@main
     with:
       ignore_errors: false
       terraform_apply: false
