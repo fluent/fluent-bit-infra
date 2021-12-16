@@ -1,15 +1,6 @@
-variable "fluent_bit_workspace" {
-  type    = string
-  default = "fluent-bit-infra"
-}
-
-variable "fluent_bit_organization" {
-  type    = string
-  default = "calyptia"
-}
-
 variable "packet_net_token" {
   type = string
+  sensitive = true
 }
 
 variable "packet_net_project_id" {
@@ -29,14 +20,17 @@ variable "cloudflare_email" {
 
 variable "cloudflare_token" {
   type = string
-}
-
-variable "github_owner" {
-  type = string
+  sensitive = true
 }
 
 variable "github_token" {
   type = string
+  sensitive = true
+}
+
+variable "github_owner" {
+  type = string
+  default = "fluent"
 }
 
 variable "gcp-project-id" {
@@ -56,6 +50,7 @@ variable "gcp-default-zone" {
 
 variable "gcp-sa-key" {
   type = string
+  sensitive = true
 }
 
 variable "gcp-default-machine-type" {
@@ -68,4 +63,37 @@ variable "gcp-ssh-keys" {
   default = {
     "niedbalski" = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCzZuSdTxnKLzhps2W6ECMS6CCPFj6HaS7gxSkBsYFqOudbiJerQ+mhnXBa1EOESc461F3HgWko6XsnSMGu2K7x+7TKqxzOfzBTlD5ohzO8YzGBHN1t7yNBvQS3bPZ7gsd7TqpseZzmvbis8tZjyWzhuMxAUvKEuA6fjMdH6ndjSbmvAdjpKEVZxFvBMY1NwzazPkNKcMSXAxIbY5jPxbim/xVd8kbXG8z8ltF8IYxLLuKiYrMeiV6hI80tA8QS91uwP6WBmeY+7iG9sLd7atyc2KSo3qsWJvOlLq1o+M54HzxEcpk48Wnwg0Z5oxK/PAv1ncxfuO2Mjus9KRGimEPn niedbalski@theos-mobile"
   }
+}
+
+variable "release-s3-bucket" {
+  type = string
+}
+variable "staging-s3-bucket" {
+  type = string
+}
+
+variable "staging-s3-access-id" {
+  type = string
+  sensitive = true
+}
+
+variable "staging-s3-secret-access-key" {
+  type = string
+  sensitive = true
+}
+
+variable "staging-gpg-key" {
+  type = string
+  sensitive = true
+}
+
+variable "release-approvers-usernames" {
+  description = "The list of users making up the release-approvers team."
+  type = set(string)
+  default = [
+    "edsiper",
+    "agup006",
+    "niedbalski",
+    "patrick-stephens"
+  ]
 }

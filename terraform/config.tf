@@ -10,7 +10,7 @@ terraform {
     }
     github = {
       source  = "integrations/github"
-      version = "4.5.2"
+      version = "4.19.0"
     }
     google = {
       source  = "hashicorp/google"
@@ -40,5 +40,4 @@ provider "packet" {
 provider "github" {
   token        = var.github_token
   owner        = var.github_owner
-  organization = "fluent"
 }
