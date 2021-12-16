@@ -100,13 +100,13 @@ resource "github_team" "fluentbit-release-approvers" {
 }
 
 resource "github_team_membership" "fluentbit-release-approvers-members" {
-    team_id  = github_team.fluentbit-release-approvers.team_id
+    team_id  = github_team.fluentbit-release-approvers.id
     username = "patrick-stephens"
 }
 
 # resource "github_team_repository" "fluentbit-repo-team-mapping" {
 #   repository = data.github_repository.fluentbit.name
-#   team_id    = github_team.fluentbit-release-approvers.team_id
+#   team_id    = github_team.fluentbit-release-approvers.id
 #   permission = "maintain"
 # }
 
@@ -115,7 +115,7 @@ resource "github_repository_environment" "release-environment" {
   repository   = data.github_repository.fluentbit.name
   reviewers {
     # teams = [github_team.all["Release Approvers Team"].id]
-    teams = github_team.fluentbit-release-approvers.team_id
+    teams = github_team.fluentbit-release-approvers.id
   }
   deployment_branch_policy {
     protected_branches     = false
