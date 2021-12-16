@@ -21,4 +21,4 @@ jobs:
 
       - name: tfsec
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: docker run --rm -it -v "$(pwd):/src" aquasec/tfsec /src
+        run: docker run --rm -t -v "$(pwd):/src" aquasec/tfsec /src
