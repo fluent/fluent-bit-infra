@@ -10,7 +10,7 @@ jobs:
     uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@main
     with:
       ignore_errors: true
-      terraform_apply: true
+      job_type: 'main'
     secrets:
       gcp_sa_key: ${{ secrets.GCP_SA_KEY }}
       terraform_cloud_api_token: ${{ secrets.TF_API_TOKEN }}
