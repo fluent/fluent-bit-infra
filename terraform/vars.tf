@@ -1,15 +1,6 @@
-variable "fluent_bit_workspace" {
-  type    = string
-  default = "fluent-bit-infra"
-}
-
-variable "fluent_bit_organization" {
-  type    = string
-  default = "calyptia"
-}
-
 variable "packet_net_token" {
   type = string
+  sensitive = true
 }
 
 variable "packet_net_project_id" {
@@ -29,14 +20,17 @@ variable "cloudflare_email" {
 
 variable "cloudflare_token" {
   type = string
-}
-
-variable "github_owner" {
-  type = string
+  sensitive = true
 }
 
 variable "github_token" {
   type = string
+  sensitive = true
+}
+
+variable "github_owner" {
+  type = string
+  default = "fluent"
 }
 
 variable "gcp-project-id" {
@@ -56,6 +50,7 @@ variable "gcp-default-zone" {
 
 variable "gcp-sa-key" {
   type = string
+  sensitive = true
 }
 
 variable "gcp-default-machine-type" {
@@ -90,4 +85,15 @@ variable "staging-s3-secret-access-key" {
 variable "staging-gpg-key" {
   type = string
   sensitive = true
+}
+
+variable "release-approvers-usernames" {
+  description = "The list of users making up the release-approvers team."
+  type = set(string)
+  default = [
+    "edsiper",
+    "agup006",
+    "niedbalski",
+    "patrick-stephens"
+  ]
 }

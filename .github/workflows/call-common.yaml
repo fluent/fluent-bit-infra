@@ -27,8 +27,6 @@ on:
         required: true
       github_personal_access_token:
         required: true
-      github_owner:
-        required: true
       aws_s3_access_id_staging:
         required: true
       aws_s3_secret_access_key_staging:
@@ -75,10 +73,6 @@ jobs:
 
       - name: Replace the github.com token
         run: sed -i -e "s/\$GITHUB_TOKEN/${{ secrets.github_personal_access_token }}/g" default.auto.tfvars
-        working-directory: terraform
-
-      - name: Replace the github.com owner
-        run: sed -i -e "s/\$GITHUB_OWNER/${{ secrets.github_owner }}/g" default.auto.tfvars
         working-directory: terraform
 
       - name: Set the staging secrets

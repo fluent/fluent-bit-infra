@@ -30,17 +30,6 @@ resource "github_team" "release-approvers" {
     create_default_maintainer = true
 }
 
-variable "release-approvers-usernames" {
-  description = "The list of users making up the release-approvers team."
-  type = set(string)
-  default = [
-    "edsiper",
-    "agup006",
-    "niedbalski",
-    "patrick-stephens"
-  ]
-}
-
 resource "github_team_membership" "release-approvers-members" {
     team_id  = github_team.release-approvers.id
 
