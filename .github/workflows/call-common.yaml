@@ -46,6 +46,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        # TODO: remove
+        with:
+          ref: staging_infra_setup
 
       - uses: hashicorp/setup-terraform@v1
         with:
