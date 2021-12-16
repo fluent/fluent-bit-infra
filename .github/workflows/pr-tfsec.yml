@@ -13,7 +13,12 @@ jobs:
         uses: actions/checkout@master
 
       - name: tfsec
+        if: ${{ github.event_name == 'pull_request' }}
         uses: aquasecurity/tfsec-pr-commenter-action@v0.1.10
         with:
           github_token: ${{ github.token }}
           commenter_version: v0.1.10
+
+      - name: tfsec
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: docker run --rm -it -v "$(pwd):/src" aquasec/tfsec /src
