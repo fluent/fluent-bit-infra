@@ -54,7 +54,7 @@ jobs:
 
       - name: Replace the GCP service account key
         run: |
-          sed -i -e '/gcp-sa-key//d' default.auto.tfvars
+          sed -i -e '/gcp-sa-key/d' default.auto.tfvars
           cat <<EOT >> default.auto.tfvars
           gcp-sa-key    =  <<-EOF
           ${{ secrets.gcp_sa_key }}
@@ -87,7 +87,7 @@ jobs:
 
       - name: Set the multiline GPG key at the end
         run: |
-          sed -i -e '/staging-gpg-key//d' default.auto.tfvars
+          sed -i -e '/staging-gpg-key/d' default.auto.tfvars
           cat <<EOT >> default.auto.tfvars
           staging-gpg-key =  <<-EOF
           ${{ secrets.gpg_private_key_staging }}
