@@ -115,7 +115,7 @@ resource "github_repository_environment" "release-environment" {
   repository   = data.github_repository.fluentbit.name
   reviewers {
     # teams = [github_team.all["Release Approvers Team"].id]
-    teams = github_team.fluentbit-release-approvers.id
+    teams = [github_team.fluentbit-release-approvers.id]
   }
   deployment_branch_policy {
     protected_branches     = false
