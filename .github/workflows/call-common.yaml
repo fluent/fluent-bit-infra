@@ -12,10 +12,10 @@ on:
         type: string
         default: fluentbit-staging
         required: false
-      terraform_apply:
-        type: boolean
-        default: false
-        required: false
+      job_type:
+        type: string
+        default: pr
+        required: true
     secrets:
       gcp_sa_key:
         required: true
@@ -119,7 +119,11 @@ jobs:
       # Need to do this here to make sure we have the same configuration
       - name: Terraform Apply
         # Booleans do not compare
-        if: ${{ inputs.terraform_apply == 'true' }}
+        if: ${{ inputs.job_type == 'main' }}
         id: apply
         run: terraform apply -input=false -auto-approve
         working-directory: terraform
+
+      - name: Terraform Apply skip reason
+        if: ${{ inputs.job_type != 'main' }}
+        run: echo "Skipped because job_type is ${{ inputs.job_type }}"
