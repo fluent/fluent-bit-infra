@@ -40,7 +40,7 @@ provider "packet" {
 provider "github" {
   token        = var.github_token
   owner        = var.github_owner
-  organization = "pat-terraform-test"
+  organization = "fluent"
 }
 
 # Create local values to retrieve items from CSVs

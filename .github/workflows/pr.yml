@@ -7,7 +7,7 @@ on:
 name: Tests for pull requests
 jobs:
   run-tests:
-    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@main
+    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@staging_infra_setup
     with:
       ignore_errors: false
       terraform_apply: false

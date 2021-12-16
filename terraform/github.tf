@@ -1,7 +1,5 @@
 data "github_repository" "fluentbit" {
-  # full_name = "fluent/fluent-bit"
-  full_name = "patrick-stephens/disposable-test-terraform"
-  # name = "fluent-bit"
+  full_name = "fluent/fluent-bit"
 }
 
 resource "github_branch_protection_v3" "default-branch-protection" {

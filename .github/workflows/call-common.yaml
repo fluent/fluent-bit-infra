@@ -36,7 +36,7 @@ on:
       gpg_private_key_staging:
         required: true
 
-name: Tests for pull requests
+name: Reusable workflow to verify
 jobs:
   run-tests:
     name: update fluentbit infra with terraform
