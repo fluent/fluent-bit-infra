@@ -7,7 +7,8 @@ on:
 name: Tests for pull requests
 jobs:
   run-tests:
-    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@main
+    # DO NOT MERGE - change to main
+    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@booleans_are_strings
     with:
       ignore_errors: false
       job_type: 'pr'
