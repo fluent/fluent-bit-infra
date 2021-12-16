@@ -1,5 +1,5 @@
 # Runs 'tfsec': https://github.com/aquasecurity/tfsec-pr-commenter-action
-name: tfsec-pr-commenter
+name: Run tfsec on pull requests
 on:
   pull_request:
   workflow_dispatch:
@@ -16,4 +16,3 @@ jobs:
         uses: aquasecurity/tfsec-pr-commenter-action@main
         with:
           github_token: ${{ github.token }}
-          working-directory: terraform
