@@ -22,25 +22,37 @@ resource "github_branch_protection_v3" "default-branch-protection" {
   depends_on = [data.github_repository.fluentbit]
 }
 
-resource "github_team" "fluentbit-release-approvers" {
-    name                      = "Release Approvers"
+resource "github_team" "release-approvers" {
+    name                      = "Fluent Bit Release Approvers"
     description               = "Fluent Bit release approval team"
     privacy                   = "closed"
     # adds the creating user to the team
     create_default_maintainer = true
 }
 
-resource "github_team_membership" "fluentbit-release-approvers-members" {
-    team_id  = github_team.fluentbit-release-approvers.id
-    username = "patrick-stephens"
+variable "release-approvers-usernames" {
+  description = "The list of users making up the release-approvers team."
+  type = set(string)
+  default = [
+    "edsiper",
+    "agup006",
+    "niedbalski",
+    "patrick-stephens"
+  ]
+}
+
+resource "github_team_membership" "release-approvers-members" {
+    team_id  = github_team.release-approvers.id
+
+    for_each = var.release-approvers-usernames
+    username = each.value
 }
 
 resource "github_repository_environment" "release-environment" {
   environment  = "release"
   repository   = data.github_repository.fluentbit.name
   reviewers {
-    # teams = [github_team.all["Release Approvers Team"].id]
-    teams = [github_team.fluentbit-release-approvers.id]
+    teams = [github_team.release-approvers.id]
   }
   deployment_branch_policy {
     protected_branches     = false
