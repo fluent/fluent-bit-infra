@@ -22,7 +22,40 @@ resource "github_branch_protection_v3" "default-branch-protection" {
   depends_on = [data.github_repository.fluentbit]
 }
 
-resource "github_team_repository" "all" {
+# Create local values to retrieve items from CSVs
+locals {
+  # Parse team member files
+  team_members_path = "team-members"
+  team_members_files = {
+    for file in fileset(local.team_members_path, "*.csv") :
+    trimsuffix(file, ".csv") => csvdecode(file("${local.team_members_path}/${file}"))
+  }
+  # Create temp object that has team ID and CSV contents
+  team_members_temp = flatten([
+    for team, members in local.team_members_files : [
+      for tn, t in github_team.all : {
+        name    = t.name
+        id      = t.id
+        slug    = t.slug
+        members = members
+      } if t.slug == team
+    ]
+  ])
+
+  # Create object for each team-user relationship
+  team_members = flatten([
+    for team in local.team_members_temp : [
+      for member in team.members : {
+        name     = "${team.slug}-${member.username}"
+        team_id  = team.id
+        username = member.username
+        role     = member.role
+      }
+    ]
+  ])
+}
+
+resource "github_team" "all" {
     for_each = {
         for team in csvdecode(file("calyptia/teams.csv")) :
         team.name => team
@@ -47,7 +80,7 @@ resource "github_team_repository" "fluentbit_repo_team_mapping" {
   repository = data.github_repository.fluentbit.name
 
   for_each = {
-    for team in github_team_repository.all :
+    for team in github_team.all :
     team.team_name => {
       team_id    = github_team.all[team.team_name].id
       permission = team.permission
@@ -62,7 +95,7 @@ resource "github_repository_environment" "release-environment" {
   environment  = "release"
   repository   = data.github_repository.fluentbit.name
   reviewers {
-    teams = [github_team_repository.all["Release Approvers Team"].id]
+    teams = [github_team.all["Release Approvers Team"].id]
   }
   deployment_branch_policy {
     protected_branches     = false
