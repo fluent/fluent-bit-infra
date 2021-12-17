@@ -30,7 +30,7 @@ resource "github_repository_environment" "release-environment" {
   environment  = "release"
   repository   = data.github_repository.fluentbit.name
   reviewers {
-    users = [ data.github_user.release-approvers-users[*].id ]
+    users = [ for user in data.github_user.release-approvers-users: user.id ]
   }
   deployment_branch_policy {
     protected_branches     = false
