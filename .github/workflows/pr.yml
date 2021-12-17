@@ -3,14 +3,24 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      repo_full_name:
+        description: "The repository to operate on as a test."
+        required: true
+      job_type:
+        description: "Whether to run a full apply or just a plan."
+        required: false
+        default: "plan"
 
 name: Tests for pull requests
 jobs:
   run-tests:
-    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@main
+    # TODO: switch to main before merge
+    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@terraform_unable_to_create_repo
     with:
       ignore_errors: false
-      job_type: 'pr'
+      job_type: ${{ github.event.inputs.job_type || 'plan' }}
+      repo_full_name: ${{ github.event.inputs.repo_full_name || 'fluent/fluent-bit' }}
     secrets:
       gcp_sa_key: ${{ secrets.GCP_SA_KEY }}
       terraform_cloud_api_token: ${{ secrets.TF_API_TOKEN }}

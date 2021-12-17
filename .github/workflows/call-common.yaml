@@ -2,20 +2,29 @@ on:
   workflow_call:
     inputs:
       ignore_errors:
+        description: Ignore errors on Terraform plan.
         type: boolean
         required: true
       aws_s3_bucket_releases:
+        description: The S3 bucket to use for releases.
         type: string
         default: fluentbit-release
         required: false
       aws_s3_bucket_staging:
+        description: The S3 bucket to use for staging builds.
         type: string
         default: fluentbit-staging
         required: false
       job_type:
+        description: Whether to run Terrafrom apply or not - only if it is 'main'
         type: string
         default: pr
         required: true
+      repo_full_name:
+        description: Repository to use for Terraform, intended for testing only and include full name with organisation/user included.
+        type: string
+        default: "fluent/fluent-bit"
+        required: false
     secrets:
       gcp_sa_key:
         required: true
@@ -94,6 +103,11 @@ jobs:
           sed -i -e "s/\$AWS_S3_BUCKET_RELEASES/${{ inputs.aws_s3_bucket_releases }}/g" default.auto.tfvars
         working-directory: terraform
 
+      - name: Specify the repository to operate only.
+        run: |
+          sed -i -e "s/\$REPO_FULL_NAME/${{ inputs.repo_full_name }}/g" default.auto.tfvars
+        shell: bash
+
       - name: Terraform fmt
         id: fmt
         run: terraform fmt -check
@@ -119,11 +133,11 @@ jobs:
       # Need to do this here to make sure we have the same configuration
       - name: Terraform Apply
         # Booleans do not compare
-        if: ${{ inputs.job_type == 'main' }}
+        if: ${{ inputs.job_type == 'apply' }}
         id: apply
         run: terraform apply -input=false -auto-approve
         working-directory: terraform
 
       - name: Terraform Apply skip reason
-        if: ${{ inputs.job_type != 'main' }}
+        if: ${{ inputs.job_type != 'apply' }}
         run: echo "Skipped because job_type is ${{ inputs.job_type }}"

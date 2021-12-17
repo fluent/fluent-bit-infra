@@ -93,7 +93,6 @@ variable "release-approvers-usernames" {
   default = [
     "edsiper",
     "agup006",
-    "niedbalski",
-    "patrick-stephens"
+    "niedbalski"
   ]
 }
