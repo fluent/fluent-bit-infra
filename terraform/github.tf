@@ -62,7 +62,7 @@ resource "github_repository_environment" "staging-environment" {
   environment  = "staging"
   repository   = data.github_repository.fluentbit.name
   deployment_branch_policy {
-    protected_branches     = false
+    protected_branches     = true
     custom_branch_policies = false
   }
 
