@@ -33,7 +33,7 @@ resource "github_repository_environment" "release-environment" {
     users = [ for user in data.github_user.release-approvers-users: user.id ]
   }
   deployment_branch_policy {
-    protected_branches     = false
+    protected_branches     = true
     custom_branch_policies = false
   }
 
