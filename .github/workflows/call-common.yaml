@@ -114,6 +114,7 @@ jobs:
         # Use different separator for sed as `/` may be in repo name
         run: |
           sed -i -e "s|\$REPO_FULL_NAME|${{ inputs.repo_full_name }}|g" default.auto.tfvars
+        working-directory: terraform
         shell: bash
 
       - name: Terraform fmt
