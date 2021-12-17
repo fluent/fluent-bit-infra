@@ -96,3 +96,8 @@ variable "release-approvers-usernames" {
     "niedbalski"
   ]
 }
+
+variable "repo_full_name" {
+  type = string
+  default = "fluent/fluent-bit"
+}

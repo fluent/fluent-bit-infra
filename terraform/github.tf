@@ -1,5 +1,5 @@
 data "github_repository" "fluentbit" {
-  full_name = "fluent/fluent-bit"
+  full_name = var.repo_full_name
 }
 resource "github_branch_protection_v3" "default-branch-protection" {
 
