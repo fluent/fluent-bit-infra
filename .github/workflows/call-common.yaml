@@ -2,20 +2,29 @@ on:
   workflow_call:
     inputs:
       ignore_errors:
+        description: Ignore errors on Terraform plan.
         type: boolean
         required: true
       aws_s3_bucket_releases:
+        description: The S3 bucket to use for releases.
         type: string
         default: fluentbit-release
         required: false
       aws_s3_bucket_staging:
+        description: The S3 bucket to use for staging builds.
         type: string
         default: fluentbit-staging
         required: false
       job_type:
+        description: Whether to run Terrafrom apply or not - only if it is 'main'
         type: string
         default: pr
         required: true
+      repo_full_name:
+        description: Repository to use for Terraform, intended for testing only and include full name with organisation/user included.
+        type: string
+        default: "fluent/fluent-bit"
+        required: false
     secrets:
       gcp_sa_key:
         required: true
@@ -44,6 +53,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        # Normally checkout takes its value from the event that triggers it but for workflow_dispatch
+        # this may not be correct as it can use the default branch. You may need to add this for
+        # testing.
+        # with:
+        #   ref: 'main'
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -59,18 +73,22 @@ jobs:
           EOF
           EOT
         working-directory: terraform
+        shell: bash
 
       - name: Replace the cloudflare token
         run: sed -i -e "s/\$CLOUDFLARE_TOKEN/${{ secrets.cloudflare_token }}/g" default.auto.tfvars
         working-directory: terraform
+        shell: bash
 
       - name: Replace the packet.net token
         run: sed -i -e "s/\$PACKET_NET_TOKEN/${{ secrets.packet_net_token }}/g" default.auto.tfvars
         working-directory: terraform
+        shell: bash
 
       - name: Replace the github.com token
         run: sed -i -e "s/\$GITHUB_TOKEN/${{ secrets.github_personal_access_token }}/g" default.auto.tfvars
         working-directory: terraform
+        shell: bash
 
       - name: Set the staging secrets
         run: |
@@ -78,6 +96,7 @@ jobs:
           sed -i -e "s/\$AWS_S3_ACCESS_ID_STAGING/${{ secrets.aws_s3_access_id_staging }}/g" default.auto.tfvars
           sed -i -e "s/\$AWS_S3_SECRET_ACCESS_KEY_STAGING/${{ secrets.aws_s3_secret_access_key_staging }}/g" default.auto.tfvars
         working-directory: terraform
+        shell: bash
 
       - name: Set the multiline GPG key at the end
         run: |
@@ -88,11 +107,20 @@ jobs:
           EOF
           EOT
         working-directory: terraform
+        shell: bash
 
       - name: Set the release secrets
         run: |
           sed -i -e "s/\$AWS_S3_BUCKET_RELEASES/${{ inputs.aws_s3_bucket_releases }}/g" default.auto.tfvars
         working-directory: terraform
+        shell: bash
+
+      - name: Specify the repository to operate on.
+        # Use different separator for sed as `/` may be in repo name
+        run: |
+          sed -i -e "s|\$REPO_FULL_NAME|${{ inputs.repo_full_name }}|g" default.auto.tfvars
+        working-directory: terraform
+        shell: bash
 
       - name: Terraform fmt
         id: fmt
@@ -119,11 +147,11 @@ jobs:
       # Need to do this here to make sure we have the same configuration
       - name: Terraform Apply
         # Booleans do not compare
-        if: ${{ inputs.job_type == 'main' }}
+        if: ${{ inputs.job_type == 'apply' }}
         id: apply
         run: terraform apply -input=false -auto-approve
         working-directory: terraform
 
       - name: Terraform Apply skip reason
-        if: ${{ inputs.job_type != 'main' }}
+        if: ${{ inputs.job_type != 'apply' }}
         run: echo "Skipped because job_type is ${{ inputs.job_type }}"

@@ -93,7 +93,11 @@ variable "release-approvers-usernames" {
   default = [
     "edsiper",
     "agup006",
-    "niedbalski",
-    "patrick-stephens"
+    "niedbalski"
   ]
+}
+
+variable "repo_full_name" {
+  type = string
+  default = "fluent/fluent-bit"
 }
