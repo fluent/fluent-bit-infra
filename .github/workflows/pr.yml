@@ -15,8 +15,7 @@ on:
 name: Tests for pull requests
 jobs:
   run-tests:
-    # TODO: switch to main before merge
-    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@terraform_unable_to_create_repo
+    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@main
     with:
       ignore_errors: false
       job_type: ${{ github.event.inputs.job_type || 'plan' }}

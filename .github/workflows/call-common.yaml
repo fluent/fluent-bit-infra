@@ -53,12 +53,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        # TODO: remove before merge
         # Normally checkout takes its value from the event that triggers it but for workflow_dispatch
         # this may not be correct as it can use the default branch. You may need to add this for
         # testing.
-        with:
-          ref: 'terraform_unable_to_create_repo'
+        # with:
+        #   ref: 'main'
 
       - uses: hashicorp/setup-terraform@v1
         with:
