@@ -67,9 +67,11 @@ variable "gcp-ssh-keys" {
 
 variable "release-s3-bucket" {
   type = string
+  default = "fluentbit-releases"
 }
 variable "staging-s3-bucket" {
   type = string
+  default = "fluentbit-staging"
 }
 
 variable "staging-s3-access-id" {
