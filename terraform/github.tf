@@ -43,7 +43,7 @@ resource "github_repository_environment" "release-environment" {
 resource "github_actions_environment_secret" "release-bucket-secret" {
   repository       = data.github_repository.fluentbit.name
   environment      = github_repository_environment.release-environment.environment
-  secret_name      = "S3_BUCKET_NAME_RELEASE"
+  secret_name      = "AWS_S3_BUCKET_RELEASE"
   plaintext_value  = var.release-s3-bucket
 }
 
@@ -61,7 +61,7 @@ resource "github_repository_environment" "staging-environment" {
 resource "github_actions_environment_secret" "staging-bucket-secret" {
   repository       = data.github_repository.fluentbit.name
   environment      = github_repository_environment.staging-environment.environment
-  secret_name      = "S3_BUCKET_NAME_STAGING"
+  secret_name      = "AWS_S3_BUCKET_STAGING"
   plaintext_value  = var.staging-s3-bucket
 }
 
