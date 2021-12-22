@@ -32,7 +32,7 @@ on:
         required: true
       cloudflare_token:
         required: true
-      packet_net_token:
+      metal_net_token:
         required: true
       github_personal_access_token:
         required: true
@@ -81,7 +81,7 @@ jobs:
         shell: bash
 
       - name: Replace the packet.net token
-        run: sed -i -e "s/\$PACKET_NET_TOKEN/${{ secrets.packet_net_token }}/g" default.auto.tfvars
+        run: sed -i -e "s/\$METAL_NET_TOKEN/${{ secrets.metal_net_token }}/g" default.auto.tfvars
         working-directory: terraform
         shell: bash
 
