@@ -13,7 +13,8 @@ on:
 name: Tests for pull requests
 jobs:
   run-tests:
-    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@main
+    uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@4380_self_hosted_builders
+    # uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@main
     with:
       ignore_errors: false
       job_type: ${{ github.event.inputs.job_type || 'plan' }}
