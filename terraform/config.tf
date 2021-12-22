@@ -37,7 +37,7 @@ provider "cloudflare" {
 }
 
 provider "metal" {
-  auth_token = var.metal_net_token
+  auth_token = var.metal_token
 }
 
 # Configure the GitHub Provider

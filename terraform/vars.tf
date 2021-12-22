@@ -1,4 +1,4 @@
-variable "metal_net_token" {
+variable "metal_token" {
   type = string
   sensitive = true
 }

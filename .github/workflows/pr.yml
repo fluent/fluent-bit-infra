@@ -16,14 +16,13 @@ jobs:
     uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@4380_self_hosted_builders
     # uses: calyptia/fluent-bit-infra/.github/workflows/call-common.yaml@main
     with:
-      ignore_errors: false
       job_type: ${{ github.event.inputs.job_type || 'plan' }}
       repo_full_name: ${{ github.event.inputs.repo_full_name || 'fluent/fluent-bit' }}
     secrets:
       gcp_sa_key: ${{ secrets.GCP_SA_KEY }}
       terraform_cloud_api_token: ${{ secrets.TF_API_TOKEN }}
       cloudflare_token: ${{ secrets.CLOUDFLARE_TOKEN }}
-      metal_net_token: ${{ secrets.PACKET_NET_TOKEN }}
+      metal_token: ${{ secrets.PACKET_NET_TOKEN }}
       github_personal_access_token: ${{ secrets.GH_PA_TOKEN }}
       aws_s3_access_id_staging: ${{ secrets.AWS_S3_ACCESS_ID_STAGING }}
       aws_s3_secret_access_key_staging: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY_STAGING }}
