@@ -1,9 +1,5 @@
 terraform {
   required_providers {
-    packet = {
-      source  = "packethost/packet"
-      version = "3.2.1"
-    }
     metal = {
       source  = "equinix/metal"
       version = "3.2.1"
@@ -37,9 +33,6 @@ provider "cloudflare" {
 }
 
 provider "metal" {
-  auth_token = var.metal_token
-}
-provider "packet" {
   auth_token = var.metal_token
 }
 
