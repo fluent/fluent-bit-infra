@@ -1,7 +1,7 @@
 terraform {
   required_providers {
-    packet = {
-      source  = "packethost/packet"
+    metal = {
+      source  = "equinix/metal"
       version = "3.2.1"
     }
     cloudflare = {
@@ -32,8 +32,8 @@ provider "cloudflare" {
   api_token = var.cloudflare_token
 }
 
-provider "packet" {
-  auth_token = var.packet_net_token
+provider "metal" {
+  auth_token = var.metal_net_token
 }
 
 # Configure the GitHub Provider

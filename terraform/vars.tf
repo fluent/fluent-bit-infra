@@ -1,9 +1,9 @@
-variable "packet_net_token" {
+variable "metal_net_token" {
   type = string
   sensitive = true
 }
 
-variable "packet_net_project_id" {
+variable "metal_net_project_id" {
   type    = string
   default = "25d09386-ae25-4259-a239-f8c5e14a3c0e"
 }
