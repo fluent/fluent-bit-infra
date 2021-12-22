@@ -1,10 +1,6 @@
 on:
   workflow_call:
     inputs:
-      ignore_errors:
-        description: Ignore errors on Terraform plan.
-        type: boolean
-        required: true
       aws_s3_bucket_releases:
         description: The S3 bucket to use for releases.
         type: string
@@ -32,7 +28,7 @@ on:
         required: true
       cloudflare_token:
         required: true
-      packet_net_token:
+      metal_token:
         required: true
       github_personal_access_token:
         required: true
@@ -48,8 +44,6 @@ jobs:
   run-tests:
     name: update fluentbit infra with terraform
     runs-on: ubuntu-latest
-    env:
-      ignore_errors: ${{ inputs.ignore_errors }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -81,7 +75,7 @@ jobs:
         shell: bash
 
       - name: Replace the packet.net token
-        run: sed -i -e "s/\$PACKET_NET_TOKEN/${{ secrets.packet_net_token }}/g" default.auto.tfvars
+        run: sed -i -e "s/\$METAL_TOKEN/${{ secrets.metal_token }}/g" default.auto.tfvars
         working-directory: terraform
         shell: bash
 
@@ -142,7 +136,6 @@ jobs:
         id: plan
         run: terraform plan -no-color
         working-directory: terraform
-        continue-on-error: ${{ env.ignore_errors }}
 
       # Need to do this here to make sure we have the same configuration
       - name: Terraform Apply
