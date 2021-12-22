@@ -1,7 +1,5 @@
 on:
   pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       repo_full_name:
