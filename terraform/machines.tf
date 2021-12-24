@@ -188,23 +188,56 @@ output "gcp-long-running-instance-01-ipv4" {
 }
 
 # Add staging build and test machines
-resource "metal_device" "gh-runner-x86" {
-  hostname         = "gh-runner-x86.fluentbit.io"
-  plan             = "c3.medium.x86"
-  metro            = "ny"
-  operating_system = "ubuntu_20_04"
-  billing_cycle    = "hourly"
-  project_id = local.project_id
-  custom_data = "AMD64 target"
+locals {
+  machines = toset(["arm,x86"])
 }
+resource "metal_device" "gh-runners" {
+  for_each = local.machines
 
-resource "metal_device" "gh-runner-arm" {
-  hostname         = "gh-runner-arm.fluentbit.io"
+  hostname         = "runner-${each.key}.fluentbit.io"
   plan             = "c3.large.arm"
-  metro            = "ny"
+  metro            = "sv"
   operating_system = "ubuntu_20_04"
-  billing_cycle    = "hourly"
-  project_id = local.project_id
-  custom_data = "ARM32 and ARM64 target"
+  billing_cycle    = "monthly"
+  project_id       = local.project_id
+  custom_data      = "${each.key}"
+  user_data        = file("provision/user-data.sh")
+  connection {
+    host     = self.access_public_ipv4
+    password = self.root_password
+  }
 }
 
+resource "null_resource" "gh-runners-provision" {
+  count = length(metal_device.gh-runners)
+  triggers = {
+    public_ip    = metal_device.gh-runners[count.index].access_public_ipv4
+    password     = metal_device.gh-runners[count.index].root_password
+    github_token = var.github_token
+  }
+  provisioner "file" {
+    source      = "provision/github-runner.create.sh"
+    destination = "/tmp/provision-github-runner.create.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/provision-github-runner.create.sh",
+      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${local.machines[count.index]} -t ${var.github_token} -o calyptia -r ${var.repo_full_name} -v ${var.GH_RUNNER_VERSION}",
+    ]
+  }
+
+  provisioner "file" {
+    when        = destroy
+    source      = "provision/github-runner.destroy.sh"
+    destination = "/tmp/provision-github-runner.destroy.sh"
+  }
+
+  provisioner "remote-exec" {
+    when = destroy
+    inline = [
+      "chmod +x /tmp/provision-github-runner.destroy.sh",
+      "sudo -i -u user bash /tmp/provision-github-runner.destroy.sh  -t ${var.github_token} -o calyptia -r ${var.repo_full_name}",
+    ]
+  }
+}
