@@ -126,7 +126,7 @@ resource "cloudflare_record" "test-subdomain" {
 
 resource "cloudflare_record" "gh-runner-x86" {
   name    = "gh-runner-x86"
-  value   = data.metal_device.gh-runner-x86.access_public_ipv4
+  value   = metal_device.gh-runner-x86.access_public_ipv4
   type    = "A"
   proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
@@ -134,7 +134,7 @@ resource "cloudflare_record" "gh-runner-x86" {
 
 resource "cloudflare_record" "gh-runner-arm" {
   name    = "gh-runner-arm"
-  value   = data.metal_device.gh-runner-arm.access_public_ipv4
+  value   = metal_device.gh-runner-arm.access_public_ipv4
   type    = "A"
   proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
