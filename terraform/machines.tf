@@ -213,7 +213,9 @@ resource "null_resource" "gh-runners-provision" {
   triggers = {
     public_ip    = metal_device.gh-runners[count.index].access_public_ipv4
     password     = metal_device.gh-runners[count.index].root_password
+    # Following are required to be referenced via `self` for destroy phase
     github_token = var.github_token
+    repo         = var.repo_full_name
   }
   provisioner "file" {
     source      = "provision/github-runner.create.sh"
@@ -223,7 +225,7 @@ resource "null_resource" "gh-runners-provision" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${local.machines[count.index]} -t ${var.github_token} -o calyptia -r ${var.repo_full_name} -v ${var.GH_RUNNER_VERSION}",
+      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${local.machines[count.index]} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.GH_RUNNER_VERSION}",
     ]
   }
 
@@ -237,7 +239,7 @@ resource "null_resource" "gh-runners-provision" {
     when = destroy
     inline = [
       "chmod +x /tmp/provision-github-runner.destroy.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.destroy.sh  -t ${var.github_token} -o calyptia -r ${var.repo_full_name}",
+      "sudo -i -u user bash /tmp/provision-github-runner.destroy.sh -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo}",
     ]
   }
 }
