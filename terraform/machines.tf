@@ -186,3 +186,25 @@ output "gcp-long-running-instance-ipv4" {
 output "gcp-long-running-instance-01-ipv4" {
   value = google_compute_address.static-01.address
 }
+
+# Add staging build and test machines
+resource "metal_device" "gh-runner-x86" {
+  hostname         = "gh-runner-x86.fluentbit.io"
+  plan             = "c3.medium.x86"
+  metro            = "ny"
+  operating_system = "ubuntu_20_04"
+  billing_cycle    = "hourly"
+  project_id = local.project_id
+  custom_data = "AMD64 target"
+}
+
+resource "metal_device" "gh-runner-arm" {
+  hostname         = "gh-runner-arm.fluentbit.io"
+  plan             = "c3.large.arm"
+  metro            = "ny"
+  operating_system = "ubuntu_20_04"
+  billing_cycle    = "hourly"
+  project_id = local.project_id
+  custom_data = "ARM32 and ARM64 target"
+}
+
