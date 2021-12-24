@@ -103,3 +103,9 @@ variable "repo_full_name" {
   type = string
   default = "fluent/fluent-bit"
 }
+
+variable "github_runner_version" {
+  type        = string
+  description = "Version of action runner to install"
+  default     = "2.275.1"
+}

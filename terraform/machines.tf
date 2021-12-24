@@ -208,6 +208,7 @@ resource "metal_device" "gh-runners" {
   }
 }
 
+# We provision them as Github runners here as directly related to machine creation
 resource "null_resource" "gh-runners-provision" {
   count = length(metal_device.gh-runners)
   triggers = {
@@ -225,7 +226,7 @@ resource "null_resource" "gh-runners-provision" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${local.machines[count.index]} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.GH_RUNNER_VERSION}",
+      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${local.machines[count.index]} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.github_runner_version}",
     ]
   }
 
