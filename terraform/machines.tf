@@ -186,3 +186,61 @@ output "gcp-long-running-instance-ipv4" {
 output "gcp-long-running-instance-01-ipv4" {
   value = google_compute_address.static-01.address
 }
+
+# Add staging build and test machines
+locals {
+  machines = toset(["arm", "x86"])
+}
+resource "metal_device" "gh-runners" {
+  for_each = local.machines
+
+  hostname         = "runner-${each.key}.fluentbit.io"
+  plan             = "c3.large.arm"
+  metro            = "sv"
+  operating_system = "ubuntu_20_04"
+  billing_cycle    = "monthly"
+  project_id       = local.project_id
+  custom_data      = each.key
+  user_data        = file("provision/user-data.sh")
+  connection {
+    host     = self.access_public_ipv4
+    password = self.root_password
+  }
+}
+
+# We provision them as Github runners here as directly related to machine creation
+resource "null_resource" "gh-runners-provision" {
+  for_each = metal_device.gh-runners
+  triggers = {
+    public_ip    = each.value.access_public_ipv4
+    password     = each.value.root_password
+    # Following are required to be referenced via `self` for destroy phase
+    github_token = var.github_token
+    repo         = var.repo_full_name
+  }
+  provisioner "file" {
+    source      = "provision/github-runner.create.sh"
+    destination = "/tmp/provision-github-runner.create.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/provision-github-runner.create.sh",
+      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${each.value.custom_data} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.github_runner_version}",
+    ]
+  }
+
+  provisioner "file" {
+    when        = destroy
+    source      = "provision/github-runner.destroy.sh"
+    destination = "/tmp/provision-github-runner.destroy.sh"
+  }
+
+  provisioner "remote-exec" {
+    when = destroy
+    inline = [
+      "chmod +x /tmp/provision-github-runner.destroy.sh",
+      "sudo -i -u user bash /tmp/provision-github-runner.destroy.sh -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo}",
+    ]
+  }
+}
