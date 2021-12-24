@@ -218,6 +218,11 @@ resource "null_resource" "gh-runners-provision" {
     github_token = var.github_token
     repo         = var.repo_full_name
   }
+  connection {
+    host     = self.triggers.public_ip
+    password = self.triggers.password
+  }
+
   provisioner "file" {
     source      = "provision/github-runner.create.sh"
     destination = "/tmp/provision-github-runner.create.sh"
