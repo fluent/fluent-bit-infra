@@ -189,7 +189,7 @@ output "gcp-long-running-instance-01-ipv4" {
 
 # Add staging build and test machines
 locals {
-  machines = toset(["arm,x86"])
+  machines = toset(["arm", "x86"])
 }
 resource "metal_device" "gh-runners" {
   for_each = local.machines
@@ -210,10 +210,10 @@ resource "metal_device" "gh-runners" {
 
 # We provision them as Github runners here as directly related to machine creation
 resource "null_resource" "gh-runners-provision" {
-  count = length(metal_device.gh-runners)
+  for_each = metal_device.gh-runners
   triggers = {
-    public_ip    = metal_device.gh-runners[count.index].access_public_ipv4
-    password     = metal_device.gh-runners[count.index].root_password
+    public_ip    = each.value.access_public_ipv4
+    password     = each.value.root_password
     # Following are required to be referenced via `self` for destroy phase
     github_token = var.github_token
     repo         = var.repo_full_name
@@ -226,7 +226,7 @@ resource "null_resource" "gh-runners-provision" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${local.machines[count.index]} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.github_runner_version}",
+      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${each.value.custom_data} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.github_runner_version}",
     ]
   }
 
