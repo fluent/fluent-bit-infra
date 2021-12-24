@@ -1,4 +1,5 @@
 #!/bin/env bash
+# Based on https://github.com/buildpacks/ci/blob/main/gh-runners/rhel-openshift/provision-scripts/github-runner.create.sh
 set -e
 
 if [ "$EUID" -eq 0 ]; then

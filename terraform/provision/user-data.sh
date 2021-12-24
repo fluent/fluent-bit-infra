@@ -1,4 +1,5 @@
 #!/bin/env bash
+# Based on https://github.com/buildpacks/ci/blob/main/gh-runners/rhel-openshift/provision-scripts/user-data.sh
 set -e
 
 echo "> Enable password login..."
