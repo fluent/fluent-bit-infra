@@ -127,7 +127,7 @@ resource "cloudflare_record" "test-subdomain" {
 resource "cloudflare_record" "gh-runners" {
   for_each = metal_device.gh-runners
 
-  name    = "runner-${each.value.custom_data}"
+  name    = "runner-${each.value.tags[0]}"
   value   = each.value.access_public_ipv4
   type    = "A"
   proxied = false

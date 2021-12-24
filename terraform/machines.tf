@@ -200,7 +200,7 @@ resource "metal_device" "gh-runners" {
   operating_system = "ubuntu_20_04"
   billing_cycle    = "hourly"
   project_id       = local.project_id
-  custom_data      = each.key # we use this for the key data
+  tags             = [ each.key ] # we use this for the key data
   user_data        = file("provision/user-data.sh")
   connection {
     host     = self.access_public_ipv4
@@ -226,7 +226,7 @@ resource "null_resource" "gh-runners-provision" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${each.value.custom_data} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.github_runner_version}",
+      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${each.value.tags[0]} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.github_runner_version}",
     ]
   }
 
