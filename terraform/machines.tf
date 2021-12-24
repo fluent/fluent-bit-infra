@@ -189,18 +189,18 @@ output "gcp-long-running-instance-01-ipv4" {
 
 # Add staging build and test machines
 locals {
-  machines = toset(["arm", "x86"])
+  machines = zipmap(["arm", "x86"], ["c3.large.arm", "c3.medium.x86"])
 }
 resource "metal_device" "gh-runners" {
   for_each = local.machines
 
   hostname         = "runner-${each.key}.fluentbit.io"
-  plan             = "c3.large.arm"
-  metro            = "sv"
+  plan             = each.value
+  metro            = "da"
   operating_system = "ubuntu_20_04"
-  billing_cycle    = "monthly"
+  billing_cycle    = "hourly"
   project_id       = local.project_id
-  custom_data      = each.key
+  custom_data      = each.key # we use this for the key data
   user_data        = file("provision/user-data.sh")
   connection {
     host     = self.access_public_ipv4
