@@ -125,10 +125,10 @@ resource "cloudflare_record" "test-subdomain" {
 }
 
 resource "cloudflare_record" "gh-runners" {
-  count = length(metal_device.gh-runners)
+  for_each = metal_device.gh-runners
 
-  name    = "gh-runner-${count.index}"
-  value   = metal_device.gh-runners[count.index].access_public_ipv4
+  name    = "runner-${each.value.custom_data}"
+  value   = each.value.access_public_ipv4
   type    = "A"
   proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")

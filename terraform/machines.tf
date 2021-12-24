@@ -200,7 +200,7 @@ resource "metal_device" "gh-runners" {
   operating_system = "ubuntu_20_04"
   billing_cycle    = "monthly"
   project_id       = local.project_id
-  custom_data      = "${each.key}"
+  custom_data      = each.key
   user_data        = file("provision/user-data.sh")
   connection {
     host     = self.access_public_ipv4
