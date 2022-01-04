@@ -191,6 +191,13 @@ output "gcp-long-running-instance-01-ipv4" {
 locals {
   machines = zipmap(["arm", "x86"], ["c3.large.arm", "c3.medium.x86"])
 }
+
+resource "random_password" "gh-runner-password" {
+  length           = 32
+  special          = true
+  override_special = "_%@"
+}
+
 resource "metal_device" "gh-runners" {
   for_each = local.machines
 
@@ -206,6 +213,7 @@ resource "metal_device" "gh-runners" {
     host     = self.access_public_ipv4
     password = self.root_password
   }
+  root_password    = random_password.gh-runner-password.result # disabled after 24 hours as well
 }
 
 # We provision them as Github runners here as directly related to machine creation
