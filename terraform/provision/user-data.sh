@@ -1,6 +1,6 @@
 #!/bin/env bash
 # Based on https://github.com/buildpacks/ci/blob/main/gh-runners/rhel-openshift/provision-scripts/user-data.sh
-set -e
+set -ex
 
 echo "> Enable password login..."
 sed -i '/PasswordAuthentication \+no/s/no/yes/' /etc/ssh/sshd_config
