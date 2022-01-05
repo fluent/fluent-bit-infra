@@ -244,7 +244,7 @@ resource "null_resource" "gh-runners-provision" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u provisioner bash /tmp/provision-github-runner.create.sh -l ${each.value.tags[0]} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.github_runner_version}",
+      "sudo -i -u provisioner bash /tmp/provision-github-runner.create.sh -l ${each.value.tags[0]} -t ${self.triggers.github_token} -r ${self.triggers.repo} -v ${var.github_runner_version}",
     ]
   }
 
@@ -258,7 +258,7 @@ resource "null_resource" "gh-runners-provision" {
     when = destroy
     inline = [
       "chmod +x /tmp/provision-github-runner.destroy.sh",
-      "sudo -i -u provisioner bash /tmp/provision-github-runner.destroy.sh -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo}",
+      "sudo -i -u provisioner bash /tmp/provision-github-runner.destroy.sh -t ${self.triggers.github_token} -r ${self.triggers.repo}",
     ]
   }
 }
