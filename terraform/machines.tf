@@ -209,12 +209,11 @@ resource "metal_device" "gh-runners" {
   }
 }
 output "gh-runners-public_ip" {
-  value = metal_device.gh-runners[0].access_public_ipv4
+  value = {for k, v in metal_device.gh-runners: k => v.access_public_ipv4}
 }
 
 output "gh-runners-root_password" {
-  value     = metal_device.gh-runners[0].root_password
-  sensitive = true
+  value = {for k, v in metal_device.gh-runners: k => v.root_password}
 }
 
 # We provision them as Github runners here as directly related to machine creation
