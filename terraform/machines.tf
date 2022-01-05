@@ -189,7 +189,7 @@ output "gcp-long-running-instance-01-ipv4" {
 
 # Add staging build and test machines
 locals {
-  machines = zipmap(["arm", "x86"], ["c3.large.arm", "c3.medium.x86"])
+  machines = zipmap(["arm64", "x64"], ["c3.large.arm", "c3.medium.x86"])
 }
 
 # Ensure we have an SSH key set up we can use

@@ -17,6 +17,8 @@ while getopts t:o:r: flag; do
     esac
 done
 
+export RUNNER_ALLOW_RUNASROOT="1"
+
 ACTIONS_RUNNER_INSTALL_DIR="${HOME}/runner-${GH_OWNER}-${GH_REPO}"
 ACTIONS_RUNNER_WORK_DIR="${ACTIONS_RUNNER_INSTALL_DIR}-work"
 
@@ -28,7 +30,7 @@ pushd "$ACTIONS_RUNNER_INSTALL_DIR" > /dev/null
     sudo ./svc.sh uninstall || true
 
     echo "> Unregistering runner..."
-    ACTIONS_RUNNER_INPUT_TOKEN=$(curl -sS --request POST --url "https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/runners/remove-token" --header "authorization: Bearer ${GH_TOKEN}"  --header 'content-type: application/json' | jq -r .token)
+    ACTIONS_RUNNER_INPUT_TOKEN=$(curl -sS -X POST -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/runners/remove-token" --header "authorization: Bearer ${GH_TOKEN}" | jq -r .token)
     echo "Token: $ACTIONS_RUNNER_INPUT_TOKEN"
 
     ./config.sh remove --unattended --token "$ACTIONS_RUNNER_INPUT_TOKEN"
