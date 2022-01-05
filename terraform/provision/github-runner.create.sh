@@ -32,6 +32,8 @@ mkdir -p "$ACTIONS_RUNNER_INSTALL_DIR" "$ACTIONS_RUNNER_WORK_DIR"
 tar -zxf actions.tar.gz --directory "$ACTIONS_RUNNER_INSTALL_DIR"
 rm -f actions.tar.gz
 
+# prevent issues with apt-get locks
+sed -i 's/apt_get=apt-get/apt_get="apt-get -o DPkg::Lock::Timeout=-1"/g' "${ACTIONS_RUNNER_INSTALL_DIR}"/bin/installdependencies.sh
 sudo "${ACTIONS_RUNNER_INSTALL_DIR}"/bin/installdependencies.sh
 
 pushd "$ACTIONS_RUNNER_INSTALL_DIR" > /dev/null
