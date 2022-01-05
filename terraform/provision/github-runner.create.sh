@@ -1,6 +1,6 @@
 #!/bin/env bash
 # Based on https://github.com/buildpacks/ci/blob/main/gh-runners/rhel-openshift/provision-scripts/github-runner.create.sh
-set -e
+set -ex
 
 if [ "$EUID" -eq 0 ]; then
     echo "Must be ran as a non-root user"
@@ -19,7 +19,8 @@ while getopts l:t:o:r:v: flag; do
 done
 
 echo "> Install depenedencies..."
-sudo yum install -y jq
+sudo apt-get update
+sudo apt-get install -y curl jq
 
 echo "> Downloading actions runner ($GH_RUNNER_VERSION)..."
 curl -o actions.tar.gz --location "https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz"

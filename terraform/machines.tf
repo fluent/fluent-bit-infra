@@ -191,6 +191,18 @@ output "gcp-long-running-instance-01-ipv4" {
 locals {
   machines = zipmap(["arm", "x86"], ["c3.large.arm", "c3.medium.x86"])
 }
+
+# Ensure we have an SSH key set up we can use
+resource "tls_private_key" "gh-runner-provision-key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "metal_ssh_key" "gh-runner-provision-ssh-pub-key" {
+  name       = "gh-runner-provision-ssh-pub-key"
+  public_key = chomp(tls_private_key.gh-runner-provision-key.public_key_openssh)
+}
+
 resource "metal_device" "gh-runners" {
   for_each = local.machines
 
@@ -202,6 +214,7 @@ resource "metal_device" "gh-runners" {
   project_id       = local.project_id
   tags             = [ each.key ] # we use this for the key data
   user_data        = file("provision/user-data.sh")
+  depends_on       = [ metal_ssh_key.gh-runner-provision-ssh-pub-key ]
   connection {
     host     = self.access_public_ipv4
     password = self.root_password
@@ -213,14 +226,14 @@ resource "null_resource" "gh-runners-provision" {
   for_each = metal_device.gh-runners
   triggers = {
     public_ip    = each.value.access_public_ipv4
-    password     = each.value.root_password
+    private_key  = chomp(tls_private_key.gh-runner-provision-key.private_key_pem)
     # Following are required to be referenced via `self` for destroy phase
     github_token = var.github_token
     repo         = var.repo_full_name
   }
   connection {
-    host     = self.triggers.public_ip
-    password = self.triggers.password
+    host        = self.triggers.public_ip
+    private_key = self.triggers.private_key
   }
 
   provisioner "file" {
@@ -231,7 +244,7 @@ resource "null_resource" "gh-runners-provision" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -l ${each.value.tags[0]} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.github_runner_version}",
+      "sudo -i -u provisioner bash /tmp/provision-github-runner.create.sh -l ${each.value.tags[0]} -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo} -v ${var.github_runner_version}",
     ]
   }
 
@@ -245,7 +258,7 @@ resource "null_resource" "gh-runners-provision" {
     when = destroy
     inline = [
       "chmod +x /tmp/provision-github-runner.destroy.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.destroy.sh -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo}",
+      "sudo -i -u provisioner bash /tmp/provision-github-runner.destroy.sh -t ${self.triggers.github_token} -o calyptia -r ${self.triggers.repo}",
     ]
   }
 }
