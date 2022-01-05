@@ -19,12 +19,14 @@ while getopts l:t:o:r:v: flag; do
     esac
 done
 
-echo "> Install depenedencies..."
+export RUNNER_ALLOW_RUNASROOT="1"
+
+echo "> Install dependencies..."
 sudo apt-get update
 sudo apt-get install -y curl jq
 
 echo "> Downloading actions runner ($GH_RUNNER_VERSION)..."
-curl -o actions.tar.gz --location "https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz"
+curl -o actions.tar.gz --location "https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-${RUNNER_LABEL}-${GH_RUNNER_VERSION}.tar.gz"
 
 echo "> Installing runner..."
 ACTIONS_RUNNER_INSTALL_DIR="${HOME}/runner-${GH_OWNER}-${GH_REPO}"
@@ -39,7 +41,7 @@ sudo "${ACTIONS_RUNNER_INSTALL_DIR}"/bin/installdependencies.sh
 
 pushd "$ACTIONS_RUNNER_INSTALL_DIR" > /dev/null
     echo "> Configuring runner..."
-    ACTIONS_RUNNER_INPUT_TOKEN=$(curl -sS --request POST --url "https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/runners/registration-token" --header "authorization: Bearer ${GH_TOKEN}"  --header 'content-type: application/json' | jq -r .token)
+    ACTIONS_RUNNER_INPUT_TOKEN=$(curl -sS -X POST -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/runners/registration-token" --header "authorization: Bearer ${GH_TOKEN}" | jq -r .token)
 
     echo "Token: $ACTIONS_RUNNER_INPUT_TOKEN"
 

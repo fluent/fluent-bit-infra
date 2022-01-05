@@ -108,5 +108,5 @@ variable "repo_full_name" {
 variable "github_runner_version" {
   type        = string
   description = "Version of action runner to install"
-  default     = "2.275.1"
+  default     = "2.285.1"
 }
