@@ -19,7 +19,8 @@ while getopts l:t:o:r:v: flag; do
 done
 
 echo "> Install depenedencies..."
-sudo yum install -y jq
+sudo apt-get update
+sudo apt-get install -y curl jq
 
 echo "> Downloading actions runner ($GH_RUNNER_VERSION)..."
 curl -o actions.tar.gz --location "https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz"
