@@ -10,7 +10,8 @@ sed -i '/Defaults \+secure_path/s/^/#/' /etc/sudoers
 # do not require password
 sed -i '0,/%sudo/s/ALL$/NOPASSWD: ALL/' /etc/sudoers
 
-# Add docker
-apt-get update
-apt-get install -y docker.io
+# Add dependencies and allow for other users of apt-get
+# https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
+apt-get -o DPkg::Lock::Timeout=60 update
+apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io curl jq
 usermod -aG docker provisioner

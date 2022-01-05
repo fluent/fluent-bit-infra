@@ -20,10 +20,6 @@ done
 
 export RUNNER_ALLOW_RUNASROOT="1"
 
-echo "> Install dependencies..."
-sudo apt-get update
-sudo apt-get install -y curl jq
-
 echo "> Downloading actions runner ($GH_RUNNER_VERSION)..."
 curl -o actions.tar.gz --location "https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-${RUNNER_LABEL}-${GH_RUNNER_VERSION}.tar.gz"
 
