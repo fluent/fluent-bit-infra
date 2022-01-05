@@ -9,3 +9,8 @@ adduser --ingroup sudo --disabled-password --gecos "" provisioner
 sed -i '/Defaults \+secure_path/s/^/#/' /etc/sudoers
 # do not require password
 sed -i '0,/%sudo/s/ALL$/NOPASSWD: ALL/' /etc/sudoers
+
+# Add docker
+apt-get update
+apt-get install -y docker.io
+usermod -aG docker provisioner
