@@ -1,5 +1,6 @@
 #!/bin/env bash
 # Based on https://github.com/buildpacks/ci/blob/main/gh-runners/rhel-openshift/provision-scripts/github-runner.destroy.sh
+exec &> >(tee -a "/tmp/github-runner.destroy.sh.log")
 set -ex
 
 if [ "$EUID" -eq 0 ]; then
