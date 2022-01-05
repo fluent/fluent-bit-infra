@@ -1,5 +1,6 @@
 #!/bin/env bash
 # Based on https://github.com/buildpacks/ci/blob/main/gh-runners/rhel-openshift/provision-scripts/user-data.sh
+exec &> >(tee -a "/tmp/user-data.sh.log")
 set -ex
 
 echo "> Creating non-root user..."
