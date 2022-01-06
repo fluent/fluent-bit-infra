@@ -212,7 +212,7 @@ resource "metal_device" "gh-runners" {
   operating_system = "ubuntu_20_04"
   billing_cycle    = "hourly"
   project_id       = local.project_id
-  tags             = [ each.key ] # we use this for the key data
+  tags             = [ each.key, "github-runner" ] # we use this for the key data
   user_data        = file("provision/user-data.sh")
   depends_on       = [ metal_ssh_key.gh-runner-provision-ssh-pub-key ]
   connection {

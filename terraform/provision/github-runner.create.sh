@@ -44,7 +44,7 @@ pushd "$ACTIONS_RUNNER_INSTALL_DIR" > /dev/null
 
     ./config.sh --unattended --replace \
         --name "$HOSTNAME" \
-        --labels "calyptia,ubuntu-latest,ubuntu-20.04,$RUNNER_LABEL"\
+        --labels "calyptia,$RUNNER_LABEL"\
         --work "$ACTIONS_RUNNER_WORK_DIR" \
         --url "https://github.com/${GH_REPO}" \
         --token "$ACTIONS_RUNNER_INPUT_TOKEN"
