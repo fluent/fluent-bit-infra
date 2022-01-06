@@ -20,13 +20,27 @@ done
 
 export RUNNER_ALLOW_RUNASROOT="1"
 
+ACTIONS_RUNNER_INSTALL_DIR="${HOME}/runner-${GH_REPO}"
+ACTIONS_RUNNER_WORK_DIR="${ACTIONS_RUNNER_INSTALL_DIR}-work"
+
+# Remove any existing runner installation as belt-and-braces
+if [[ -d "$ACTIONS_RUNNER_INSTALL_DIR" ]]; then
+    pushd "$ACTIONS_RUNNER_INSTALL_DIR" > /dev/null
+        echo "> Stopping service..."
+        sudo ./svc.sh stop || true
+
+        echo "> Uninstalling service..."
+        sudo ./svc.sh uninstall || true
+    popd > /dev/null
+fi
+
+# Ensure fresh state each time
+rm -rf "$ACTIONS_RUNNER_INSTALL_DIR" "$ACTIONS_RUNNER_WORK_DIR"
+
 echo "> Downloading actions runner ($GH_RUNNER_VERSION)..."
 curl -o actions.tar.gz --location "https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-${RUNNER_LABEL}-${GH_RUNNER_VERSION}.tar.gz"
 
 echo "> Installing runner..."
-ACTIONS_RUNNER_INSTALL_DIR="${HOME}/runner-${GH_REPO}"
-ACTIONS_RUNNER_WORK_DIR="${ACTIONS_RUNNER_INSTALL_DIR}-work"
-
 mkdir -p "$ACTIONS_RUNNER_INSTALL_DIR" "$ACTIONS_RUNNER_WORK_DIR"
 
 tar -zxf actions.tar.gz --directory "$ACTIONS_RUNNER_INSTALL_DIR"
