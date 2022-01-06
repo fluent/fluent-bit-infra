@@ -252,6 +252,8 @@ resource "null_resource" "gh-runners-provision" {
     when        = destroy
     source      = "provision/github-runner.destroy.sh"
     destination = "/tmp/provision-github-runner.destroy.sh"
+    # Ignore failures, e.g. resource was deleted so cannot SSH to it
+    on_failure = continue
   }
 
   provisioner "remote-exec" {
@@ -260,5 +262,7 @@ resource "null_resource" "gh-runners-provision" {
       "chmod +x /tmp/provision-github-runner.destroy.sh",
       "sudo -i -u provisioner bash /tmp/provision-github-runner.destroy.sh -t ${self.triggers.github_token} -r ${self.triggers.repo}",
     ]
+    # Ignore failures, e.g. resource was deleted so cannot SSH to it
+    on_failure = continue
   }
 }
