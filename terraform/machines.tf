@@ -222,47 +222,47 @@ resource "metal_device" "gh-runners" {
 }
 
 # We provision them as Github runners here as directly related to machine creation
-resource "null_resource" "gh-runners-provision" {
-  for_each = metal_device.gh-runners
-  triggers = {
-    public_ip    = each.value.access_public_ipv4
-    private_key  = chomp(tls_private_key.gh-runner-provision-key.private_key_pem)
-    # Following are required to be referenced via `self` for destroy phase
-    github_token = var.github_token
-    repo         = github_repository.fluent-bit-mirror.full_name
-  }
-  connection {
-    host        = self.triggers.public_ip
-    private_key = self.triggers.private_key
-  }
+# resource "null_resource" "gh-runners-provision" {
+#   for_each = metal_device.gh-runners
+#   triggers = {
+#     public_ip    = each.value.access_public_ipv4
+#     private_key  = chomp(tls_private_key.gh-runner-provision-key.private_key_pem)
+#     # Following are required to be referenced via `self` for destroy phase
+#     github_token = var.github_token
+#     repo         = github_repository.fluent-bit-mirror.full_name
+#   }
+#   connection {
+#     host        = self.triggers.public_ip
+#     private_key = self.triggers.private_key
+#   }
 
-  provisioner "file" {
-    source      = "provision/github-runner.create.sh"
-    destination = "/tmp/provision-github-runner.create.sh"
-  }
+#   provisioner "file" {
+#     source      = "provision/github-runner.create.sh"
+#     destination = "/tmp/provision-github-runner.create.sh"
+#   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u provisioner bash /tmp/provision-github-runner.create.sh -l ${each.value.tags[0]} -t ${self.triggers.github_token} -r ${self.triggers.repo} -v ${var.github_runner_version}",
-    ]
-  }
+#   provisioner "remote-exec" {
+#     inline = [
+#       "chmod +x /tmp/provision-github-runner.create.sh",
+#       "sudo -i -u provisioner bash /tmp/provision-github-runner.create.sh -l ${each.value.tags[0]} -t ${self.triggers.github_token} -r ${self.triggers.repo} -v ${var.github_runner_version}",
+#     ]
+#   }
 
-  provisioner "file" {
-    when        = destroy
-    source      = "provision/github-runner.destroy.sh"
-    destination = "/tmp/provision-github-runner.destroy.sh"
-    # Ignore failures, e.g. resource was deleted so cannot SSH to it
-    on_failure = continue
-  }
+#   provisioner "file" {
+#     when        = destroy
+#     source      = "provision/github-runner.destroy.sh"
+#     destination = "/tmp/provision-github-runner.destroy.sh"
+#     # Ignore failures, e.g. resource was deleted so cannot SSH to it
+#     on_failure = continue
+#   }
 
-  provisioner "remote-exec" {
-    when = destroy
-    inline = [
-      "chmod +x /tmp/provision-github-runner.destroy.sh",
-      "sudo -i -u provisioner bash /tmp/provision-github-runner.destroy.sh -t ${self.triggers.github_token} -r ${self.triggers.repo}",
-    ]
-    # Ignore failures, e.g. resource was deleted so cannot SSH to it
-    on_failure = continue
-  }
-}
+#   provisioner "remote-exec" {
+#     when = destroy
+#     inline = [
+#       "chmod +x /tmp/provision-github-runner.destroy.sh",
+#       "sudo -i -u provisioner bash /tmp/provision-github-runner.destroy.sh -t ${self.triggers.github_token} -r ${self.triggers.repo}",
+#     ]
+#     # Ignore failures, e.g. resource was deleted so cannot SSH to it
+#     on_failure = continue
+#   }
+# }

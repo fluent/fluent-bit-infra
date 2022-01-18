@@ -1,25 +1,26 @@
 data "github_repository" "fluentbit" {
   full_name = var.repo_full_name
 }
-resource "github_repository" "fluent-bit-mirror" {
-  name        = "fluent-bit-mirror"
-  description = "A private mirror of Fluent Bit purely to mitigate security concerns of using self-hosted runners."
+# resource "github_repository" "fluent-bit-mirror" {
+#   name        = "fluent-bit-mirror"
+#   description = "A private mirror of Fluent Bit purely to mitigate security concerns of using self-hosted runners."
 
-  visibility = "private"
+#   visibility = "private"
 
-  archive_on_destroy     = true
-  delete_branch_on_merge = true
-  vulnerability_alerts   = true
-}
+#   archive_on_destroy     = true
+#   delete_branch_on_merge = true
+#   vulnerability_alerts   = true
+# }
 
-resource "github_branch" "fluent-bit-mirror" {
-  repository = github_repository.fluent-bit-mirror.name
-  # We need a default branch not in the main repo to run the sync jobs
-  branch     = "mirror-main"
-}
+# resource "github_branch" "fluent-bit-mirror" {
+#   repository = github_repository.fluent-bit-mirror.name
+#   # We need a default branch not in the main repo to run the sync jobs
+#   branch     = "mirror-main"
+# }
 
 locals {
-  fluent-bit-repos = [ data.github_repository.fluentbit, github_repository.fluent-bit-mirror ]
+  # fluent-bit-repos = [ data.github_repository.fluentbit, github_repository.fluent-bit-mirror ]
+  fluent-bit-repos = [ data.github_repository.fluentbit ]
 }
 resource "github_branch_protection_v3" "default-branch-protection" {
   for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
