@@ -7,8 +7,9 @@ resource "github_repository" "fluent-bit-mirror" {
 
   visibility = "private"
 
-  delete_branch_on_merge = true
   archive_on_destroy     = true
+  delete_branch_on_merge = true
+  vulnerability_alerts   = true
 }
 
 resource "github_branch" "fluent-bit-mirror" {
