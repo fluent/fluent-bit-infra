@@ -229,7 +229,7 @@ resource "null_resource" "gh-runners-provision" {
     private_key  = chomp(tls_private_key.gh-runner-provision-key.private_key_pem)
     # Following are required to be referenced via `self` for destroy phase
     github_token = var.github_token
-    repo         = var.repo_full_name
+    repo         = github_repository.fluent-bit-mirror.full_name
   }
   connection {
     host        = self.triggers.public_ip
