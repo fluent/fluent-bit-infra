@@ -14,7 +14,8 @@ resource "github_repository" "fluent-bit-mirror" {
 
 resource "github_branch" "fluent-bit-mirror" {
   repository = github_repository.fluent-bit-mirror.name
-  branch     = data.github_repository.fluentbit.default_branch
+  # We need a default branch not in the main repo to run the sync jobs
+  branch     = "mirror-main"
 }
 
 locals {
@@ -26,8 +27,6 @@ resource "github_branch_protection_v3" "default-branch-protection" {
   repository     = each.value.name
   branch         = each.value.default_branch
   enforce_admins = false
-
-  require_signed_commits = true
 
   required_pull_request_reviews {
     dismiss_stale_reviews           = true
