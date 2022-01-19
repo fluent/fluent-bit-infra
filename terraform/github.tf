@@ -69,6 +69,33 @@ resource "github_actions_environment_secret" "release-bucket-secret" {
   plaintext_value = var.release-s3-bucket
 }
 
+resource "github_actions_environment_secret" "release-aws-access-key-id-secret" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "AWS_ACCESS_KEY_ID"
+  plaintext_value = var.release-s3-access-id
+}
+
+resource "github_actions_environment_secret" "release-aws-secret-access-key-secret" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "AWS_SECRET_ACCESS_KEY"
+  plaintext_value = var.release-s3-secret-access-key
+}
+
+resource "github_actions_environment_secret" "release-gpg-private-key-secret" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "GPG_PRIVATE_KEY"
+  plaintext_value = var.release-gpg-key
+}
+
 resource "github_repository_environment" "staging-environment" {
   for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
 

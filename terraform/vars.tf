@@ -69,6 +69,22 @@ variable "release-s3-bucket" {
   type = string
   default = "fluentbit-releases"
 }
+
+variable "release-s3-access-id" {
+  type = string
+  sensitive = true
+}
+
+variable "release-s3-secret-access-key" {
+  type = string
+  sensitive = true
+}
+
+variable "release-gpg-key" {
+  type = string
+  sensitive = true
+}
+
 variable "staging-s3-bucket" {
   type = string
   default = "fluentbit-staging"

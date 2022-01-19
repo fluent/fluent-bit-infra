@@ -45,7 +45,15 @@ inputs:
   gpg_private_key_staging:
     description: The GPG private key for staging.
     required: true
-
+  aws_s3_access_id_releases:
+    description: The AWS S3 access id for releases.
+    required: true
+  aws_s3_secret_access_key_releases:
+    description: The AWS S3 secret access key for releases.
+    required: true
+  gpg_private_key_releases:
+    description: The GPG private key for releases.
+    required: true
 runs:
   using: "composite"
   steps:
@@ -88,7 +96,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 
-    - name: Set the multiline GPG key at the end
+    - name: Set the staging multiline GPG key
       run: |
         sed -i -e '/staging-gpg-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
@@ -102,6 +110,19 @@ runs:
     - name: Set the release secrets
       run: |
         sed -i -e "s/\$AWS_S3_BUCKET_RELEASES/${{ inputs.aws_s3_bucket_releases }}/g" default.auto.tfvars
+        sed -i -e "s/\$AWS_S3_ACCESS_ID_RELEASES/${{ inputs.aws_s3_access_id_releases }}/g" default.auto.tfvars
+        sed -i -e "s/\$AWS_S3_SECRET_ACCESS_KEY_RELEASES/${{ inputs.aws_s3_secret_access_key_releases }}/g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the release multiline GPG key
+      run: |
+        sed -i -e '/release-gpg-key/d' default.auto.tfvars
+        cat <<EOT >> default.auto.tfvars
+        releases-gpg-key =  <<-EOF
+        ${{ inputs.gpg_private_key_releases }}
+        EOF
+        EOT
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 
