@@ -1,4 +1,4 @@
-name: Import Calyptia Infra
+name: Import Fluent Bit Infra
 
 on:
   # We only ever want to run manually
@@ -31,5 +31,5 @@ jobs:
 
       - name: Terraform import
         run: |
-          terraform import ${{ github.event.inputs.import-resource }}
+          terraform import --no-color ${{ github.event.inputs.import-resource }}
         working-directory: terraform
