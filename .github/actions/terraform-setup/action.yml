@@ -175,7 +175,7 @@ runs:
       run: |
         sed -i -e '/release-gpg-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
-        releases-gpg-key =  <<-EOF
+        release-gpg-key =  <<-EOF
         ${{ inputs.gpg_private_key_releases }}
         EOF
         EOT
