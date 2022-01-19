@@ -97,10 +97,10 @@ runs:
         [[ -z "${{ inputs.release_dockerhub_token }}" ]]           && echo "release_dockerhub_token empty" && exitCode=1
 
         # Keys should have multiple lines
-        [[ "${{ inputs.gcp_sa_key }}" != *$'\n'* ]]                && echo "gcp_sa_key empty" && exitCode=1
-        [[ "${{ inputs.gpg_private_key_staging }}" != *$'\n'* ]]   && echo "gpg_private_key_staging empty" && exitCode=1
-        [[ "${{ inputs.gpg_private_key_releases }}" != *$'\n'* ]]  && echo "gpg_private_key_releases empty" && exitCode=1
-        [[ "${{ inputs.release_server_ssh_key }}" != *$'\n'* ]]    && echo "release_server_ssh_key empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]               && echo "gcp_sa_key empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.gpg_private_key_staging }}"|wc --lines) -le 1 ]]  && echo "gpg_private_key_staging empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.gpg_private_key_releases }}"|wc --lines) -le 1 ]] && echo "gpg_private_key_releases empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.release_server_ssh_key }}"|wc --lines) -le 1 ]]   && echo "release_server_ssh_key empty" && exitCode=1
 
         exit $exitCode
       shell: bash
