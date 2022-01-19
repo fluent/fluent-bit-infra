@@ -89,7 +89,7 @@ resource "github_actions_environment_secret" "release-server-sshkey" {
 }
 
 # The DockerHub details for release
-resource "github_actions_environment_secret" "release-server-username" {
+resource "github_actions_environment_secret" "release-dockerhub-username" {
   for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
 
   repository      = each.value.name
@@ -98,7 +98,7 @@ resource "github_actions_environment_secret" "release-server-username" {
   plaintext_value = var.release-dockerhub-username
 }
 
-resource "github_actions_environment_secret" "release-server-sshkey" {
+resource "github_actions_environment_secret" "release-dockerhub-token" {
   for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
 
   repository      = each.value.name
