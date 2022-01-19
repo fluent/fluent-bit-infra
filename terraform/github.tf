@@ -60,6 +60,54 @@ resource "github_repository_environment" "release-environment" {
   }
 }
 
+# The packaging server to use:
+resource "github_actions_environment_secret" "release-server-hostname" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "FLUENTBITIO_HOST"
+  plaintext_value = var.release-server-hostname
+}
+
+resource "github_actions_environment_secret" "release-server-username" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "FLUENTBITIO_USERNAME"
+  plaintext_value = var.release-server-username
+}
+
+resource "github_actions_environment_secret" "release-server-sshkey" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "FLUENTBITIO_SSHKEY"
+  plaintext_value = var.release-server-sshkey
+}
+
+# The DockerHub details for release
+resource "github_actions_environment_secret" "release-server-username" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "DOCKERHUB_USERNAME"
+  plaintext_value = var.release-dockerhub-username
+}
+
+resource "github_actions_environment_secret" "release-server-sshkey" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "DOCKERHUB_TOKEN"
+  plaintext_value = var.release-dockerhub-token
+}
+
+# AWS credentials
 resource "github_actions_environment_secret" "release-bucket-secret" {
   for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
 
@@ -67,6 +115,16 @@ resource "github_actions_environment_secret" "release-bucket-secret" {
   environment     = github_repository_environment.release-environment[each.key].environment
   secret_name     = "AWS_S3_BUCKET_RELEASE"
   plaintext_value = var.release-s3-bucket
+}
+
+# Release needs to take out of staging and into release bucket
+resource "github_actions_environment_secret" "release-bucket-secret" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "AWS_S3_BUCKET_STAGING"
+  plaintext_value = var.staging-s3-bucket
 }
 
 resource "github_actions_environment_secret" "release-aws-access-key-id-secret" {

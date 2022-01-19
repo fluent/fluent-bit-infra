@@ -21,6 +21,10 @@ inputs:
     description: Optionally override the directory to run all these commands in, i.e. where the Terraform files are.
     default: terraform
     required: false
+  release_server_hostname:
+    description: Optionally override to change the hostname to copy release packages to.
+    default: packaging.fluentbit.io
+    required: false
   gcp_sa_key:
     description: The Terraform API token to use.
     required: true
@@ -53,6 +57,18 @@ inputs:
     required: true
   gpg_private_key_releases:
     description: The GPG private key for releases.
+    required: true
+  release_server_username:
+    description: The username to authenticate with the release server.
+    required: true
+  release_server_ssh_key:
+    description: The SSH key to use for authentication with the release server.
+    required: true
+  release_dockerhub_username:
+    description: The DockerHub username for authentication when pushing release images.
+    required: true
+  release_dockerhub_token:
+    description: The DockerHub token for authentication when pushing release images.
     required: true
 runs:
   using: "composite"
@@ -112,6 +128,10 @@ runs:
         sed -i -e "s/\$AWS_S3_BUCKET_RELEASES/${{ inputs.aws_s3_bucket_releases }}/g" default.auto.tfvars
         sed -i -e "s/\$AWS_S3_ACCESS_ID_RELEASES/${{ inputs.aws_s3_access_id_releases }}/g" default.auto.tfvars
         sed -i -e "s/\$AWS_S3_SECRET_ACCESS_KEY_RELEASES/${{ inputs.aws_s3_secret_access_key_releases }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_SERVER_HOSTNAME/${{ inputs.release_server_hostname }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_SERVER_USERNAME/${{ inputs.release_server_username }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_DOCKERHUB_USERNAME/${{ inputs.release_dockerhub_username }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_DOCKERHUB_TOKEN/${{ inputs.release_dockerhub_token }}/g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 
@@ -121,6 +141,17 @@ runs:
         cat <<EOT >> default.auto.tfvars
         releases-gpg-key =  <<-EOF
         ${{ inputs.gpg_private_key_releases }}
+        EOF
+        EOT
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the release multiline SSH key
+      run: |
+        sed -i -e '/release-server-sshkey/d' default.auto.tfvars
+        cat <<EOT >> default.auto.tfvars
+        release-server-sshkey =  <<-EOF
+        ${{ inputs.release_server_ssh_key }}
         EOF
         EOT
       working-directory: ${{ inputs.working-directory }}

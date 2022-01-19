@@ -29,6 +29,11 @@ jobs:
           aws_s3_access_id_releases: ${{ secrets.AWS_S3_ACCESS_ID_RELEASES }}
           aws_s3_secret_access_key_releases: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY_RELEASES }}
           gpg_private_key_releases: ${{ secrets.GPG_PRIVATE_KEY_RELEASES }}
+          release_server_hostname: ${{ secrets.RELEASE_SERVER_HOSTNAME }}
+          release_server_username: ${{ secrets.RELEASE_SERVER_USERNAME }}
+          release_server_sshkey: ${{ secrets.RELEASE_SERVER_SSHKEY }}
+          release_dockerhub_username: ${{ secrets.RELEASE_DOCKERHUB_USERNAME }}
+          release_dockerhub_token: ${{ secrets.RELEASE_DOCKERHUB_TOKEN }}
 
       - name: Terraform fmt
         id: fmt
