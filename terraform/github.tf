@@ -118,7 +118,7 @@ resource "github_actions_environment_secret" "release-bucket-secret" {
 }
 
 # Release needs to take out of staging and into release bucket
-resource "github_actions_environment_secret" "release-bucket-secret" {
+resource "github_actions_environment_secret" "release-staging-bucket-secret" {
   for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
 
   repository      = each.value.name
