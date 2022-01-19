@@ -84,7 +84,6 @@ runs:
         [[ -z "${{ inputs.repo_full_name }}" ]]                    && echo "repo_full_name empty" && exitCode=1
         [[ -z "${{ inputs.terraform-api-host }}" ]]                && echo "terraform-api-host empty" && exitCode=1
         [[ -z "${{ inputs.release_server_hostname }}" ]]           && echo "release_server_hostname empty" && exitCode=1
-        [[ -z "${{ inputs.gcp_sa_key }}" ]]                        && echo "gcp_sa_key empty" && exitCode=1
         [[ -z "${{ inputs.terraform_cloud_api_token }}" ]]         && echo "terraform_cloud_api_token empty" && exitCode=1
         [[ -z "${{ inputs.cloudflare_token }}" ]]                  && echo "cloudflare_token empty" && exitCode=1
         [[ -z "${{ inputs.metal_token }}" ]]                       && echo "metal_token empty" && exitCode=1
@@ -98,6 +97,7 @@ runs:
         [[ -z "${{ inputs.release_dockerhub_token }}" ]]           && echo "release_dockerhub_token empty" && exitCode=1
 
         # Keys should have multiple lines
+        [[ "${{ inputs.gcp_sa_key }}" != *$'\n'* ]]                && echo "gcp_sa_key empty" && exitCode=1
         [[ "${{ inputs.gpg_private_key_staging }}" != *$'\n'* ]]   && echo "gpg_private_key_staging empty" && exitCode=1
         [[ "${{ inputs.gpg_private_key_releases }}" != *$'\n'* ]]  && echo "gpg_private_key_releases empty" && exitCode=1
         [[ "${{ inputs.release_server_ssh_key }}" != *$'\n'* ]]    && echo "release_server_ssh_key empty" && exitCode=1
