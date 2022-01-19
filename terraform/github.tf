@@ -107,6 +107,16 @@ resource "github_actions_environment_secret" "release-dockerhub-token" {
   plaintext_value = var.release-dockerhub-token
 }
 
+# Cosign signatures for release
+resource "github_actions_environment_secret" "release-cosign-private-key" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "COSIGN_PRIVATE_KEY"
+  plaintext_value = var.release-cosign-private-key
+}
+
 # AWS credentials
 resource "github_actions_environment_secret" "release-bucket-secret" {
   for_each = { for repo in local.fluent-bit-repos: repo.name => repo }

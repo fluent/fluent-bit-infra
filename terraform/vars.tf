@@ -147,3 +147,8 @@ variable "release-dockerhub-token" {
   type = string
   sensitive = true
 }
+
+variable "release-cosign-private-key" {
+  type = string
+  sensitive = true
+}

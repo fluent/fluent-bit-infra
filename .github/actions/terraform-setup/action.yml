@@ -23,7 +23,7 @@ inputs:
     required: false
   release_server_hostname:
     description: Optionally override to change the hostname to copy release packages to.
-    default: packaging.fluentbit.io
+    default: packages.fluentbit.io
     required: false
   gcp_sa_key:
     description: The Terraform API token to use.
@@ -70,6 +70,9 @@ inputs:
   release_dockerhub_token:
     description: The DockerHub token for authentication when pushing release images.
     required: true
+  release-cosign-private-key:
+    description: The Cosign private key used for signing released images.
+    required: true
 runs:
   using: "composite"
   steps:
@@ -97,10 +100,11 @@ runs:
         [[ -z "${{ inputs.release_dockerhub_token }}" ]]           && echo "release_dockerhub_token empty" && exitCode=1
 
         # Keys should have multiple lines
-        [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]               && echo "gcp_sa_key empty" && exitCode=1
-        [[ $(echo -e "${{ inputs.gpg_private_key_staging }}"|wc --lines) -le 1 ]]  && echo "gpg_private_key_staging empty" && exitCode=1
-        [[ $(echo -e "${{ inputs.gpg_private_key_releases }}"|wc --lines) -le 1 ]] && echo "gpg_private_key_releases empty" && exitCode=1
-        [[ $(echo -e "${{ inputs.release_server_ssh_key }}"|wc --lines) -le 1 ]]   && echo "release_server_ssh_key empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]                 && echo "gcp_sa_key empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.gpg_private_key_staging }}"|wc --lines) -le 1 ]]    && echo "gpg_private_key_staging empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.gpg_private_key_releases }}"|wc --lines) -le 1 ]]   && echo "gpg_private_key_releases empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.release_server_ssh_key }}"|wc --lines) -le 1 ]]     && echo "release_server_ssh_key empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.release-cosign-private-key }}"|wc --lines) -le 1 ]] && echo "release-cosign-private-key empty" && exitCode=1
 
         exit $exitCode
       shell: bash
@@ -184,6 +188,17 @@ runs:
         cat <<EOT >> default.auto.tfvars
         release-server-sshkey =  <<-EOF
         ${{ inputs.release_server_ssh_key }}
+        EOF
+        EOT
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the release Cosign key
+      run: |
+        sed -i -e '/release-cosign-private-key/d' default.auto.tfvars
+        cat <<EOT >> default.auto.tfvars
+        release-cosign-private-key =  <<-EOF
+        ${{ inputs.release-cosign-private-key }}
         EOF
         EOT
       working-directory: ${{ inputs.working-directory }}
