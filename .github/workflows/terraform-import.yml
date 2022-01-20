@@ -35,6 +35,7 @@ jobs:
           release_server_ssh_key: ${{ secrets.RELEASE_SERVER_SSHKEY }}
           release_dockerhub_username: ${{ secrets.RELEASE_DOCKERHUB_USERNAME }}
           release_dockerhub_token: ${{ secrets.RELEASE_DOCKERHUB_TOKEN }}
+          release_dockerhub_org: ${{ secrets.RELEASE_DOCKERHUB_ORGANIZATION }}
           release-cosign-private-key: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
       - name: Terraform import

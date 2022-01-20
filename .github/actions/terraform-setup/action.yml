@@ -70,6 +70,9 @@ inputs:
   release_dockerhub_token:
     description: The DockerHub token for authentication when pushing release images.
     required: true
+  release_dockerhub_org:
+    description: The DockerHub registry when pushing release images.
+    required: true
   release-cosign-private-key:
     description: The Cosign private key used for signing released images.
     required: true
@@ -98,6 +101,7 @@ runs:
         [[ -z "${{ inputs.release_server_username }}" ]]           && echo "release_server_username empty" && exitCode=1
         [[ -z "${{ inputs.release_dockerhub_username }}" ]]        && echo "release_dockerhub_username empty" && exitCode=1
         [[ -z "${{ inputs.release_dockerhub_token }}" ]]           && echo "release_dockerhub_token empty" && exitCode=1
+        [[ -z "${{ inputs.release_dockerhub_org }}" ]]             && echo "release_dockerhub_org empty" && exitCode=1
 
         # Keys should have multiple lines
         [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]                 && echo "gcp_sa_key empty" && exitCode=1
@@ -168,6 +172,7 @@ runs:
         sed -i -e "s/\$RELEASE_SERVER_USERNAME/${{ inputs.release_server_username }}/g" default.auto.tfvars
         sed -i -e "s/\$RELEASE_DOCKERHUB_USERNAME/${{ inputs.release_dockerhub_username }}/g" default.auto.tfvars
         sed -i -e "s/\$RELEASE_DOCKERHUB_TOKEN/${{ inputs.release_dockerhub_token }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_DOCKERHUB_ORGANIZATION/${{ inputs.release_dockerhub_org }}/g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 

@@ -106,6 +106,14 @@ resource "github_actions_environment_secret" "release-dockerhub-token" {
   secret_name     = "DOCKERHUB_TOKEN"
   plaintext_value = var.release-dockerhub-token
 }
+resource "github_actions_environment_secret" "release-dockerhub-token" {
+  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
+
+  repository      = each.value.name
+  environment     = github_repository_environment.release-environment[each.key].environment
+  secret_name     = "DOCKERHUB_ORGANIZATION"
+  plaintext_value = var.release-dockerhub-org
+}
 
 # Cosign signatures for release
 resource "github_actions_environment_secret" "release-cosign-private-key" {
