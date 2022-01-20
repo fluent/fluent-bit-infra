@@ -106,7 +106,7 @@ resource "github_actions_environment_secret" "release-dockerhub-token" {
   secret_name     = "DOCKERHUB_TOKEN"
   plaintext_value = var.release-dockerhub-token
 }
-resource "github_actions_environment_secret" "release-dockerhub-token" {
+resource "github_actions_environment_secret" "release-dockerhub-org" {
   for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
 
   repository      = each.value.name
