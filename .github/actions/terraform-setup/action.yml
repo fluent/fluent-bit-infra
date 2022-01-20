@@ -3,7 +3,7 @@ name: Composite action to set up Terraform credentials
 inputs:
   aws_s3_bucket_releases:
     description: The S3 bucket to use for releases.
-    default: fluentbit-release
+    default: fluentbit-releases
     required: false
   aws_s3_bucket_staging:
     description: The S3 bucket to use for staging builds.
