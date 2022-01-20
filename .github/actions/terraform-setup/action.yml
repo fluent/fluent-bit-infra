@@ -211,6 +211,6 @@ runs:
       # Use different separator for sed as `/` may be in repo name
       run: |
         sed -i -e "s|\$REPO_FULL_NAME|${{ inputs.repo_full_name }}|g" default.auto.tfvars
-        sed -i -e "s|\$RELEASE_DOCKERHUB_TOKEN|${{ inputs.release_dockerhub_token }}|g" default.auto.tfvars
+        sed -i -e "s|\$RELEASE_DOCKERHUB_ORGANIZATION|${{ inputs.release_dockerhub_token }}|g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash
