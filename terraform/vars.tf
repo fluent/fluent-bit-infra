@@ -152,5 +152,5 @@ variable "release-cosign-private-key" {
 
 variable "release-dockerhub-org" {
   type = string
-  default = fluent/fluent-bit
+  default = "fluent/fluent-bit"
 }
