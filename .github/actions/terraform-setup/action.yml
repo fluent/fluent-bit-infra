@@ -120,7 +120,6 @@ runs:
 
     - name: Replace the GCP service account key
       run: |
-        sed -i -e '/gcp-sa-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         gcp-sa-key    =  <<-EOF
         ${{ inputs.gcp_sa_key }}
@@ -154,7 +153,6 @@ runs:
 
     - name: Set the staging multiline GPG key
       run: |
-        sed -i -e '/staging-gpg-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         staging-gpg-key =  <<-EOF
         ${{ inputs.gpg_private_key_staging }}
@@ -177,7 +175,6 @@ runs:
 
     - name: Set the release multiline GPG key
       run: |
-        sed -i -e '/release-gpg-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         release-gpg-key =  <<-EOF
         ${{ inputs.gpg_private_key_releases }}
@@ -188,7 +185,6 @@ runs:
 
     - name: Set the release multiline SSH key
       run: |
-        sed -i -e '/release-server-sshkey/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         release-server-sshkey =  <<-EOF
         ${{ inputs.release_server_ssh_key }}
@@ -199,7 +195,6 @@ runs:
 
     - name: Set the release Cosign key
       run: |
-        sed -i -e '/release-cosign-private-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         release-cosign-private-key =  <<-EOF
         ${{ inputs.release-cosign-private-key }}
