@@ -70,6 +70,9 @@ inputs:
   release_dockerhub_token:
     description: The DockerHub token for authentication when pushing release images.
     required: true
+  release_dockerhub_org:
+    description: The DockerHub registry when pushing release images.
+    required: true
   release-cosign-private-key:
     description: The Cosign private key used for signing released images.
     required: true
@@ -98,6 +101,7 @@ runs:
         [[ -z "${{ inputs.release_server_username }}" ]]           && echo "release_server_username empty" && exitCode=1
         [[ -z "${{ inputs.release_dockerhub_username }}" ]]        && echo "release_dockerhub_username empty" && exitCode=1
         [[ -z "${{ inputs.release_dockerhub_token }}" ]]           && echo "release_dockerhub_token empty" && exitCode=1
+        [[ -z "${{ inputs.release_dockerhub_org }}" ]]             && echo "release_dockerhub_org empty" && exitCode=1
 
         # Keys should have multiple lines
         [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]                 && echo "gcp_sa_key empty" && exitCode=1
@@ -116,7 +120,6 @@ runs:
 
     - name: Replace the GCP service account key
       run: |
-        sed -i -e '/gcp-sa-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         gcp-sa-key    =  <<-EOF
         ${{ inputs.gcp_sa_key }}
@@ -150,7 +153,6 @@ runs:
 
     - name: Set the staging multiline GPG key
       run: |
-        sed -i -e '/staging-gpg-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         staging-gpg-key =  <<-EOF
         ${{ inputs.gpg_private_key_staging }}
@@ -173,7 +175,6 @@ runs:
 
     - name: Set the release multiline GPG key
       run: |
-        sed -i -e '/release-gpg-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         release-gpg-key =  <<-EOF
         ${{ inputs.gpg_private_key_releases }}
@@ -184,7 +185,6 @@ runs:
 
     - name: Set the release multiline SSH key
       run: |
-        sed -i -e '/release-server-sshkey/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         release-server-sshkey =  <<-EOF
         ${{ inputs.release_server_ssh_key }}
@@ -195,7 +195,6 @@ runs:
 
     - name: Set the release Cosign key
       run: |
-        sed -i -e '/release-cosign-private-key/d' default.auto.tfvars
         cat <<EOT >> default.auto.tfvars
         release-cosign-private-key =  <<-EOF
         ${{ inputs.release-cosign-private-key }}
@@ -204,9 +203,10 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 
-    - name: Specify the repository to operate on.
+    - name: Specify the repository and registry to operate on.
       # Use different separator for sed as `/` may be in repo name
       run: |
         sed -i -e "s|\$REPO_FULL_NAME|${{ inputs.repo_full_name }}|g" default.auto.tfvars
+        sed -i -e "s|\$RELEASE_DOCKERHUB_ORGANIZATION|${{ inputs.release_dockerhub_org }}|g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash

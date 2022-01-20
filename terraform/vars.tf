@@ -129,11 +129,9 @@ variable "github_runner_version" {
 
 variable "release-server-hostname" {
   type = string
-  sensitive = true
 }
 variable "release-server-username" {
   type = string
-  sensitive = true
 }
 variable "release-server-sshkey" {
   type = string
@@ -141,7 +139,6 @@ variable "release-server-sshkey" {
 }
 variable "release-dockerhub-username" {
   type = string
-  sensitive = true
 }
 variable "release-dockerhub-token" {
   type = string
@@ -151,4 +148,9 @@ variable "release-dockerhub-token" {
 variable "release-cosign-private-key" {
   type = string
   sensitive = true
+}
+
+variable "release-dockerhub-org" {
+  type = string
+  default = "fluent/fluent-bit"
 }

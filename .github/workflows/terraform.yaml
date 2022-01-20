@@ -31,6 +31,7 @@ jobs:
           release_server_ssh_key: ${{ secrets.RELEASE_SERVER_SSHKEY }}
           release_dockerhub_username: ${{ secrets.RELEASE_DOCKERHUB_USERNAME }}
           release_dockerhub_token: ${{ secrets.RELEASE_DOCKERHUB_TOKEN }}
+          release_dockerhub_org: ${{ secrets.RELEASE_DOCKERHUB_ORGANIZATION }}
           release-cosign-private-key: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
       - name: Terraform fmt
@@ -53,6 +54,11 @@ jobs:
         id: plan
         run: terraform plan -no-color
         working-directory: terraform
+
+      - name: Terraform Debug
+        if: failure()
+        run: cat terraform/default.auto.tfvars
+        shell: bash
 
       # Only apply on push (or workflow_dispatch), not pull request
       - name: Terraform Apply
