@@ -6,15 +6,15 @@ terraform {
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "2.18.0"
+      version = "3.7.0"
     }
     github = {
       source  = "integrations/github"
-      version = "4.19.0"
+      version = "4.19.2"
     }
     google = {
       source  = "hashicorp/google"
-      version = "3.59.0"
+      version = "4.7.0"
     }
   }
   backend "remote" {

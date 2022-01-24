@@ -1,0 +1,69 @@
+name: Test or update Fluent Bit infra
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  run-terraform:
+    name: update fluentbit infra with terraform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: ./.github/actions/terraform-setup
+        with:
+          gcp_sa_key: ${{ secrets.GCP_SA_KEY }}
+          terraform_cloud_api_token: ${{ secrets.TF_API_TOKEN }}
+          cloudflare_token: ${{ secrets.CLOUDFLARE_TOKEN }}
+          metal_token: ${{ secrets.PACKET_NET_TOKEN }}
+          github_personal_access_token: ${{ secrets.GH_PA_TOKEN }}
+          aws_s3_access_id_staging: ${{ secrets.AWS_S3_ACCESS_ID_STAGING }}
+          aws_s3_secret_access_key_staging: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY_STAGING }}
+          gpg_private_key_staging: ${{ secrets.GPG_PRIVATE_KEY_STAGING }}
+          aws_s3_access_id_releases: ${{ secrets.AWS_S3_ACCESS_ID_RELEASES }}
+          aws_s3_secret_access_key_releases: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY_RELEASES }}
+          gpg_private_key_releases: ${{ secrets.GPG_PRIVATE_KEY_RELEASES }}
+          release_server_username: ${{ secrets.RELEASE_SERVER_USERNAME }}
+          release_server_ssh_key: ${{ secrets.RELEASE_SERVER_SSHKEY }}
+          release_dockerhub_username: ${{ secrets.RELEASE_DOCKERHUB_USERNAME }}
+          release_dockerhub_token: ${{ secrets.RELEASE_DOCKERHUB_TOKEN }}
+          release_dockerhub_org: ${{ secrets.RELEASE_DOCKERHUB_ORGANIZATION }}
+          release-cosign-private-key: ${{ secrets.COSIGN_PRIVATE_KEY }}
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+        working-directory: terraform
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: terraform
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color
+        working-directory: terraform
+
+      - name: Terraform Debug
+        if: failure()
+        run: cat terraform/default.auto.tfvars
+        shell: bash
+
+      # Only apply on push (or workflow_dispatch), not pull request
+      - name: Terraform Apply
+        if: github.event_name != 'pull_request'
+        id: apply
+        run: terraform apply -input=false -auto-approve
+        working-directory: terraform
+

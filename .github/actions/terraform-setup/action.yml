@@ -1,0 +1,212 @@
+name: Composite action to set up Terraform credentials
+
+inputs:
+  aws_s3_bucket_releases:
+    description: The S3 bucket to use for releases.
+    default: fluentbit-releases
+    required: false
+  aws_s3_bucket_staging:
+    description: The S3 bucket to use for staging builds.
+    default: fluentbit-staging
+    required: false
+  repo_full_name:
+    description: Repository to use for Terraform, intended for testing only and include full name with organisation/user included.
+    default: fluent/fluent-bit
+    required: false
+  terraform-api-host:
+    description: Optionally override the Terraform API host to invoke.
+    default: app.terraform.io
+    required: false
+  working-directory:
+    description: Optionally override the directory to run all these commands in, i.e. where the Terraform files are.
+    default: terraform
+    required: false
+  release_server_hostname:
+    description: Optionally override to change the hostname to copy release packages to.
+    default: packages.fluentbit.io
+    required: false
+  gcp_sa_key:
+    description: The Terraform API token to use.
+    required: true
+  terraform_cloud_api_token:
+    description: The Terraform API token to use.
+    required: true
+  cloudflare_token:
+    description: The Cloudflare token to use.
+    required: true
+  metal_token:
+    description: The Equinix token to use.
+    required: true
+  github_personal_access_token:
+    description: The Github token to use.
+    required: true
+  aws_s3_access_id_staging:
+    description: The AWS S3 access id for staging.
+    required: true
+  aws_s3_secret_access_key_staging:
+    description: The AWS S3 secret access key for staging.
+    required: true
+  gpg_private_key_staging:
+    description: The GPG private key for staging.
+    required: true
+  aws_s3_access_id_releases:
+    description: The AWS S3 access id for releases.
+    required: true
+  aws_s3_secret_access_key_releases:
+    description: The AWS S3 secret access key for releases.
+    required: true
+  gpg_private_key_releases:
+    description: The GPG private key for releases.
+    required: true
+  release_server_username:
+    description: The username to authenticate with the release server.
+    required: true
+  release_server_ssh_key:
+    description: The SSH key to use for authentication with the release server.
+    required: true
+  release_dockerhub_username:
+    description: The DockerHub username for authentication when pushing release images.
+    required: true
+  release_dockerhub_token:
+    description: The DockerHub token for authentication when pushing release images.
+    required: true
+  release_dockerhub_org:
+    description: The DockerHub registry when pushing release images.
+    required: true
+  release-cosign-private-key:
+    description: The Cosign private key used for signing released images.
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: check for empty inputs
+      # mainly because it is non-obvious post-substitution
+      run: |
+        exitCode=0
+
+        # Check single line variables are not-empty/unset
+        [[ -z "${{ inputs.aws_s3_bucket_releases }}" ]]            && echo "aws_s3_bucket_releases empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_bucket_staging }}" ]]             && echo "aws_s3_bucket_staging empty" && exitCode=1
+        [[ -z "${{ inputs.repo_full_name }}" ]]                    && echo "repo_full_name empty" && exitCode=1
+        [[ -z "${{ inputs.terraform-api-host }}" ]]                && echo "terraform-api-host empty" && exitCode=1
+        [[ -z "${{ inputs.release_server_hostname }}" ]]           && echo "release_server_hostname empty" && exitCode=1
+        [[ -z "${{ inputs.terraform_cloud_api_token }}" ]]         && echo "terraform_cloud_api_token empty" && exitCode=1
+        [[ -z "${{ inputs.cloudflare_token }}" ]]                  && echo "cloudflare_token empty" && exitCode=1
+        [[ -z "${{ inputs.metal_token }}" ]]                       && echo "metal_token empty" && exitCode=1
+        [[ -z "${{ inputs.github_personal_access_token }}" ]]      && echo "github_personal_access_token empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_access_id_staging }}" ]]          && echo "aws_s3_access_id_staging empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_secret_access_key_staging }}" ]]  && echo "aws_s3_secret_access_key_staging empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_access_id_releases }}" ]]         && echo "aws_s3_access_id_releases empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_secret_access_key_releases }}" ]] && echo "aws_s3_secret_access_key_releases empty" && exitCode=1
+        [[ -z "${{ inputs.release_server_username }}" ]]           && echo "release_server_username empty" && exitCode=1
+        [[ -z "${{ inputs.release_dockerhub_username }}" ]]        && echo "release_dockerhub_username empty" && exitCode=1
+        [[ -z "${{ inputs.release_dockerhub_token }}" ]]           && echo "release_dockerhub_token empty" && exitCode=1
+        [[ -z "${{ inputs.release_dockerhub_org }}" ]]             && echo "release_dockerhub_org empty" && exitCode=1
+
+        # Keys should have multiple lines
+        [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]                 && echo "gcp_sa_key empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.gpg_private_key_staging }}"|wc --lines) -le 1 ]]    && echo "gpg_private_key_staging empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.gpg_private_key_releases }}"|wc --lines) -le 1 ]]   && echo "gpg_private_key_releases empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.release_server_ssh_key }}"|wc --lines) -le 1 ]]     && echo "release_server_ssh_key empty" && exitCode=1
+        [[ $(echo -e "${{ inputs.release-cosign-private-key }}"|wc --lines) -le 1 ]] && echo "release-cosign-private-key empty" && exitCode=1
+
+        exit $exitCode
+      shell: bash
+
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        cli_config_credentials_hostname: ${{ inputs.terraform-api-host }}
+        cli_config_credentials_token: ${{ inputs.terraform_cloud_api_token }}
+
+    - name: Replace the GCP service account key
+      run: |
+        cat <<EOT >> default.auto.tfvars
+        gcp-sa-key    =  <<-EOF
+        ${{ inputs.gcp_sa_key }}
+        EOF
+        EOT
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Replace the cloudflare token
+      run: sed -i -e "s/\$CLOUDFLARE_TOKEN/${{ inputs.cloudflare_token }}/g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Replace the packet.net token
+      run: sed -i -e "s/\$METAL_TOKEN/${{ inputs.metal_token }}/g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Replace the github.com token
+      run: sed -i -e "s/\$GITHUB_TOKEN/${{ inputs.github_personal_access_token }}/g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the staging secrets
+      run: |
+        sed -i -e "s/\$AWS_S3_BUCKET_STAGING/${{ inputs.aws_s3_bucket_staging }}/g" default.auto.tfvars
+        sed -i -e "s/\$AWS_S3_ACCESS_ID_STAGING/${{ inputs.aws_s3_access_id_staging }}/g" default.auto.tfvars
+        sed -i -e "s/\$AWS_S3_SECRET_ACCESS_KEY_STAGING/${{ inputs.aws_s3_secret_access_key_staging }}/g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the staging multiline GPG key
+      run: |
+        cat <<EOT >> default.auto.tfvars
+        staging-gpg-key =  <<-EOF
+        ${{ inputs.gpg_private_key_staging }}
+        EOF
+        EOT
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the release secrets
+      run: |
+        sed -i -e "s/\$AWS_S3_BUCKET_RELEASES/${{ inputs.aws_s3_bucket_releases }}/g" default.auto.tfvars
+        sed -i -e "s/\$AWS_S3_ACCESS_ID_RELEASES/${{ inputs.aws_s3_access_id_releases }}/g" default.auto.tfvars
+        sed -i -e "s/\$AWS_S3_SECRET_ACCESS_KEY_RELEASES/${{ inputs.aws_s3_secret_access_key_releases }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_SERVER_HOSTNAME/${{ inputs.release_server_hostname }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_SERVER_USERNAME/${{ inputs.release_server_username }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_DOCKERHUB_USERNAME/${{ inputs.release_dockerhub_username }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_DOCKERHUB_TOKEN/${{ inputs.release_dockerhub_token }}/g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the release multiline GPG key
+      run: |
+        cat <<EOT >> default.auto.tfvars
+        release-gpg-key =  <<-EOF
+        ${{ inputs.gpg_private_key_releases }}
+        EOF
+        EOT
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the release multiline SSH key
+      run: |
+        cat <<EOT >> default.auto.tfvars
+        release-server-sshkey =  <<-EOF
+        ${{ inputs.release_server_ssh_key }}
+        EOF
+        EOT
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the release Cosign key
+      run: |
+        cat <<EOT >> default.auto.tfvars
+        release-cosign-private-key =  <<-EOF
+        ${{ inputs.release-cosign-private-key }}
+        EOF
+        EOT
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Specify the repository and registry to operate on.
+      # Use different separator for sed as `/` may be in repo name
+      run: |
+        sed -i -e "s|\$REPO_FULL_NAME|${{ inputs.repo_full_name }}|g" default.auto.tfvars
+        sed -i -e "s|\$RELEASE_DOCKERHUB_ORGANIZATION|${{ inputs.release_dockerhub_org }}|g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash

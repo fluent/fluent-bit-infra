@@ -69,6 +69,22 @@ variable "release-s3-bucket" {
   type = string
   default = "fluentbit-releases"
 }
+
+variable "release-s3-access-id" {
+  type = string
+  sensitive = true
+}
+
+variable "release-s3-secret-access-key" {
+  type = string
+  sensitive = true
+}
+
+variable "release-gpg-key" {
+  type = string
+  sensitive = true
+}
+
 variable "staging-s3-bucket" {
   type = string
   default = "fluentbit-staging"
@@ -109,4 +125,32 @@ variable "github_runner_version" {
   type        = string
   description = "Version of action runner to install"
   default     = "2.285.1"
+}
+
+variable "release-server-hostname" {
+  type = string
+}
+variable "release-server-username" {
+  type = string
+}
+variable "release-server-sshkey" {
+  type = string
+  sensitive = true
+}
+variable "release-dockerhub-username" {
+  type = string
+}
+variable "release-dockerhub-token" {
+  type = string
+  sensitive = true
+}
+
+variable "release-cosign-private-key" {
+  type = string
+  sensitive = true
+}
+
+variable "release-dockerhub-org" {
+  type = string
+  default = "fluent/fluent-bit"
 }

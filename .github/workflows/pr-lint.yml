@@ -1,0 +1,44 @@
+name: Run linting on pull requests
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  # Runs 'tfsec': https://github.com/aquasecurity/tfsec-pr-commenter-action
+  tfsec:
+    name: tfsec PR commenter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+
+      - name: tfsec
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.0.2
+        with:
+          github_token: ${{ github.token }}
+          commenter_version: v0.1.10
+
+      - name: tfsec
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: docker run --rm -t -v "$(pwd):/src" aquasec/tfsec /src
+
+  tflint:
+    name: tflint PR commenter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+
+      - name: tflint
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: reviewdog/action-tflint@v1.14.0
+        with:
+          github_token: ${{ secrets.github_token }}
+          working_directory: terraform
+          fail_on_error: "true"
+
+      - name: tfsec
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: docker run --rm -v "$(pwd)/terraform:/data" -t ghcr.io/terraform-linters/tflint
