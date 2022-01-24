@@ -45,11 +45,6 @@ jobs:
         run: terraform init
         working-directory: terraform
 
-      - name: Terraform import
-        run: |
-          terraform import -input=false -no-color "github_repository.fluent-bit-mirror" "fluent-bit-mirror"
-        working-directory: terraform
-
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
@@ -60,11 +55,6 @@ jobs:
         run: terraform plan -no-color
         working-directory: terraform
 
-      - name: Terraform Debug
-        if: failure()
-        run: cat terraform/default.auto.tfvars
-        shell: bash
-
       # Only apply on push (or workflow_dispatch), not pull request
       - name: Terraform Apply
         if: github.event_name != 'pull_request'
@@ -72,3 +62,7 @@ jobs:
         run: terraform apply -input=false -auto-approve
         working-directory: terraform
 
+      - name: Terraform Debug
+        if: failure()
+        run: cat terraform/default.auto.tfvars
+        shell: bash
