@@ -1,32 +1,49 @@
 data "github_repository" "fluentbit" {
   full_name = var.repo_full_name
 }
-# resource "github_repository" "fluent-bit-mirror" {
-#   name        = "fluent-bit-mirror"
-#   description = "A private mirror of Fluent Bit purely to mitigate security concerns of using self-hosted runners."
 
-#   visibility = "private"
+resource "github_repository" "fluent-bit-mirror" {
+  name        = "fluent-bit-mirror"
+  description = "A private mirror of Fluent Bit purely to mitigate security concerns of using self-hosted runners."
 
-#   archive_on_destroy     = true
-#   delete_branch_on_merge = true
-#   vulnerability_alerts   = true
-# }
+  visibility = "private"
 
-# resource "github_branch" "fluent-bit-mirror" {
-#   repository = github_repository.fluent-bit-mirror.name
-#   # We need a default branch not in the main repo to run the sync jobs
-#   branch     = "mirror-main"
-# }
-
-locals {
-  # fluent-bit-repos = [ data.github_repository.fluentbit, github_repository.fluent-bit-mirror ]
-  fluent-bit-repos = [ data.github_repository.fluentbit ]
+  archive_on_destroy     = true
+  delete_branch_on_merge = true
+  vulnerability_alerts   = true
 }
-resource "github_branch_protection_v3" "default-branch-protection" {
-  for_each = { for repo in local.fluent-bit-repos: repo.name => repo }
 
-  repository     = each.value.name
-  branch         = each.value.default_branch
+resource "github_branch" "mirror-main-branch" {
+  repository = github_repository.fluent-bit-mirror.name
+  # We need a default branch not in the main repo to run the sync jobs
+  branch     = "mirror-main"
+}
+
+resource "github_branch_default" "mirror-default-branch"{
+  repository = github_repository.fluent-bit-mirror.name
+  branch     = github_branch.mirror-main-branch.branch
+}
+
+# Minimal branch protection - required for environment set up later.
+resource "github_branch_protection_v3" "mirror-main-branch-protection" {
+  repository     = github_repository.fluent-bit-mirror.name
+  branch         = github_branch.mirror-main-branch.branch
+  enforce_admins = true
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    require_code_owner_reviews      = true
+    required_approving_review_count = 1
+}
+
+  # No status checks - we do not want to force unit tests, etc. to run
+  # TODO: update with checks on incoming syncs
+}
+
+# We only want this for the normal Fluent Bit repository.
+resource "github_branch_protection_v3" "default-branch-protection" {
+  repository     = data.github_repository.fluentbit.name
+  branch         = data.github_repository.fluentbit.default_branch
   enforce_admins = false
 
   required_pull_request_reviews {
@@ -39,6 +56,11 @@ resource "github_branch_protection_v3" "default-branch-protection" {
     strict   = false
     contexts = ["Unit tests (matrix)", "Check Commit Message"]
   }
+}
+
+# We create an array for the rest of the Terraform configuration to loop over on each repository
+locals {
+  fluent-bit-repos = [ data.github_repository.fluentbit, github_repository.fluent-bit-mirror ]
 }
 
 data "github_user" "release-approvers-users" {
