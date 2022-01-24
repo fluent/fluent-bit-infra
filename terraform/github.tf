@@ -2,31 +2,34 @@ data "github_repository" "fluentbit" {
   full_name = var.repo_full_name
 }
 
-resource "github_repository" "fluent-bit-mirror" {
-  name        = "fluent-bit-mirror"
-  description = "A private mirror of Fluent Bit purely to mitigate security concerns of using self-hosted runners."
+# resource "github_repository" "fluent-bit-mirror" {
+#   name        = "fluent-bit-mirror"
+#   description = "A private mirror of Fluent Bit purely to mitigate security concerns of using self-hosted runners."
 
-  visibility = "private"
+#   visibility = "private"
 
-  archive_on_destroy     = true
-  delete_branch_on_merge = true
-  vulnerability_alerts   = true
+#   archive_on_destroy     = true
+#   delete_branch_on_merge = true
+#   vulnerability_alerts   = true
+# }
+data "github_repository" "fluent-bit-mirror" {
+  full_name = "fluent/fluent-bit-mirror"
 }
 
 resource "github_branch" "mirror-main-branch" {
-  repository = github_repository.fluent-bit-mirror.name
+  repository = data.github_repository.fluent-bit-mirror.name
   # We need a default branch not in the main repo to run the sync jobs
   branch     = "mirror-main"
 }
 
 resource "github_branch_default" "mirror-default-branch"{
-  repository = github_repository.fluent-bit-mirror.name
+  repository = data.github_repository.fluent-bit-mirror.name
   branch     = github_branch.mirror-main-branch.branch
 }
 
 # Minimal branch protection - required for environment set up later.
 resource "github_branch_protection_v3" "mirror-main-branch-protection" {
-  repository     = github_repository.fluent-bit-mirror.name
+  repository     = data.github_repository.fluent-bit-mirror.name
   branch         = github_branch.mirror-main-branch.branch
   enforce_admins = true
 
@@ -60,7 +63,7 @@ resource "github_branch_protection_v3" "default-branch-protection" {
 
 # We create an array for the rest of the Terraform configuration to loop over on each repository
 locals {
-  fluent-bit-repos = [ data.github_repository.fluentbit, github_repository.fluent-bit-mirror ]
+  fluent-bit-repos = [ data.github_repository.fluentbit, data.github_repository.fluent-bit-mirror ]
 }
 
 data "github_user" "release-approvers-users" {
