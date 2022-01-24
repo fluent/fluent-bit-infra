@@ -38,7 +38,12 @@ jobs:
           release_dockerhub_org: ${{ secrets.RELEASE_DOCKERHUB_ORGANIZATION }}
           release-cosign-private-key: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: terraform
+
       - name: Terraform import
         run: |
-          terraform import --no-color ${{ github.event.inputs.import-resource }}
+          terraform import -input=false -allow-missing-config -no-color ${{ github.event.inputs.import-resource }}
         working-directory: terraform
