@@ -14,7 +14,7 @@ jobs:
 
       - name: tfsec
         if: ${{ github.event_name == 'pull_request' }}
-        uses: aquasecurity/tfsec-pr-commenter-action@v1.0.0
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.0.2
         with:
           github_token: ${{ github.token }}
           commenter_version: v0.1.10
