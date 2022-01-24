@@ -47,7 +47,7 @@ jobs:
 
       - name: Terraform import
         run: |
-          terraform import -input=false -no-color "github_repository.fluent-bit-mirror" "fluent/fluent-bit-mirror"
+          terraform import -input=false -no-color "github_repository.fluent-bit-mirror" "fluent-bit-mirror"
         working-directory: terraform
 
       - name: Terraform Validate
