@@ -215,7 +215,7 @@ locals {
 resource "github_actions_secret" "mirror-release-secrets" {
   for_each = { for secret in local.mirror-release-secrets: secret.secret_name => secret }
 
-  repository      = data.github_repository.fluent-bit-mirror
+  repository      = data.github_repository.fluent-bit-mirror.name
   secret_name     = each.key
   encrypted_value = each.value.encrypted_value
 }
