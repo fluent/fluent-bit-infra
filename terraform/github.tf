@@ -54,7 +54,7 @@ data "github_user" "release-approvers-users" {
 
 resource "github_repository_environment" "release-environment" {
   environment = "release"
-  repository  = data.github_repository.fluentbit
+  repository  = data.github_repository.fluentbit.name
   reviewers {
     users = [ for user in data.github_user.release-approvers-users: user.id ]
   }
@@ -66,21 +66,21 @@ resource "github_repository_environment" "release-environment" {
 
 # The packaging server to use:
 resource "github_actions_environment_secret" "release-server-hostname" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "FLUENTBITIO_HOST"
   plaintext_value = var.release-server-hostname
 }
 
 resource "github_actions_environment_secret" "release-server-username" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "FLUENTBITIO_USERNAME"
   plaintext_value = var.release-server-username
 }
 
 resource "github_actions_environment_secret" "release-server-sshkey" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "FLUENTBITIO_SSHKEY"
   plaintext_value = var.release-server-sshkey
@@ -88,20 +88,20 @@ resource "github_actions_environment_secret" "release-server-sshkey" {
 
 # The DockerHub details for release
 resource "github_actions_environment_secret" "release-dockerhub-username" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "DOCKERHUB_USERNAME"
   plaintext_value = var.release-dockerhub-username
 }
 
 resource "github_actions_environment_secret" "release-dockerhub-token" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "DOCKERHUB_TOKEN"
   plaintext_value = var.release-dockerhub-token
 }
 resource "github_actions_environment_secret" "release-dockerhub-org" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "DOCKERHUB_ORGANIZATION"
   plaintext_value = var.release-dockerhub-org
@@ -109,7 +109,7 @@ resource "github_actions_environment_secret" "release-dockerhub-org" {
 
 # Cosign signatures for release
 resource "github_actions_environment_secret" "release-cosign-private-key" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "COSIGN_PRIVATE_KEY"
   plaintext_value = var.release-cosign-private-key
@@ -117,7 +117,7 @@ resource "github_actions_environment_secret" "release-cosign-private-key" {
 
 # AWS credentials
 resource "github_actions_environment_secret" "release-bucket-secret" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "AWS_S3_BUCKET_RELEASE"
   plaintext_value = var.release-s3-bucket
@@ -125,28 +125,28 @@ resource "github_actions_environment_secret" "release-bucket-secret" {
 
 # Release needs to take out of staging and into release bucket
 resource "github_actions_environment_secret" "release-staging-bucket-secret" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "AWS_S3_BUCKET_STAGING"
   plaintext_value = var.staging-s3-bucket
 }
 
 resource "github_actions_environment_secret" "release-aws-access-key-id-secret" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "AWS_ACCESS_KEY_ID"
   plaintext_value = var.release-s3-access-id
 }
 
 resource "github_actions_environment_secret" "release-aws-secret-access-key-secret" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "AWS_SECRET_ACCESS_KEY"
   plaintext_value = var.release-s3-secret-access-key
 }
 
 resource "github_actions_environment_secret" "release-gpg-private-key-secret" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.release-environment
   secret_name     = "GPG_PRIVATE_KEY"
   plaintext_value = var.release-gpg-key
@@ -154,7 +154,7 @@ resource "github_actions_environment_secret" "release-gpg-private-key-secret" {
 
 resource "github_repository_environment" "staging-environment" {
   environment = "staging"
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   deployment_branch_policy {
     protected_branches     = true
     custom_branch_policies = false
@@ -162,28 +162,28 @@ resource "github_repository_environment" "staging-environment" {
 }
 
 resource "github_actions_environment_secret" "staging-bucket-secret" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.staging-environment
   secret_name     = "AWS_S3_BUCKET_STAGING"
   plaintext_value = var.staging-s3-bucket
 }
 
 resource "github_actions_environment_secret" "staging-aws-access-key-id-secret" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.staging-environment
   secret_name     = "AWS_ACCESS_KEY_ID"
   plaintext_value = var.staging-s3-access-id
 }
 
 resource "github_actions_environment_secret" "staging-aws-secret-access-key-secret" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.staging-environment
   secret_name     = "AWS_SECRET_ACCESS_KEY"
   plaintext_value = var.staging-s3-secret-access-key
 }
 
 resource "github_actions_environment_secret" "staging-gpg-private-key-secret" {
-  repository      = data.github_repository.fluentbit
+  repository      = data.github_repository.fluentbit.name
   environment     = github_repository_environment.staging-environment
   secret_name     = "GPG_PRIVATE_KEY"
   plaintext_value = var.staging-gpg-key
