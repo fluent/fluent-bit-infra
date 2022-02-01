@@ -217,5 +217,5 @@ resource "github_actions_secret" "mirror-release-secrets" {
 
   repository      = data.github_repository.fluent-bit-mirror.name
   secret_name     = each.key
-  encrypted_value = each.value.encrypted_value
+  plaintext_value = each.value.plaintext_value
 }
