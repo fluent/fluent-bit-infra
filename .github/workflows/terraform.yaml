@@ -33,6 +33,8 @@ jobs:
           release_dockerhub_token: ${{ secrets.RELEASE_DOCKERHUB_TOKEN }}
           release_dockerhub_org: ${{ secrets.RELEASE_DOCKERHUB_ORGANIZATION }}
           release-cosign-private-key: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          appveyor-account: ${{ secrets.APPVEYOR_ACCOUNT }}
+          appveyor-token: ${{ secrets.APPVEYOR_TOKEN }}
 
       - name: Terraform fmt
         id: fmt

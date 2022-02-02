@@ -1,6 +1,8 @@
 cloudflare_token             = "$CLOUDFLARE_TOKEN"
 metal_token                  = "$METAL_TOKEN"
 github_token                 = "$GITHUB_TOKEN"
+appveyor_account             = "$APPVEYOR_ACCOUNT"
+appveyor_token               = "$APPVEYOR_TOKEN"
 repo_full_name               = "$REPO_FULL_NAME"
 staging-s3-bucket            = "$AWS_S3_BUCKET_STAGING"
 staging-s3-access-id         = "$AWS_S3_ACCESS_ID_STAGING"

@@ -189,6 +189,12 @@ resource "github_actions_environment_secret" "staging-gpg-private-key-secret" {
   plaintext_value = var.staging-gpg-key
 }
 
+resource "github_actions_secret" "appveyor_token" {
+  repository      = data.github_repository.fluentbit.name
+  secret_name     = "APPVEYOR_TOKEN"
+  plaintext_value = var.appveyor_token
+}
+
 # For the mirror we need release environment secrets but as full-blown repository secrets
 # as private repos do not support without Github Enterprise.
 # We unfortunately cannot splat them all together dynamically either:

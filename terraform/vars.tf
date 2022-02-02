@@ -154,3 +154,8 @@ variable "release-dockerhub-org" {
   type = string
   default = "fluent/fluent-bit"
 }
+
+variable "appveyor_token" {
+  type = string
+  sensitive = true
+}

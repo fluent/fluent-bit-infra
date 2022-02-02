@@ -76,6 +76,12 @@ inputs:
   release-cosign-private-key:
     description: The Cosign private key used for signing released images.
     required: true
+  appveyor-token:
+    description: The appveyor account to use to access builds.
+    required: true
+  appveyor-account:
+    description: The appveyor token to use to access builds.
+    required: true
 runs:
   using: "composite"
   steps:
@@ -102,6 +108,8 @@ runs:
         [[ -z "${{ inputs.release_dockerhub_username }}" ]]        && echo "release_dockerhub_username empty" && exitCode=1
         [[ -z "${{ inputs.release_dockerhub_token }}" ]]           && echo "release_dockerhub_token empty" && exitCode=1
         [[ -z "${{ inputs.release_dockerhub_org }}" ]]             && echo "release_dockerhub_org empty" && exitCode=1
+        [[ -z "${{ inputs.appveyor-account }}" ]]                  && echo "appveyor-account empty" && exitCode=1
+        [[ -z "${{ inputs.appveyor-token }}" ]]                    && echo "appveyor-token empty" && exitCode=1
 
         # Keys should have multiple lines
         [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]                 && echo "gcp_sa_key empty" && exitCode=1
@@ -140,6 +148,13 @@ runs:
 
     - name: Replace the github.com token
       run: sed -i -e "s/\$GITHUB_TOKEN/${{ inputs.github_personal_access_token }}/g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Setup the Appveyor access token
+      run: |
+        sed -i -e "s/\$APPVEYOR_ACCOUNT/${{ inputs.appveyor-account }}/g" default.auto.tfvars
+        sed -i -e "s/\$APPVEYOR_TOKEN/${{ inputs.appveyor-token }}/g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 
