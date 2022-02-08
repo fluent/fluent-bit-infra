@@ -49,6 +49,9 @@ inputs:
   gpg_private_key_staging:
     description: The GPG private key for staging.
     required: true
+  gpg_private_key_passphrase_staging:
+    description: The GPG private key passphrase for staging.
+    required: true
   aws_s3_access_id_releases:
     description: The AWS S3 access id for releases.
     required: true
@@ -57,6 +60,9 @@ inputs:
     required: true
   gpg_private_key_releases:
     description: The GPG private key for releases.
+    required: true
+  gpg_private_key_passphrase_releases:
+    description: The GPG private key passphrase for releases.
     required: true
   release_server_username:
     description: The username to authenticate with the release server.
