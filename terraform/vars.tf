@@ -159,3 +159,8 @@ variable "appveyor_token" {
   type = string
   sensitive = true
 }
+
+variable "appveyor_account" {
+  type = string
+  sensitive = true
+}

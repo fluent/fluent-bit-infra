@@ -195,6 +195,12 @@ resource "github_actions_secret" "appveyor_token" {
   plaintext_value = var.appveyor_token
 }
 
+resource "github_actions_secret" "appveyor_account" {
+  repository      = data.github_repository.fluentbit.name
+  secret_name     = "APPVEYOR_ACCOUNT"
+  plaintext_value = var.appveyor_account
+}
+
 # For the mirror we need release environment secrets but as full-blown repository secrets
 # as private repos do not support without Github Enterprise.
 # We unfortunately cannot splat them all together dynamically either:
