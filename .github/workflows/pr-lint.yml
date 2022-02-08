@@ -39,6 +39,6 @@ jobs:
           working_directory: terraform
           fail_on_error: "true"
 
-      - name: tfsec
+      - name: tflint
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: docker run --rm -v "$(pwd)/terraform:/data" -t ghcr.io/terraform-linters/tflint
