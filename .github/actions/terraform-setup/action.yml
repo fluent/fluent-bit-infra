@@ -200,8 +200,8 @@ runs:
 
     - name: Set optional secrets
       run: |
-        [[ -n "$GPG_PRIVATE_KEY_PASSPHRASE_RELEASES" ]] && echo "release-gpg-key-passphrase = $GPG_PRIVATE_KEY_PASSPHRASE_RELEASES" >> default.auto.tfvars
-        [[ -n "$GPG_PRIVATE_KEY_PASSPHRASE_STAGING" ]]  && echo "staging-gpg-key-passphrase = $GPG_PRIVATE_KEY_PASSPHRASE_STAGING" >> default.auto.tfvars
+        [[ -n "$GPG_PRIVATE_KEY_PASSPHRASE_RELEASES" ]] && echo "release-gpg-key-passphrase = \"$GPG_PRIVATE_KEY_PASSPHRASE_RELEASES\"" >> default.auto.tfvars
+        [[ -n "$GPG_PRIVATE_KEY_PASSPHRASE_STAGING" ]]  && echo "staging-gpg-key-passphrase = \"$GPG_PRIVATE_KEY_PASSPHRASE_STAGING\"" >> default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash
       env:
