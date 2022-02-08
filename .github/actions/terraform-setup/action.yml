@@ -163,6 +163,7 @@ runs:
         sed -i -e "s/\$AWS_S3_BUCKET_STAGING/${{ inputs.aws_s3_bucket_staging }}/g" default.auto.tfvars
         sed -i -e "s/\$AWS_S3_ACCESS_ID_STAGING/${{ inputs.aws_s3_access_id_staging }}/g" default.auto.tfvars
         sed -i -e "s/\$AWS_S3_SECRET_ACCESS_KEY_STAGING/${{ inputs.aws_s3_secret_access_key_staging }}/g" default.auto.tfvars
+        sed -i -e "s/\$GPG_PRIVATE_KEY_PASSPHRASE_STAGING/${{ inputs.gpg_private_key_passphrase_staging }}/g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 
@@ -185,6 +186,7 @@ runs:
         sed -i -e "s/\$RELEASE_SERVER_USERNAME/${{ inputs.release_server_username }}/g" default.auto.tfvars
         sed -i -e "s/\$RELEASE_DOCKERHUB_USERNAME/${{ inputs.release_dockerhub_username }}/g" default.auto.tfvars
         sed -i -e "s/\$RELEASE_DOCKERHUB_TOKEN/${{ inputs.release_dockerhub_token }}/g" default.auto.tfvars
+        sed -i -e "s/\$GPG_PRIVATE_KEY_PASSPHRASE_RELEASES/${{ inputs.gpg_private_key_passphrase_releases }}/g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 
