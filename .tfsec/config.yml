@@ -1,0 +1,6 @@
+# Config for TFSec
+---
+exclude:
+  # Terraform Cloud encrypts state at rest
+  # https://www.terraform.io/language/state/sensitive-data
+  - general-secrets-no-plaintext-exposure

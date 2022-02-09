@@ -152,6 +152,13 @@ resource "github_actions_environment_secret" "release-gpg-private-key-secret" {
   plaintext_value = var.release-gpg-key
 }
 
+resource "github_actions_environment_secret" "release-gpg-private-key-passphrase-secret" {
+  repository      = data.github_repository.fluentbit.name
+  environment     = github_repository_environment.release-environment.environment
+  secret_name     = "GPG_PRIVATE_KEY_PASSPHRASE"
+  plaintext_value = var.release-gpg-key-passphrase
+}
+
 resource "github_repository_environment" "staging-environment" {
   environment = "staging"
   repository      = data.github_repository.fluentbit.name
@@ -189,10 +196,23 @@ resource "github_actions_environment_secret" "staging-gpg-private-key-secret" {
   plaintext_value = var.staging-gpg-key
 }
 
+resource "github_actions_environment_secret" "staging-gpg-private-key-passphrase-secret" {
+  repository      = data.github_repository.fluentbit.name
+  environment     = github_repository_environment.staging-environment.environment
+  secret_name     = "GPG_PRIVATE_KEY_PASSPHRASE"
+  plaintext_value = var.staging-gpg-key-passphrase
+}
+
 resource "github_actions_secret" "appveyor_token" {
   repository      = data.github_repository.fluentbit.name
   secret_name     = "APPVEYOR_TOKEN"
   plaintext_value = var.appveyor_token
+}
+
+resource "github_actions_secret" "appveyor_account" {
+  repository      = data.github_repository.fluentbit.name
+  secret_name     = "APPVEYOR_ACCOUNT"
+  plaintext_value = var.appveyor_account
 }
 
 # For the mirror we need release environment secrets but as full-blown repository secrets
@@ -214,7 +234,8 @@ locals {
     github_actions_environment_secret.release-bucket-secret,
     github_actions_environment_secret.release-staging-bucket-secret,
     github_actions_environment_secret.release-aws-secret-access-key-secret,
-    github_actions_environment_secret.release-gpg-private-key-secret
+    github_actions_environment_secret.release-gpg-private-key-secret,
+    github_actions_environment_secret.release-gpg-private-key-passphrase-secret
   ]
 }
 

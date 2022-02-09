@@ -85,6 +85,11 @@ variable "release-gpg-key" {
   sensitive = true
 }
 
+variable "release-gpg-key-passphrase" {
+  type = string
+  sensitive = true
+}
+
 variable "staging-s3-bucket" {
   type = string
   default = "fluentbit-staging"
@@ -101,6 +106,11 @@ variable "staging-s3-secret-access-key" {
 }
 
 variable "staging-gpg-key" {
+  type = string
+  sensitive = true
+}
+
+variable "staging-gpg-key-passphrase" {
   type = string
   sensitive = true
 }
@@ -156,6 +166,11 @@ variable "release-dockerhub-org" {
 }
 
 variable "appveyor_token" {
+  type = string
+  sensitive = true
+}
+
+variable "appveyor_account" {
   type = string
   sensitive = true
 }
