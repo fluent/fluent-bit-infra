@@ -162,10 +162,6 @@ resource "github_actions_environment_secret" "release-gpg-private-key-passphrase
 resource "github_repository_environment" "staging-environment" {
   environment = "staging"
   repository      = data.github_repository.fluentbit.name
-  deployment_branch_policy {
-    protected_branches     = true
-    custom_branch_policies = false
-  }
 }
 
 resource "github_actions_environment_secret" "staging-bucket-secret" {
