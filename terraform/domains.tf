@@ -22,16 +22,16 @@ resource "cloudflare_record" "dev-arm" {
 
 resource "cloudflare_record" "www" {
   name    = "www"
-  value   = data.metal_device.www.access_public_ipv4
-  type    = "A"
-  proxied = false
+  value   = "stoic-goldberg-e3a26b.netlify.app"
+  type    = "CNAME"
+  proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
 resource "cloudflare_record" "root-www" {
   name    = "fluentbit.io"
-  value   = data.metal_device.www.access_public_ipv4
-  type    = "A"
+  value   = "apex-loadbalancer.netlify.com"
+  type    = "CNAME"
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
