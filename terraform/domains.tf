@@ -149,3 +149,11 @@ resource "cloudflare_record" "legacy-releases" {
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
+
+resource "cloudflare_record" "legacy-server" {
+  name    = "legacy"
+  value   = data.metal_device.legacy_www.access_public_ipv4
+  type    = "A"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}

@@ -39,3 +39,16 @@ resource "cloudflare_page_rule" "releases-fluentbitio" {
     }
   }
 }
+
+resource "cloudflare_page_rule" "legacy-fluentbitio" {
+  zone_id  = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+  target   = "https://${var.cloudflare_domain}/legacy/*"
+  priority = 1
+
+  actions {
+    forwarding_url {
+      url         = "https://legacy.${var.cloudflare_domain}/$1"
+      status_code = 301
+    }
+  }
+}
