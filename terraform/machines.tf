@@ -12,7 +12,7 @@ data "metal_device" "dev-arm" {
   hostname   = "dev-arm.fluentbit.io"
 }
 
-data "metal_device" "www" {
+data "metal_device" "legacy_www" {
   project_id = local.project_id
   hostname   = "fluentbit.io"
 }
