@@ -157,3 +157,11 @@ resource "cloudflare_record" "legacy-server" {
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
+
+resource "cloudflare_record" "www-old" {
+  name    = "www-old"
+  value   = "legacy.fluentbit.io"
+  type    = "CNAME"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
