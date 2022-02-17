@@ -54,7 +54,7 @@ resource "cloudflare_record" "backup" {
 
 resource "cloudflare_record" "packages" {
   name    = "packages"
-  value   = data.metal_device.www.access_public_ipv4
+  value   = data.metal_device.legacy_www.access_public_ipv4
   type    = "A"
   proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
@@ -62,7 +62,7 @@ resource "cloudflare_record" "packages" {
 
 resource "cloudflare_record" "apt" {
   name    = "apt"
-  value   = data.metal_device.www.access_public_ipv4
+  value   = data.metal_device.legacy_www.access_public_ipv4
   type    = "A"
   proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
@@ -118,7 +118,7 @@ resource "cloudflare_record" "docs" {
 
 resource "cloudflare_record" "test-subdomain" {
   name    = "test-subdomain"
-  value   = data.metal_device.www.access_public_ipv4
+  value   = data.metal_device.legacy_www.access_public_ipv4
   type    = "A"
   proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
@@ -139,5 +139,13 @@ resource "cloudflare_record" "test" {
   value   = "stoic-goldberg-e3a26b.netlify.app"
   type    = "CNAME"
   proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
+resource "cloudflare_record" "legacy-releases" {
+  name    = "releases"
+  value   = data.metal_device.legacy_www.access_public_ipv4
+  type    = "A"
+  proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }

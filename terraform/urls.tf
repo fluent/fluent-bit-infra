@@ -25,3 +25,17 @@ resource "cloudflare_page_rule" "downloads-fluentbitio" {
     }
   }
 }
+
+# For legacy releases, forward the download URL to the old server
+resource "cloudflare_page_rule" "releases-fluentbitio" {
+  zone_id  = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+  target   = "https://${var.cloudflare_domain}/releases*"
+  priority = 1
+
+  actions {
+    forwarding_url {
+      url         = "https://releases.${var.cloudflare_domain}/"
+      status_code = 301
+    }
+  }
+}
