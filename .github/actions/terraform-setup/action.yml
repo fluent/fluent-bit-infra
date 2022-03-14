@@ -88,6 +88,9 @@ inputs:
   appveyor-account:
     description: The appveyor token to use to access builds.
     required: true
+  release-server-aptly-config:
+    description: The aptly configuration file to use on the release server.
+    required: true
 runs:
   using: "composite"
   steps:
@@ -116,6 +119,7 @@ runs:
         [[ -z "${{ inputs.release_dockerhub_org }}" ]]             && echo "release_dockerhub_org empty" && exitCode=1
         [[ -z "${{ inputs.appveyor-account }}" ]]                  && echo "appveyor-account empty" && exitCode=1
         [[ -z "${{ inputs.appveyor-token }}" ]]                    && echo "appveyor-token empty" && exitCode=1
+        [[ -z "${{ inputs.release-server-aptly-config }}" ]]       && echo "release-server-aptly-config empty" && exitCode=1
 
         # Keys should have multiple lines
         [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]                 && echo "gcp_sa_key empty" && exitCode=1
@@ -193,6 +197,7 @@ runs:
         sed -i -e "s|\$AWS_S3_SECRET_ACCESS_KEY_RELEASES|${{ inputs.aws_s3_secret_access_key_releases }}|g" default.auto.tfvars
         sed -i -e "s/\$RELEASE_SERVER_HOSTNAME/${{ inputs.release_server_hostname }}/g" default.auto.tfvars
         sed -i -e "s/\$RELEASE_SERVER_USERNAME/${{ inputs.release_server_username }}/g" default.auto.tfvars
+        sed -i -e "s/\$RELEASE_SERVER_APTLY_TOKEN/${{ inputs.release-server-aptly-config }}/g" default.auto.tfvars
         sed -i -e "s/\$RELEASE_DOCKERHUB_USERNAME/${{ inputs.release_dockerhub_username }}/g" default.auto.tfvars
         sed -i -e "s/\$RELEASE_DOCKERHUB_TOKEN/${{ inputs.release_dockerhub_token }}/g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}

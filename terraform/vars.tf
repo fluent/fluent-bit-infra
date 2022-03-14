@@ -174,3 +174,7 @@ variable "appveyor_account" {
   type = string
   sensitive = true
 }
+
+variable "release-server-aptly-config" {
+  type = string
+}

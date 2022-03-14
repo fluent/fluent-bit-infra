@@ -86,6 +86,13 @@ resource "github_actions_environment_secret" "release-server-sshkey" {
   plaintext_value = var.release-server-sshkey
 }
 
+resource "github_actions_environment_secret" "release-server-aptly-config" {
+  repository      = data.github_repository.fluentbit.name
+  environment     = github_repository_environment.release-environment.environment
+  secret_name     = "FLUENTBITIO_APTLY_CONFIG"
+  plaintext_value = var.release-server-aptly-config
+}
+
 # The DockerHub details for release
 resource "github_actions_environment_secret" "release-dockerhub-username" {
   repository      = data.github_repository.fluentbit.name
@@ -231,7 +238,8 @@ locals {
     github_actions_environment_secret.release-staging-bucket-secret,
     github_actions_environment_secret.release-aws-secret-access-key-secret,
     github_actions_environment_secret.release-gpg-private-key-secret,
-    github_actions_environment_secret.release-gpg-private-key-passphrase-secret
+    github_actions_environment_secret.release-gpg-private-key-passphrase-secret,
+    github_actions_environment_secret.release-server-aptly-config
   ]
 }
 
