@@ -165,3 +165,11 @@ resource "cloudflare_record" "www-old" {
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
+
+resource "cloudflare_record" "registry" {
+  name    = "registry"
+  value   = "gateway.scarf.sh"
+  type    = "CNAME"
+  proxied = false
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
