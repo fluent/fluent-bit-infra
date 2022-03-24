@@ -173,3 +173,12 @@ resource "cloudflare_record" "registry" {
   proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
+
+resource "cloudflare_record" "packages-test" {
+  name    = "packages-test"
+  value   = "packages-test.fluentbit.io.s3.amazonaws.com"
+  type    = "CNAME"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
