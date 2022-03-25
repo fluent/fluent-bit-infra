@@ -182,3 +182,10 @@ resource "cloudflare_record" "packages-test" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
+resource "cloudflare_record" "short-registry" {
+  name    = "cr"
+  value   = "gateway.scarf.sh"
+  type    = "CNAME"
+  proxied = false
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
