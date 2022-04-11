@@ -272,3 +272,27 @@ resource "github_branch_protection_v3" "example" {
     apps  = []
   }
 }
+
+resource "github_repository_environment" "unstable-environment" {
+  environment = "unstable"
+  repository  = data.github_repository.fluentbit.name
+}
+
+# Create necessary secrets for publishing pre-releases from unstable and staging environments
+resource "github_actions_environment_secret" "unstable-release-repos" {
+  for_each = toset( github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment )
+  environment = each.key
+
+  repository      = data.github_repository.fluentbit.name
+  secret_name     = "RELEASE_REPO"
+  plaintext_value = github_repository.fluent-bit-unstable-releases.name
+}
+
+resource "github_actions_environment_secret" "unstable-release-tokens" {
+  for_each = toset( github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment )
+  environment = each.key
+
+  repository      = data.github_repository.fluentbit.name
+  secret_name     = "RELEASE_TOKEN"
+  plaintext_value = var.unstable-release-token
+}
