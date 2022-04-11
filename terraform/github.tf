@@ -245,11 +245,9 @@ resource "github_actions_secret" "mirror-release-secrets" {
 
 # Primarily to resolve https://github.com/fluent/fluent-bit/discussions/5160 by moving
 # pre-releases to a separate repository until Github resolve the issue.
-resource "github_repository" "fluent-bit-release-notifications" {
-  name        = "fluent-bit-release-notifications"
+resource "github_repository" "fluent-bit-unstable-releases" {
+  name        = "fluent-bit-unstable-releases"
   description = "A repository to handle Fluent Bit releases that are not official to reduce notification spam."
-
-  visibility = "public"
 
   archive_on_destroy     = true
   delete_branch_on_merge = true
@@ -264,8 +262,8 @@ resource "github_repository" "fluent-bit-release-notifications" {
 
 # No one should be merging
 resource "github_branch_protection_v3" "example" {
-  repository     = github_repository.fluent-bit-release-notifications.name
-  branch         = github_repository.fluent-bit-release-notifications.default_branch
+  repository     = github_repository.fluent-bit-unstable-releases.name
+  branch         = github_repository.fluent-bit-unstable-releases.default_branch
   enforce_admins = false
 
   restrictions {
