@@ -253,13 +253,13 @@ resource "github_repository" "fluent-bit-release-notifications" {
 
   archive_on_destroy     = true
   delete_branch_on_merge = true
+  vulnerability_alerts   = true
   has_issues             = false
   has_projects           = false
   has_wiki               = false
   homepage_url           = "https://fluentbit.io"
   auto_init              = true
   license_template       = "apache-2.0"
-  topics                 = "fluent-bit"
 }
 
 # No one should be merging
