@@ -280,7 +280,7 @@ resource "github_repository_environment" "unstable-environment" {
 
 # Create necessary secrets for publishing pre-releases from unstable and staging environments
 resource "github_actions_environment_secret" "unstable-release-repos" {
-  for_each = toset( github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment )
+  for_each = toset( [github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment] )
   environment = each.key
 
   repository      = data.github_repository.fluentbit.name
@@ -289,7 +289,7 @@ resource "github_actions_environment_secret" "unstable-release-repos" {
 }
 
 resource "github_actions_environment_secret" "unstable-release-tokens" {
-  for_each = toset( github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment )
+  for_each = toset( [github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment] )
   environment = each.key
 
   repository      = data.github_repository.fluentbit.name
