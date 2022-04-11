@@ -174,3 +174,8 @@ variable "appveyor_account" {
   type = string
   sensitive = true
 }
+
+variable "unstable-release-token" {
+  type = string
+  sensitive = true
+}

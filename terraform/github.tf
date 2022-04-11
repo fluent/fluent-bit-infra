@@ -245,11 +245,9 @@ resource "github_actions_secret" "mirror-release-secrets" {
 
 # Primarily to resolve https://github.com/fluent/fluent-bit/discussions/5160 by moving
 # pre-releases to a separate repository until Github resolve the issue.
-resource "github_repository" "fluent-bit-release-notifications" {
-  name        = "fluent-bit-release-notifications"
+resource "github_repository" "fluent-bit-unstable-releases" {
+  name        = "fluent-bit-unstable-releases"
   description = "A repository to handle Fluent Bit releases that are not official to reduce notification spam."
-
-  visibility = "public"
 
   archive_on_destroy     = true
   delete_branch_on_merge = true
@@ -264,8 +262,8 @@ resource "github_repository" "fluent-bit-release-notifications" {
 
 # No one should be merging
 resource "github_branch_protection_v3" "example" {
-  repository     = github_repository.fluent-bit-release-notifications.name
-  branch         = github_repository.fluent-bit-release-notifications.default_branch
+  repository     = github_repository.fluent-bit-unstable-releases.name
+  branch         = github_repository.fluent-bit-unstable-releases.default_branch
   enforce_admins = false
 
   restrictions {
@@ -273,4 +271,28 @@ resource "github_branch_protection_v3" "example" {
     teams = []
     apps  = []
   }
+}
+
+resource "github_repository_environment" "unstable-environment" {
+  environment = "unstable"
+  repository  = data.github_repository.fluentbit.name
+}
+
+# Create necessary secrets for publishing pre-releases from unstable and staging environments
+resource "github_actions_environment_secret" "unstable-release-repos" {
+  for_each = toset( [github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment] )
+  environment = each.key
+
+  repository      = data.github_repository.fluentbit.name
+  secret_name     = "RELEASE_REPO"
+  plaintext_value = github_repository.fluent-bit-unstable-releases.name
+}
+
+resource "github_actions_environment_secret" "unstable-release-tokens" {
+  for_each = toset( [github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment] )
+  environment = each.key
+
+  repository      = data.github_repository.fluentbit.name
+  secret_name     = "RELEASE_TOKEN"
+  plaintext_value = var.unstable-release-token
 }

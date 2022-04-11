@@ -37,6 +37,7 @@ jobs:
           release-cosign-private-key: ${{ secrets.COSIGN_PRIVATE_KEY }}
           appveyor-account: ${{ secrets.APPVEYOR_ACCOUNT }}
           appveyor-token: ${{ secrets.APPVEYOR_TOKEN }}
+          unstable-release-token: ${{ secrets.UNSTABLE_RELEASE_TOKEN }}
 
       - name: Terraform fmt
         id: fmt
