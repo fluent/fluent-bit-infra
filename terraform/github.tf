@@ -285,7 +285,7 @@ resource "github_actions_environment_secret" "unstable-release-repos" {
 
   repository      = data.github_repository.fluentbit.name
   secret_name     = "RELEASE_REPO"
-  plaintext_value = github_repository.fluent-bit-unstable-releases.name
+  plaintext_value = github_repository.fluent-bit-unstable-releases.full_name
 }
 
 resource "github_actions_environment_secret" "unstable-release-tokens" {
