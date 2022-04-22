@@ -365,8 +365,8 @@ resource "github_branch_protection_v3" "fluent-bit-sandbox" {
   }
 }
 
-resource "github_team_repository" "backend_team_repos" {
-  team_id    = github_team.fluent-bit-sandbox-maintainers
-  repository = github_repository.fluent-bit-sandbox
+resource "github_team_repository" "fluent-bit-sandbox-maintainers" {
+  team_id    = github_team.fluent-bit-sandbox-maintainers.id
+  repository = github_repository.fluent-bit-sandbox.name
   permission = "maintain"
 }
