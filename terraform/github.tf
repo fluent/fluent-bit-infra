@@ -3,7 +3,7 @@ data "github_repository" "fluentbit" {
 }
 
 data "github_repository" "fluent-bit-ci" {
-  full_name = "fluent/fluent-bit-ci"
+  full_name = "calyptia/fluent-bit-ci"
 }
 
 # resource "github_repository" "fluent-bit-mirror" {
