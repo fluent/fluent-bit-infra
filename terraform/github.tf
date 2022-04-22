@@ -327,7 +327,7 @@ resource "github_team" "fluent-bit-sandbox-maintainers" {
 }
 
 resource "github_team_membership" "fluent-bit-sandbox-maintainers" {
-  for_each = var.backend-team-usernames
+  for_each = var.fluent-bit-sandbox-maintainers
 
   team_id  = github_team.fluent-bit-sandbox-maintainers.id
   username = each.value
