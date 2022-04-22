@@ -265,7 +265,7 @@ resource "github_repository" "fluent-bit-unstable-releases" {
 }
 
 # No one should be merging
-resource "github_branch_protection_v3" "example" {
+resource "github_branch_protection_v3" "fluent-bit-unstable-releases" {
   repository     = github_repository.fluent-bit-unstable-releases.name
   branch         = github_repository.fluent-bit-unstable-releases.default_branch
   enforce_admins = false
@@ -318,4 +318,55 @@ resource "github_actions_secret" "fluent-bit-ci-opensearch-password" {
   repository      = data.github_repository.fluent-bit-ci.id
   secret_name     = "OPENSEARCH_ADMIN_PASSWORD"
   plaintext_value = var.fluent-bit-ci-opensearch-admin-password
+}
+
+resource "github_team" "fluent-bit-sandbox-maintainers" {
+  name        = "fluent-bit-sandbox-maintainers"
+  description = "The maintainers team for Fluent Bit Sandbox. Only modify via Terraform."
+  privacy     = "closed"
+}
+
+resource "github_team_membership" "fluent-bit-sandbox-maintainers" {
+  for_each = var.fluent-bit-sandbox-maintainers
+
+  team_id  = github_team.fluent-bit-sandbox-maintainers.id
+  username = each.value
+  role     = "member"
+}
+
+resource "github_repository" "fluent-bit-sandbox" {
+  name        = "fluent-bit-sandbox"
+  description = "A repository to covering the setup and configuration of the Fluent Bit Sandbox."
+
+  archive_on_destroy     = true
+  delete_branch_on_merge = true
+  vulnerability_alerts   = true
+  has_issues             = true
+  has_projects           = true
+  has_wiki               = true
+  homepage_url           = "https://fluentbit.io"
+  auto_init              = true
+  license_template       = "apache-2.0"
+}
+
+resource "github_branch_protection_v3" "fluent-bit-sandbox" {
+  repository     = github_repository.fluent-bit-sandbox.name
+  branch         = github_repository.fluent-bit-sandbox.default_branch
+  enforce_admins = false
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    require_code_owner_reviews      = true
+    required_approving_review_count = 1
+  }
+
+  restrictions {
+    teams = [ github_team.fluent-bit-sandbox-maintainers.slug ]
+  }
+}
+
+resource "github_team_repository" "fluent-bit-sandbox-maintainers" {
+  team_id    = github_team.fluent-bit-sandbox-maintainers.id
+  repository = github_repository.fluent-bit-sandbox.name
+  permission = "maintain"
 }

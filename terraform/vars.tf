@@ -194,3 +194,14 @@ variable "fluent-bit-ci-opensearch-admin-password" {
   type      = string
   sensitive = true
 }
+
+variable "fluent-bit-sandbox-maintainers" {
+  description = "The list of users making up the fluent-bit-sandbox-maintainers team."
+  type        = set(string)
+  default = [
+    "edsiper",
+    "agup006",
+    "niedbalski",
+    "patrick-stephens"
+  ]
+}
