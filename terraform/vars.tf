@@ -179,3 +179,18 @@ variable "unstable-release-token" {
   type = string
   sensitive = true
 }
+
+variable "fluent-bit-ci-opensearch-aws-access-id" {
+  type      = string
+  sensitive = true
+}
+
+variable "fluent-bit-ci-opensearch-aws-secret-key" {
+  type      = string
+  sensitive = true
+}
+
+variable "fluent-bit-ci-opensearch-admin-password" {
+  type      = string
+  sensitive = true
+}

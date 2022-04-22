@@ -91,6 +91,16 @@ inputs:
   unstable-release-token:
     description: The Github token to use for publishing pre-releases.
     required: true
+  fluent-bit-ci-opensearch-aws-access-id:
+    description: AWS/OpenSearch access ID to use on fluent-bit-ci
+    required: true
+  fluent-bit-ci-opensearch-aws-secret-key:
+    description: AWS/OpenSearch secret key to use on fluent-bit-ci
+    required: true
+  fluent-bit-ci-opensearch-admin-password:
+    description: admin password for the opensearch service
+    required: true
+description:
 runs:
   using: "composite"
   steps:
@@ -120,6 +130,9 @@ runs:
         [[ -z "${{ inputs.appveyor-account }}" ]]                  && echo "appveyor-account empty" && exitCode=1
         [[ -z "${{ inputs.appveyor-token }}" ]]                    && echo "appveyor-token empty" && exitCode=1
         [[ -z "${{ inputs.unstable-release-token }}" ]]            && echo "unstable-release-token empty" && exitCode=1
+        [[ -z "${{ inputs.fluent-bit-ci-opensearch-aws-access-id }}" ]]       && echo "fluent-bit-ci-opensearch-aws-access-id empty" && exitCode=1
+        [[ -z "${{ inputs.fluent-bit-ci-opensearch-aws-secret-key }}" ]]      && echo "fluent-bit-ci-opensearch-aws-secret-key empty" && exitCode=1
+        [[ -z "${{ inputs.fluent-bit-ci-opensearch-admin-password }}" ]]      && echo "fluent-bit-ci-opensearch-admin-password empty" && exitCode=1
 
         # Keys should have multiple lines
         [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]                 && echo "gcp_sa_key empty" && exitCode=1
@@ -207,6 +220,18 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       shell: bash
 
+    - name: Set fluent-bit-ci secrets
+      run: |
+        [[ -n "$FLUENT_BIT_CI_OPENSEARCH_AWS_ACCESS_ID" ]] && echo "fluent-bit-ci-opensearch-aws-access-id = \"$FLUENT_BIT_CI_OPENSEARCH_AWS_ACCESS_ID\"" >> default.auto.tfvars
+        [[ -n "$FLUENT_BIT_CI_OPENSEARCH_AWS_SECRET_KEY" ]]  && echo "fluent-bit-ci-opensearch-aws-secret-key = \"$FLUENT_BIT_CI_OPENSEARCH_AWS_SECRET_KEY\"" >> default.auto.tfvars
+        [[ -n "$FLUENT_BIT_CI_OPENSEARCH_ADMIN_PASSWORD" ]]  && echo "fluent-bit-ci-opensearch-admin-password = \"$FLUENT_BIT_CI_OPENSEARCH_ADMIN_PASSWORD\"" >> default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      env:
+        FLUENT_BIT_CI_OPENSEARCH_AWS_ACCESS_ID: ${{ inputs.fluent-bit-ci-opensearch-aws-access-id }}
+        FLUENT_BIT_CI_OPENSEARCH_AWS_SECRET_KEY: ${{ inputs.fluent-bit-ci-opensearch-aws-secret-key }}
+        FLUENT_BIT_CI_OPENSEARCH_ADMIN_PASSWORD: ${{ inputs.fluent-bit-ci-opensearch-admin-password }}
+
     - name: Set optional secrets
       run: |
         [[ -n "$GPG_PRIVATE_KEY_PASSPHRASE_RELEASES" ]] && echo "release-gpg-key-passphrase = \"$GPG_PRIVATE_KEY_PASSPHRASE_RELEASES\"" >> default.auto.tfvars
@@ -216,7 +241,6 @@ runs:
       env:
         GPG_PRIVATE_KEY_PASSPHRASE_RELEASES: ${{ inputs.gpg_private_key_passphrase_releases }}
         GPG_PRIVATE_KEY_PASSPHRASE_STAGING: ${{ inputs.gpg_private_key_passphrase_staging }}
-
     - name: Set the release multiline GPG key
       run: |
         cat <<EOT >> default.auto.tfvars

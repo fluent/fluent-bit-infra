@@ -2,6 +2,10 @@ data "github_repository" "fluentbit" {
   full_name = var.repo_full_name
 }
 
+data "github_repository" "fluent-bit-ci" {
+  full_name = "fluent/fluent-bit-ci"
+}
+
 # resource "github_repository" "fluent-bit-mirror" {
 #   name        = "fluent-bit-mirror"
 #   description = "A private mirror of Fluent Bit purely to mitigate security concerns of using self-hosted runners."
@@ -295,4 +299,23 @@ resource "github_actions_environment_secret" "unstable-release-tokens" {
   repository      = data.github_repository.fluentbit.name
   secret_name     = "RELEASE_TOKEN"
   plaintext_value = var.unstable-release-token
+}
+
+# Create the needed secrets for fluent-bit-ci repository
+resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-access-id" {
+  repository = data.github_repository.fluent-bit-ci.name
+  secret_name = "FLUENT_BIT_CI_OPENSEARCH_AWS_ACCESS_ID"
+  plaintext_value = var.fluent-bit-ci-opensearch-aws-access-id
+}
+
+resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-secret-key" {
+  repository = data.github_repository.fluent-bit-ci.name
+  secret_name = "FLUENT_BIT_CI_OPENSEARCH_AWS_SECRET_KEY"
+  plaintext_value = var.fluent-bit-ci-opensearch-aws-secret-key
+}
+
+resource "github_actions_secret" "fluent-bit-ci-opensearch-password" {
+  repository = data.github_repository.fluent-bit-ci.name
+  secret_name = "FLUENT_BIT_CI_OPENSEARCH_ADMIN_PASSWORD"
+  plaintext_value = var.fluent-bit-ci-opensearch-admin-password
 }
