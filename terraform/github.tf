@@ -304,18 +304,18 @@ resource "github_actions_environment_secret" "unstable-release-tokens" {
 # Create the needed secrets for fluent-bit-ci repository
 resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-access-id" {
   repository = data.github_repository.fluent-bit-ci.name
-  secret_name = "FLUENT_BIT_CI_OPENSEARCH_AWS_ACCESS_ID"
+  secret_name = "OPENSEARCH_AWS_ACCESS_ID"
   plaintext_value = var.fluent-bit-ci-opensearch-aws-access-id
 }
 
 resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-secret-key" {
   repository = data.github_repository.fluent-bit-ci.name
-  secret_name = "FLUENT_BIT_CI_OPENSEARCH_AWS_SECRET_KEY"
+  secret_name = "OPENSEARCH_AWS_SECRET_KEY"
   plaintext_value = var.fluent-bit-ci-opensearch-aws-secret-key
 }
 
 resource "github_actions_secret" "fluent-bit-ci-opensearch-password" {
   repository = data.github_repository.fluent-bit-ci.name
-  secret_name = "FLUENT_BIT_CI_OPENSEARCH_ADMIN_PASSWORD"
+  secret_name = "OPENSEARCH_ADMIN_PASSWORD"
   plaintext_value = var.fluent-bit-ci-opensearch-admin-password
 }
