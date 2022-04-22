@@ -1,5 +1,5 @@
 variable "metal_token" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -19,17 +19,17 @@ variable "cloudflare_email" {
 }
 
 variable "cloudflare_token" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "github_token" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "github_owner" {
-  type = string
+  type    = string
   default = "fluent"
 }
 
@@ -49,7 +49,7 @@ variable "gcp-default-zone" {
 }
 
 variable "gcp-sa-key" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -66,58 +66,58 @@ variable "gcp-ssh-keys" {
 }
 
 variable "release-s3-bucket" {
-  type = string
+  type    = string
   default = "fluentbit-releases"
 }
 
 variable "release-s3-access-id" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "release-s3-secret-access-key" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "release-gpg-key" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "release-gpg-key-passphrase" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "staging-s3-bucket" {
-  type = string
+  type    = string
   default = "fluentbit-staging"
 }
 
 variable "staging-s3-access-id" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "staging-s3-secret-access-key" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "staging-gpg-key" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "staging-gpg-key-passphrase" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "release-approvers-usernames" {
   description = "The list of users making up the release-approvers team."
-  type = set(string)
+  type        = set(string)
   default = [
     "edsiper",
     "agup006",
@@ -127,7 +127,7 @@ variable "release-approvers-usernames" {
 }
 
 variable "repo_full_name" {
-  type = string
+  type    = string
   default = "fluent/fluent-bit"
 }
 
@@ -144,39 +144,39 @@ variable "release-server-username" {
   type = string
 }
 variable "release-server-sshkey" {
-  type = string
+  type      = string
   sensitive = true
 }
 variable "release-dockerhub-username" {
   type = string
 }
 variable "release-dockerhub-token" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "release-cosign-private-key" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "release-dockerhub-org" {
-  type = string
+  type    = string
   default = "fluent/fluent-bit"
 }
 
 variable "appveyor_token" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "appveyor_account" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "unstable-release-token" {
-  type = string
+  type      = string
   sensitive = true
 }
 

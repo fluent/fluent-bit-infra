@@ -212,9 +212,9 @@ resource "metal_device" "gh-runners" {
   operating_system = "ubuntu_20_04"
   billing_cycle    = "hourly"
   project_id       = local.project_id
-  tags             = [ each.key, "github-runner" ] # we use this for the key data
+  tags             = [each.key, "github-runner"] # we use this for the key data
   user_data        = file("provision/user-data.sh")
-  depends_on       = [ metal_ssh_key.gh-runner-provision-ssh-pub-key ]
+  depends_on       = [metal_ssh_key.gh-runner-provision-ssh-pub-key]
   connection {
     host     = self.access_public_ipv4
     password = self.root_password
@@ -225,8 +225,8 @@ resource "metal_device" "gh-runners" {
 resource "null_resource" "gh-runners-provision" {
   for_each = metal_device.gh-runners
   triggers = {
-    public_ip    = each.value.access_public_ipv4
-    private_key  = chomp(tls_private_key.gh-runner-provision-key.private_key_pem)
+    public_ip   = each.value.access_public_ipv4
+    private_key = chomp(tls_private_key.gh-runner-provision-key.private_key_pem)
     # Following are required to be referenced via `self` for destroy phase
     github_token = var.github_token
     repo         = data.github_repository.fluent-bit-mirror.full_name
