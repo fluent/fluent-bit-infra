@@ -2,6 +2,10 @@ data "github_repository" "fluentbit" {
   full_name = var.repo_full_name
 }
 
+data "github_repository" "fluent-bit-ci" {
+  full_name = "calyptia/fluent-bit-ci"
+}
+
 # resource "github_repository" "fluent-bit-mirror" {
 #   name        = "fluent-bit-mirror"
 #   description = "A private mirror of Fluent Bit purely to mitigate security concerns of using self-hosted runners."
@@ -19,10 +23,10 @@ data "github_repository" "fluent-bit-mirror" {
 resource "github_branch" "mirror-main-branch" {
   repository = data.github_repository.fluent-bit-mirror.name
   # We need a default branch not in the main repo to run the sync jobs
-  branch     = "mirror-main"
+  branch = "mirror-main"
 }
 
-resource "github_branch_default" "mirror-default-branch"{
+resource "github_branch_default" "mirror-default-branch" {
   repository = data.github_repository.fluent-bit-mirror.name
   branch     = github_branch.mirror-main-branch.branch
 }
@@ -48,15 +52,15 @@ resource "github_branch_protection_v3" "default-branch-protection" {
 }
 
 data "github_user" "release-approvers-users" {
-    for_each = var.release-approvers-usernames
-    username = each.value
+  for_each = var.release-approvers-usernames
+  username = each.value
 }
 
 resource "github_repository_environment" "release-environment" {
   environment = "release"
   repository  = data.github_repository.fluentbit.name
   reviewers {
-    users = [ for user in data.github_user.release-approvers-users: user.id ]
+    users = [for user in data.github_user.release-approvers-users : user.id]
   }
   deployment_branch_policy {
     protected_branches     = true
@@ -161,7 +165,7 @@ resource "github_actions_environment_secret" "release-gpg-private-key-passphrase
 
 resource "github_repository_environment" "staging-environment" {
   environment = "staging"
-  repository      = data.github_repository.fluentbit.name
+  repository  = data.github_repository.fluentbit.name
 }
 
 resource "github_actions_environment_secret" "staging-bucket-secret" {
@@ -236,7 +240,7 @@ locals {
 }
 
 resource "github_actions_secret" "mirror-release-secrets" {
-  for_each = { for secret in local.mirror-release-secrets: secret.secret_name => secret }
+  for_each = { for secret in local.mirror-release-secrets : secret.secret_name => secret }
 
   repository      = data.github_repository.fluent-bit-mirror.name
   secret_name     = each.key
@@ -280,7 +284,7 @@ resource "github_repository_environment" "unstable-environment" {
 
 # Create necessary secrets for publishing pre-releases from unstable and staging environments
 resource "github_actions_environment_secret" "unstable-release-repos" {
-  for_each = toset( [github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment] )
+  for_each    = toset([github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment])
   environment = each.key
 
   repository      = data.github_repository.fluentbit.name
@@ -289,10 +293,29 @@ resource "github_actions_environment_secret" "unstable-release-repos" {
 }
 
 resource "github_actions_environment_secret" "unstable-release-tokens" {
-  for_each = toset( [github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment] )
+  for_each    = toset([github_repository_environment.unstable-environment.environment, github_repository_environment.staging-environment.environment])
   environment = each.key
 
   repository      = data.github_repository.fluentbit.name
   secret_name     = "RELEASE_TOKEN"
   plaintext_value = var.unstable-release-token
+}
+
+# Create the needed secrets for fluent-bit-ci repository
+resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-access-id" {
+  repository      = data.github_repository.fluent-bit-ci.id
+  secret_name     = "OPENSEARCH_AWS_ACCESS_ID"
+  plaintext_value = var.fluent-bit-ci-opensearch-aws-access-id
+}
+
+resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-secret-key" {
+  repository      = data.github_repository.fluent-bit-ci.id
+  secret_name     = "OPENSEARCH_AWS_SECRET_KEY"
+  plaintext_value = var.fluent-bit-ci-opensearch-aws-secret-key
+}
+
+resource "github_actions_secret" "fluent-bit-ci-opensearch-password" {
+  repository      = data.github_repository.fluent-bit-ci.id
+  secret_name     = "OPENSEARCH_ADMIN_PASSWORD"
+  plaintext_value = var.fluent-bit-ci-opensearch-admin-password
 }
