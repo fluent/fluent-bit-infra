@@ -7,7 +7,7 @@ data "github_repository" "fluent-bit-ci" {
 }
 
 locals {
-  repos_with_opensearch_aws_access = [data.github_repository.fluent-bit-ci, data.github_repository.fluent-bit-mirror, data.github_repository.fluent-bit-ci]
+  repos_with_opensearch_aws_access = [data.github_repository.fluentbit, data.github_repository.fluent-bit-mirror, data.github_repository.fluent-bit-ci]
 }
 
 data "github_repository" "fluent-bit-mirror" {
