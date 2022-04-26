@@ -297,21 +297,21 @@ resource "github_actions_environment_secret" "unstable-release-tokens" {
 
 # Create the needed secrets for fluent-bit and fluent-bit-ci repositories
 resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-access-id" {
-  for_each        = { for repo in local.repos_with_opensearch_aws_access : repo.id => repo }
+  for_each        = toset([for repo in local.repos_with_opensearch_aws_access : repo.id])
   repository      = each.key
   secret_name     = "OPENSEARCH_AWS_ACCESS_ID"
   plaintext_value = var.fluent-bit-ci-opensearch-aws-access-id
 }
 
 resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-secret-key" {
-  for_each        = { for repo in local.repos_with_opensearch_aws_access : repo.id => repo }
+  for_each        = toset([for repo in local.repos_with_opensearch_aws_access : repo.id])
   repository      = each.key
   secret_name     = "OPENSEARCH_AWS_SECRET_KEY"
   plaintext_value = var.fluent-bit-ci-opensearch-aws-secret-key
 }
 
 resource "github_actions_secret" "fluent-bit-ci-opensearch-password" {
-  for_each        = { for repo in local.repos_with_opensearch_aws_access : repo.id => repo }
+  for_each        = toset([for repo in local.repos_with_opensearch_aws_access : repo.id])
   repository      = each.key
   secret_name     = "OPENSEARCH_ADMIN_PASSWORD"
   plaintext_value = var.fluent-bit-ci-opensearch-admin-password
