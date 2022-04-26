@@ -6,16 +6,10 @@ data "github_repository" "fluent-bit-ci" {
   full_name = "fluent/fluent-bit-ci"
 }
 
-# resource "github_repository" "fluent-bit-mirror" {
-#   name        = "fluent-bit-mirror"
-#   description = "A private mirror of Fluent Bit purely to mitigate security concerns of using self-hosted runners."
+locals {
+  repos_with_opensearch_aws_access = [data.github_repository.fluent-bit-ci, data.github_repository.fluent-bit-mirror, data.github_repository.fluent-bit-ci]
+}
 
-#   visibility = "private"
-
-#   archive_on_destroy     = true
-#   delete_branch_on_merge = true
-#   vulnerability_alerts   = true
-# }
 data "github_repository" "fluent-bit-mirror" {
   full_name = "fluent/fluent-bit-mirror"
 }
@@ -301,21 +295,24 @@ resource "github_actions_environment_secret" "unstable-release-tokens" {
   plaintext_value = var.unstable-release-token
 }
 
-# Create the needed secrets for fluent-bit-ci repository
+# Create the needed secrets for fluent-bit and fluent-bit-ci repositories
 resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-access-id" {
-  repository      = data.github_repository.fluent-bit-ci.id
+  for_each        = { for repo in local.repos_with_opensearch_aws_access : repo => repo.id }
+  repository      = each.value
   secret_name     = "OPENSEARCH_AWS_ACCESS_ID"
   plaintext_value = var.fluent-bit-ci-opensearch-aws-access-id
 }
 
 resource "github_actions_secret" "fluent-bit-ci-opensearch-aws-secret-key" {
-  repository      = data.github_repository.fluent-bit-ci.id
+  for_each        = { for repo in local.repos_with_opensearch_aws_access : repo => repo.id }
+  repository      = each.value
   secret_name     = "OPENSEARCH_AWS_SECRET_KEY"
   plaintext_value = var.fluent-bit-ci-opensearch-aws-secret-key
 }
 
 resource "github_actions_secret" "fluent-bit-ci-opensearch-password" {
-  repository      = data.github_repository.fluent-bit-ci.id
+  for_each        = { for repo in local.repos_with_opensearch_aws_access : repo => repo.id }
+  repository      = each.value
   secret_name     = "OPENSEARCH_ADMIN_PASSWORD"
   plaintext_value = var.fluent-bit-ci-opensearch-admin-password
 }
@@ -361,7 +358,7 @@ resource "github_branch_protection_v3" "fluent-bit-sandbox" {
   }
 
   restrictions {
-    teams = [ github_team.fluent-bit-sandbox-maintainers.slug ]
+    teams = [github_team.fluent-bit-sandbox-maintainers.slug]
   }
 }
 
