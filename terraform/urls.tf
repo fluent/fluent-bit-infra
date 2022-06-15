@@ -16,7 +16,7 @@ resource "cloudflare_page_rule" "docs-fluentbitio" {
 resource "cloudflare_page_rule" "downloads-fluentbitio" {
   zone_id  = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
   target   = "https://${var.cloudflare_domain}/download*"
-  priority = 1
+  priority = 2
 
   actions {
     forwarding_url {
@@ -30,7 +30,7 @@ resource "cloudflare_page_rule" "downloads-fluentbitio" {
 resource "cloudflare_page_rule" "releases-fluentbitio" {
   zone_id  = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
   target   = "https://${var.cloudflare_domain}/releases/*"
-  priority = 1
+  priority = 3
 
   actions {
     forwarding_url {
