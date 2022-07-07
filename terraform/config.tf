@@ -2,7 +2,7 @@ terraform {
   required_providers {
     metal = {
       source  = "equinix/metal"
-      version = "3.2.2"
+      version = "3.3.0"
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
