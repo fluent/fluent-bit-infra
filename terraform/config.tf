@@ -14,7 +14,7 @@ terraform {
     }
     google = {
       source  = "hashicorp/google"
-      version = "4.28.0"
+      version = "4.29.0"
     }
   }
   backend "remote" {
