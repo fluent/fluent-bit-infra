@@ -207,21 +207,21 @@ variable "fluent-bit-sandbox-maintainers" {
 }
 
 variable "fluent-bit-ci-azure-client-id" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "fluent-bit-ci-azure-client-secret" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "fluent-bit-ci-azure-subscription-id" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "fluent-bit-ci-azure-tenant-id" {
-  type = string
+  type      = string
   sensitive = true
 }

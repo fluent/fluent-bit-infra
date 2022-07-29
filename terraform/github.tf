@@ -8,7 +8,7 @@ data "github_repository" "fluent-bit-ci" {
 
 locals {
   repos_with_opensearch_aws_access = [data.github_repository.fluentbit, data.github_repository.fluent-bit-mirror, data.github_repository.fluent-bit-ci]
-  repos_with_azure_access = [data.github_repository.fluentbit, data.github_repository.fluent-bit-mirror, data.github_repository.fluent-bit-ci]
+  repos_with_azure_access          = [data.github_repository.fluentbit, data.github_repository.fluent-bit-mirror, data.github_repository.fluent-bit-ci]
 }
 
 data "github_repository" "fluent-bit-mirror" {
@@ -29,9 +29,19 @@ resource "github_branch_default" "mirror-default-branch" {
 # No branch protection or environments supported for the private repos like the mirror
 
 # We only want this for the normal Fluent Bit repository.
+locals {
+  fluent_bit_protected_branches = [
+    data.github_repository.fluentbit.default_branch,
+    "1.9",
+    "1.8",
+  ]
+}
 resource "github_branch_protection_v3" "default-branch-protection" {
-  repository     = data.github_repository.fluentbit.name
-  branch         = data.github_repository.fluentbit.default_branch
+  repository = data.github_repository.fluentbit.name
+
+  for_each = toset(local.fluent_bit_protected_branches)
+  branch   = each.value
+
   enforce_admins = false
 
   required_pull_request_reviews {
