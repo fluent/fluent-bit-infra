@@ -100,7 +100,18 @@ inputs:
   fluent-bit-ci-opensearch-admin-password:
     description: admin password for the opensearch service
     required: true
-description:
+  fluent-bit-ci-azure-client-id:
+    description: The Azure client ID to use.
+    required: true
+  fluent-bit-ci-azure-client-secret:
+    description: The Azure client secret to use.
+    required: true
+  fluent-bit-ci-azure-subscription-id:
+    description: The Azure subscription to use.
+    required: true
+  fluent-bit-ci-azure-tenant-id:
+    description: The Azure tenant ID to use.
+    required: true
 runs:
   using: "composite"
   steps:
@@ -130,9 +141,14 @@ runs:
         [[ -z "${{ inputs.appveyor-account }}" ]]                  && echo "appveyor-account empty" && exitCode=1
         [[ -z "${{ inputs.appveyor-token }}" ]]                    && echo "appveyor-token empty" && exitCode=1
         [[ -z "${{ inputs.unstable-release-token }}" ]]            && echo "unstable-release-token empty" && exitCode=1
+
         [[ -z "${{ inputs.fluent-bit-ci-opensearch-aws-access-id }}" ]]       && echo "fluent-bit-ci-opensearch-aws-access-id empty" && exitCode=1
         [[ -z "${{ inputs.fluent-bit-ci-opensearch-aws-secret-key }}" ]]      && echo "fluent-bit-ci-opensearch-aws-secret-key empty" && exitCode=1
         [[ -z "${{ inputs.fluent-bit-ci-opensearch-admin-password }}" ]]      && echo "fluent-bit-ci-opensearch-admin-password empty" && exitCode=1
+        [[ -z "${{ inputs.fluent-bit-ci-azure-client-id }}" ]]                && echo "fluent-bit-ci-azure-client-id empty" && exitCode=1
+        [[ -z "${{ inputs.fluent-bit-ci-azure-client-secret }}" ]]            && echo "fluent-bit-ci-azure-client-secret empty" && exitCode=1
+        [[ -z "${{ inputs.fluent-bit-ci-azure-subscription-id }}" ]]          && echo "fluent-bit-ci-azure-subscription-id empty" && exitCode=1
+        [[ -z "${{ inputs.fluent-bit-ci-azure-tenant-id }}" ]]                && echo "fluent-bit-ci-azure-tenant-id empty" && exitCode=1
 
         # Keys should have multiple lines
         [[ $(echo -e "${{ inputs.gcp_sa_key }}"|wc --lines) -le 1 ]]                 && echo "gcp_sa_key empty" && exitCode=1
@@ -225,12 +241,20 @@ runs:
         [[ -n "$FLUENT_BIT_CI_OPENSEARCH_AWS_ACCESS_ID" ]] && echo "fluent-bit-ci-opensearch-aws-access-id = \"$FLUENT_BIT_CI_OPENSEARCH_AWS_ACCESS_ID\"" >> default.auto.tfvars
         [[ -n "$FLUENT_BIT_CI_OPENSEARCH_AWS_SECRET_KEY" ]]  && echo "fluent-bit-ci-opensearch-aws-secret-key = \"$FLUENT_BIT_CI_OPENSEARCH_AWS_SECRET_KEY\"" >> default.auto.tfvars
         [[ -n "$FLUENT_BIT_CI_OPENSEARCH_ADMIN_PASSWORD" ]]  && echo "fluent-bit-ci-opensearch-admin-password = \"$FLUENT_BIT_CI_OPENSEARCH_ADMIN_PASSWORD\"" >> default.auto.tfvars
+        [[ -n "$FLUENT_BIT_CI_AZURE_CLIENT_ID" ]]  && echo "fluent-bit-ci-azure-client-id = \"$FLUENT_BIT_CI_AZURE_CLIENT_ID\"" >> default.auto.tfvars
+        [[ -n "$FLUENT_BIT_CI_AZURE_CLIENT_SECRET" ]]  && echo "fluent-bit-ci-azure-client-secret = \"$FLUENT_BIT_CI_AZURE_CLIENT_SECRET\"" >> default.auto.tfvars
+        [[ -n "$FLUENT_BIT_CI_AZURE_SUBSCRIPTION_ID" ]]  && echo "fluent-bit-ci-azure-subscription-id = \"$FLUENT_BIT_CI_AZURE_SUBSCRIPTION_ID\"" >> default.auto.tfvars
+        [[ -n "$FLUENT_BIT_CI_AZURE_TENANT_ID" ]]  && echo "fluent-bit-ci-azure-tenant-id = \"$FLUENT_BIT_CI_AZURE_TENANT_ID\"" >> default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash
       env:
         FLUENT_BIT_CI_OPENSEARCH_AWS_ACCESS_ID: ${{ inputs.fluent-bit-ci-opensearch-aws-access-id }}
         FLUENT_BIT_CI_OPENSEARCH_AWS_SECRET_KEY: ${{ inputs.fluent-bit-ci-opensearch-aws-secret-key }}
         FLUENT_BIT_CI_OPENSEARCH_ADMIN_PASSWORD: ${{ inputs.fluent-bit-ci-opensearch-admin-password }}
+        FLUENT_BIT_CI_AZURE_CLIENT_ID: ${{ inputs.fluent-bit-ci-azure-client-id }}
+        FLUENT_BIT_CI_AZURE_CLIENT_SECRET: ${{ inputs.fluent-bit-ci-azure-client-secret }}
+        FLUENT_BIT_CI_AZURE_SUBSCRIPTION_ID: ${{ inputs.fluent-bit-ci-azure-subscription-id }}
+        FLUENT_BIT_CI_AZURE_TENANT_ID: ${{ inputs.fluent-bit-ci-azure-tenant-id }}
 
     - name: Set optional secrets
       run: |
