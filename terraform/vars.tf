@@ -205,3 +205,23 @@ variable "fluent-bit-sandbox-maintainers" {
     "patrick-stephens"
   ]
 }
+
+variable "fluent-bit-ci-azure-client-id" {
+  type = string
+  sensitive = true
+}
+
+variable "fluent-bit-ci-azure-client-secret" {
+  type = string
+  sensitive = true
+}
+
+variable "fluent-bit-ci-azure-subscription-id" {
+  type = string
+  sensitive = true
+}
+
+variable "fluent-bit-ci-azure-tenant-id" {
+  type = string
+  sensitive = true
+}

@@ -8,6 +8,7 @@ data "github_repository" "fluent-bit-ci" {
 
 locals {
   repos_with_opensearch_aws_access = [data.github_repository.fluentbit, data.github_repository.fluent-bit-mirror, data.github_repository.fluent-bit-ci]
+  repos_with_azure_access = [data.github_repository.fluentbit, data.github_repository.fluent-bit-mirror, data.github_repository.fluent-bit-ci]
 }
 
 data "github_repository" "fluent-bit-mirror" {
@@ -366,4 +367,32 @@ resource "github_team_repository" "fluent-bit-sandbox-maintainers" {
   team_id    = github_team.fluent-bit-sandbox-maintainers.id
   repository = github_repository.fluent-bit-sandbox.name
   permission = "maintain"
+}
+
+resource "github_actions_secret" "fluent-bit-ci-azure-client-id" {
+  for_each        = toset([for repo in local.repos_with_azure_access : repo.id])
+  repository      = each.key
+  secret_name     = "AZURE_CLIENT_ID"
+  plaintext_value = var.fluent-bit-ci-azure-client-id
+}
+
+resource "github_actions_secret" "ffluent-bit-ci-azure-client-secret" {
+  for_each        = toset([for repo in local.repos_with_azure_access : repo.id])
+  repository      = each.key
+  secret_name     = "AZURE_CLIENT_SECRET"
+  plaintext_value = var.fluent-bit-ci-azure-client-secret
+}
+
+resource "github_actions_secret" "fluent-bit-ci-azure-subscription-id" {
+  for_each        = toset([for repo in local.repos_with_azure_access : repo.id])
+  repository      = each.key
+  secret_name     = "AZURE_SUBSCRIPTION_ID"
+  plaintext_value = var.fluent-bit-ci-azure-subscription-id
+}
+
+resource "github_actions_secret" "fluent-bit-ci-azure-tenant-id" {
+  for_each        = toset([for repo in local.repos_with_azure_access : repo.id])
+  repository      = each.key
+  secret_name     = "AZURE_TENANT_ID"
+  plaintext_value = var.fluent-bit-ci-azure-tenant-id
 }
