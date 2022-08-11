@@ -2,19 +2,19 @@ terraform {
   required_providers {
     metal = {
       source  = "equinix/metal"
-      version = "3.3.0"
+      version = "~> 3.3"
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "3.18.0"
+      version = "~> 3.21"
     }
     github = {
       source  = "integrations/github"
-      version = "4.28.0"
+      version = "~> 4.28"
     }
     google = {
       source  = "hashicorp/google"
-      version = "4.31.0"
+      version = "~> 4.31"
     }
   }
   backend "remote" {
@@ -28,7 +28,6 @@ terraform {
 }
 
 provider "cloudflare" {
-  email     = var.cloudflare_email
   api_token = var.cloudflare_token
 }
 
