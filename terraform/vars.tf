@@ -13,11 +13,6 @@ variable "cloudflare_domain" {
   default = "fluentbit.io"
 }
 
-variable "cloudflare_email" {
-  type    = string
-  default = "j@calyptia.com"
-}
-
 variable "cloudflare_token" {
   type      = string
   sensitive = true
