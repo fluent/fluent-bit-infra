@@ -36,25 +36,25 @@ locals {
     "1.8",
   ]
 }
-resource "github_branch_protection_v3" "default-branch-protection" {
-  repository = data.github_repository.fluentbit.name
+# resource "github_branch_protection_v3" "default-branch-protection" {
+#   repository = data.github_repository.fluentbit.name
 
-  for_each = toset(local.fluent_bit_protected_branches)
-  branch   = each.value
+#   for_each = toset(local.fluent_bit_protected_branches)
+#   branch   = each.value
 
-  enforce_admins = false
+#   enforce_admins = false
 
-  required_pull_request_reviews {
-    dismiss_stale_reviews           = true
-    require_code_owner_reviews      = true
-    required_approving_review_count = 1
-  }
+#   required_pull_request_reviews {
+#     dismiss_stale_reviews           = true
+#     require_code_owner_reviews      = true
+#     required_approving_review_count = 1
+#   }
 
-  required_status_checks {
-    strict   = false
-    contexts = ["Unit tests (matrix)", "Check Commit Message"]
-  }
-}
+#   required_status_checks {
+#     strict   = false
+#     contexts = ["Unit tests (matrix)", "Check Commit Message"]
+#   }
+# }
 
 data "github_user" "release-approvers-users" {
   for_each = var.release-approvers-usernames
@@ -270,17 +270,17 @@ resource "github_repository" "fluent-bit-unstable-releases" {
 }
 
 # No one should be merging
-resource "github_branch_protection_v3" "fluent-bit-unstable-releases" {
-  repository     = github_repository.fluent-bit-unstable-releases.name
-  branch         = "main"
-  enforce_admins = false
+# resource "github_branch_protection_v3" "fluent-bit-unstable-releases" {
+#   repository     = github_repository.fluent-bit-unstable-releases.name
+#   branch         = "main"
+#   enforce_admins = false
 
-  restrictions {
-    users = []
-    teams = []
-    apps  = []
-  }
-}
+#   restrictions {
+#     users = []
+#     teams = []
+#     apps  = []
+#   }
+# }
 
 resource "github_repository_environment" "unstable-environment" {
   environment = "unstable"
@@ -357,21 +357,21 @@ resource "github_repository" "fluent-bit-sandbox" {
   license_template       = "apache-2.0"
 }
 
-resource "github_branch_protection_v3" "fluent-bit-sandbox" {
-  repository     = github_repository.fluent-bit-sandbox.name
-  branch         = "main"
-  enforce_admins = false
+# resource "github_branch_protection_v3" "fluent-bit-sandbox" {
+#   repository     = github_repository.fluent-bit-sandbox.name
+#   branch         = "main"
+#   enforce_admins = false
 
-  required_pull_request_reviews {
-    dismiss_stale_reviews           = true
-    require_code_owner_reviews      = true
-    required_approving_review_count = 1
-  }
+#   required_pull_request_reviews {
+#     dismiss_stale_reviews           = true
+#     require_code_owner_reviews      = true
+#     required_approving_review_count = 1
+#   }
 
-  restrictions {
-    teams = [github_team.fluent-bit-sandbox-maintainers.slug]
-  }
-}
+#   restrictions {
+#     teams = [github_team.fluent-bit-sandbox-maintainers.slug]
+#   }
+# }
 
 resource "github_team_repository" "fluent-bit-sandbox-maintainers" {
   team_id    = github_team.fluent-bit-sandbox-maintainers.id
