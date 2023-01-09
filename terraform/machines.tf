@@ -293,13 +293,11 @@ resource "null_resource" "packages-fluent-bit-provision" {
     metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key,
     metal_device.packages-fluent-bit,
   ]
-  triggers = {
-    public_ip   = metal_device.packages-fluent-bit.access_public_ipv4
-    private_key = chomp(metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key)
-  }
+
   connection {
-    host        = self.triggers.public_ip
-    private_key = self.triggers.private_key
+    type        = "ssh"
+    host        = metal_device.packages-fluent-bit.access_public_ipv4
+    private_key = chomp(metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key)
   }
 
   provisioner "file" {
