@@ -269,10 +269,20 @@ resource "github_repository" "fluent-bit-unstable-releases" {
   license_template       = "apache-2.0"
 }
 
+resource "github_branch" "fluent-bit-unstable-releases" {
+  repository = github_repository.fluent-bit-unstable-releases.name
+  branch     = "main"
+}
+
+resource "github_branch_default" "fluent-bit-unstable-releases" {
+  repository = github_repository.fluent-bit-unstable-releases.name
+  branch     = github_branch.fluent-bit-unstable-releases.branch
+}
+
 # No one should be merging
 resource "github_branch_protection_v3" "fluent-bit-unstable-releases" {
   repository     = github_repository.fluent-bit-unstable-releases.name
-  branch         = github_repository.fluent-bit-unstable-releases.default_branch
+  branch         = github_branch.fluent-bit-unstable-releases.branch
   enforce_admins = false
 
   restrictions {
@@ -357,9 +367,19 @@ resource "github_repository" "fluent-bit-sandbox" {
   license_template       = "apache-2.0"
 }
 
+resource "github_branch" "fluent-bit-sandbox" {
+  repository = github_repository.fluent-bit-sandbox.name
+  branch     = "main"
+}
+
+resource "github_branch_default" "fluent-bit-sandbox" {
+  repository = github_repository.fluent-bit-sandbox.name
+  branch     = github_branch.fluent-bit-sandbox.branch
+}
+
 resource "github_branch_protection_v3" "fluent-bit-sandbox" {
   repository     = github_repository.fluent-bit-sandbox.name
-  branch         = github_repository.fluent-bit-sandbox.default_branch
+  branch         = github_branch.fluent-bit-sandbox.branch
   enforce_admins = false
 
   required_pull_request_reviews {

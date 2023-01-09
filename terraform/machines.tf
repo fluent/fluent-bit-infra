@@ -257,12 +257,12 @@ resource "tls_private_key" "packages-fluent-bit-provision-key" {
   rsa_bits  = 4096
 }
 
-resource "equinix_metal_ssh_key" "packages-fluent-bit-provision-ssh-pub-key" {
+resource "metal_ssh_key" "packages-fluent-bit-provision-ssh-pub-key" {
   name       = "packages-fluent-bit-provision-ssh-pub-key"
   public_key = chomp(tls_private_key.packages-fluent-bit-provision-key.public_key_openssh)
 }
 
-resource "equinix_metal_device" "packages-fluent-bit" {
+resource "metal_device" "packages-fluent-bit" {
   hostname         = "packages-managed.fluentbit.io"
   plan             = "c3.small.x86"
   metro            = "da"
@@ -278,7 +278,7 @@ packages:
   - awscli
   - git
 EOF
-  depends_on       = [equinix_metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key]
+  depends_on       = [metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key]
   connection {
     host     = self.access_public_ipv4
     password = self.root_password
@@ -288,12 +288,12 @@ EOF
 resource "null_resource" "packages-fluent-bit-provision" {
 
   depends_on = [
-    equinix_metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key,
-    equinix_metal_device.packages-fluent-bit,
+    metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key,
+    metal_device.packages-fluent-bit,
   ]
   triggers = {
-    public_ip   = equinix_metal_device.packages-fluent-bit.access_public_ipv4
-    private_key = chomp(equinix_metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key)
+    public_ip   = metal_device.packages-fluent-bit.access_public_ipv4
+    private_key = chomp(metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key)
   }
   connection {
     host        = self.triggers.public_ip

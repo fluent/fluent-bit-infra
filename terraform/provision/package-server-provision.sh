@@ -61,8 +61,8 @@ systemctl restart nginx
 #     ufw status
 # fi
 
-# Set up sync
-aws s3 sync s3://fluentbit-releases /var/www/apt.fluentbit.io --no-sign-request
+# Sync now - move to the job
+# aws s3 sync s3://fluentbit-releases /var/www/apt.fluentbit.io --no-sign-request
 
 # Set up cron job
 cat > /etc/systemd/system/packages-sync.service <<EOF
