@@ -31,7 +31,7 @@ resource "github_branch_default" "mirror-default-branch" {
 # We only want this for the normal Fluent Bit repository.
 locals {
   fluent_bit_protected_branches = [
-    data.github_repository.fluentbit.default_branch,
+    "master",
     "1.9",
     "1.8",
   ]
@@ -272,7 +272,7 @@ resource "github_repository" "fluent-bit-unstable-releases" {
 # No one should be merging
 resource "github_branch_protection_v3" "fluent-bit-unstable-releases" {
   repository     = github_repository.fluent-bit-unstable-releases.name
-  branch         = github_repository.fluent-bit-unstable-releases.default_branch
+  branch         = "main"
   enforce_admins = false
 
   restrictions {
@@ -359,7 +359,7 @@ resource "github_repository" "fluent-bit-sandbox" {
 
 resource "github_branch_protection_v3" "fluent-bit-sandbox" {
   repository     = github_repository.fluent-bit-sandbox.name
-  branch         = github_repository.fluent-bit-sandbox.default_branch
+  branch         = "main"
   enforce_admins = false
 
   required_pull_request_reviews {

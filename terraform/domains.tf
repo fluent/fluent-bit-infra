@@ -4,22 +4,6 @@ data "cloudflare_zones" "fluentbit-io-zone" {
   }
 }
 
-resource "cloudflare_record" "builder" {
-  name    = "builder"
-  value   = data.metal_device.builder.access_public_ipv4
-  type    = "A"
-  proxied = false
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
-resource "cloudflare_record" "dev-arm" {
-  name    = "dev-arm"
-  value   = data.metal_device.dev-arm.access_public_ipv4
-  type    = "A"
-  proxied = false
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
 resource "cloudflare_record" "www" {
   name    = "www"
   value   = "stoic-goldberg-e3a26b.netlify.app"
@@ -33,14 +17,6 @@ resource "cloudflare_record" "root-www" {
   value   = "apex-loadbalancer.netlify.com"
   type    = "CNAME"
   proxied = true
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
-resource "cloudflare_record" "perf-test" {
-  name    = "perf-test"
-  value   = data.metal_device.perf-test.access_public_ipv4
-  type    = "A"
-  proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 

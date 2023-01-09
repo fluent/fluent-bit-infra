@@ -2,24 +2,9 @@ locals {
   project_id = var.metal_net_project_id
 }
 
-data "metal_device" "builder" {
-  project_id = local.project_id
-  hostname   = "builder.fluentbit.io"
-}
-
-data "metal_device" "dev-arm" {
-  project_id = local.project_id
-  hostname   = "dev-arm.fluentbit.io"
-}
-
 data "metal_device" "legacy_www" {
   project_id = local.project_id
   hostname   = "fluentbit.io"
-}
-
-data "metal_device" "perf-test" {
-  project_id = local.project_id
-  hostname   = "perf-test.fluentbit.io"
 }
 
 provider "google" {
@@ -264,5 +249,66 @@ resource "null_resource" "gh-runners-provision" {
     ]
     # Ignore failures, e.g. resource was deleted so cannot SSH to it
     on_failure = continue
+  }
+}
+
+resource "tls_private_key" "packages-fluent-bit-provision-key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "metal_ssh_key" "packages-fluent-bit-provision-ssh-pub-key" {
+  name       = "packages-fluent-bit-provision-ssh-pub-key"
+  public_key = chomp(tls_private_key.packages-fluent-bit-provision-key.public_key_openssh)
+}
+
+resource "metal_device" "packages-fluent-bit" {
+  depends_on       = [metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key]
+  hostname         = "packages-managed.fluentbit.io"
+  plan             = "c3.small.x86"
+  metro            = "da"
+  operating_system = "ubuntu_20_04"
+  billing_cycle    = "hourly"
+  project_id       = local.project_id
+  connection {
+    host     = self.access_public_ipv4
+    password = self.root_password
+  }
+
+  # Set up packages to install
+  user_data = <<EOS
+#cloud-config
+package_update: true
+packages:
+  - docker.io
+  - nginx
+  - awscli
+  - git
+EOS
+}
+
+resource "null_resource" "packages-fluent-bit-provision" {
+
+  depends_on = [
+    metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key,
+    metal_device.packages-fluent-bit,
+  ]
+
+  connection {
+    type        = "ssh"
+    host        = metal_device.packages-fluent-bit.access_public_ipv4
+    private_key = chomp(metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key)
+  }
+
+  provisioner "file" {
+    source      = "provision/package-server-provision.sh"
+    destination = "/tmp/provision-package-server-provision.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/provision-package-server-provision.sh",
+      "sudo -i -u provisioner bash /tmp/provision-package-server-provision.sh",
+    ]
   }
 }
