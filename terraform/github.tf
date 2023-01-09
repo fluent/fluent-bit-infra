@@ -31,7 +31,7 @@ resource "github_branch_default" "mirror-default-branch" {
 # We only want this for the normal Fluent Bit repository.
 locals {
   fluent_bit_protected_branches = [
-    data.github_repository.fluentbit.default_branch,
+    "master",
     "1.9",
     "1.8",
   ]
@@ -269,20 +269,10 @@ resource "github_repository" "fluent-bit-unstable-releases" {
   license_template       = "apache-2.0"
 }
 
-resource "github_branch" "fluent-bit-unstable-releases" {
-  repository = github_repository.fluent-bit-unstable-releases.name
-  branch     = "main"
-}
-
-resource "github_branch_default" "fluent-bit-unstable-releases" {
-  repository = github_repository.fluent-bit-unstable-releases.name
-  branch     = github_branch.fluent-bit-unstable-releases.branch
-}
-
 # No one should be merging
 resource "github_branch_protection_v3" "fluent-bit-unstable-releases" {
   repository     = github_repository.fluent-bit-unstable-releases.name
-  branch         = github_branch.fluent-bit-unstable-releases.branch
+  branch         = "main"
   enforce_admins = false
 
   restrictions {
@@ -367,19 +357,9 @@ resource "github_repository" "fluent-bit-sandbox" {
   license_template       = "apache-2.0"
 }
 
-resource "github_branch" "fluent-bit-sandbox" {
-  repository = github_repository.fluent-bit-sandbox.name
-  branch     = "main"
-}
-
-resource "github_branch_default" "fluent-bit-sandbox" {
-  repository = github_repository.fluent-bit-sandbox.name
-  branch     = github_branch.fluent-bit-sandbox.branch
-}
-
 resource "github_branch_protection_v3" "fluent-bit-sandbox" {
   repository     = github_repository.fluent-bit-sandbox.name
-  branch         = github_branch.fluent-bit-sandbox.branch
+  branch         = "main"
   enforce_admins = false
 
   required_pull_request_reviews {

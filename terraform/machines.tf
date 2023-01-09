@@ -276,15 +276,15 @@ resource "metal_device" "packages-fluent-bit" {
   }
 
   # Set up packages to install
-  #   user_data = <<EOS
-  # #cloud-config
-  # package_update: true
-  # packages:
-  #   - docker.io
-  #   - nginx
-  #   - awscli
-  #   - git
-  # EOS
+  user_data = <<EOS
+#cloud-config
+package_update: true
+packages:
+  - docker.io
+  - nginx
+  - awscli
+  - git
+EOS
 }
 
 resource "null_resource" "packages-fluent-bit-provision" {
