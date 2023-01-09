@@ -263,26 +263,28 @@ resource "metal_ssh_key" "packages-fluent-bit-provision-ssh-pub-key" {
 }
 
 resource "metal_device" "packages-fluent-bit" {
+  depends_on       = [metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key]
   hostname         = "packages-managed.fluentbit.io"
   plan             = "c3.small.x86"
   metro            = "da"
   operating_system = "ubuntu_20_04"
   billing_cycle    = "hourly"
   project_id       = local.project_id
-  user_data        = <<EOF
-#cloud-config
-package_update: true
-packages:
-  - docker.io
-  - nginx
-  - awscli
-  - git
-EOF
-  depends_on       = [metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key]
   connection {
     host     = self.access_public_ipv4
     password = self.root_password
   }
+
+  # Set up packages to install
+  #   user_data = <<EOS
+  # #cloud-config
+  # package_update: true
+  # packages:
+  #   - docker.io
+  #   - nginx
+  #   - awscli
+  #   - git
+  # EOS
 }
 
 resource "null_resource" "packages-fluent-bit-provision" {
