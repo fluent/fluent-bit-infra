@@ -2,12 +2,10 @@
 set -eu
 mkdir -p /var/www/apt.fluentbit.io /var/www/releases.fluentbit.io
 
-# TODO: certificates from certbot
 
 # Set up the package serving
 cat > /etc/nginx/sites-available/apt.fluentbit.io <<'EOF'
 server {
-
 	root /var/www/apt.fluentbit.io;
 	index index.html index.htm index.nginx-debian.html;
 
@@ -20,32 +18,8 @@ server {
 		autoindex on;
 	}
 
-    listen [::]:443 ssl; # managed by Certbot
-    listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/packages.fluentbit.io/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/packages.fluentbit.io/privkey.pem; # managed by Certbot
-    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-
-
-}
-server {
-    if ($host = packages.fluentbit.io) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
-
-
-    if ($host = apt.fluentbit.io) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
-
-
 	listen 80;
 	listen [::]:80;
-
-	server_name apt.fluentbit.io packages.fluentbit.io;
-    return 404; # managed by Certbot
-
 }
 EOF
 ln -s /etc/nginx/sites-available/apt-fluentbit.io /etc/nginx/sites-enabled/apt-fluentbit.io
@@ -53,7 +27,6 @@ ln -s /etc/nginx/sites-available/apt-fluentbit.io /etc/nginx/sites-enabled/apt-f
 # Set up the releases handling - Windows + Source/JSON
 cat > /etc/nginx/sites-available/releases.fluentbit.io <<'EOF'
 server {
-
 	root /var/www/releases.fluentbit.io/releases;
 	index index.html index.htm index.nginx-debian.html;
 
@@ -63,41 +36,30 @@ server {
 
 	location / {
 		try_files $uri $uri/ =404;
-                autoindex on;
+        autoindex on;
 	}
-
-    listen [::]:443 ssl; # managed by Certbot
-    listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/fluentbit.io/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/fluentbit.io/privkey.pem; # managed by Certbot
-    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-
-}
-server {
-    if ($host = releases.fluentbit.io) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
-
 
 	listen 80;
 	listen [::]:80;
-
-	server_name releases.fluentbit.io;
-    return 404; # managed by Certbot
-
 }
 EOF
 ln -s /etc/nginx/sites-available/releases-fluentbit.io /etc/nginx/sites-enabled/releases-fluentbit.io
+systemctl restart nginx
 
-# Need to set up certbot
+# TODO: certificates from certbot
 # snap install core
 # snap refresh core
 # snap install --classic certbot
 # ln -s /snap/bin/certbot /usr/bin/certbot
-# certbot --nginx
+# certbot --nginx # -d packages.fluentbit.io -d www.packages.fluentbit.io
+# systemctl restart nginx
 
-systemctl restart nginx
+# Ensure firewall is allowing traffic
+# if command -v ufw > /dev/null 2>&1; then
+#     ufw allow 'Nginx Full'
+#     ufw delete allow 'Nginx HTTP'
+#     ufw status
+# fi
 
 # Set up sync
 aws s3 sync s3://fluentbit-releases /var/www/apt.fluentbit.io --no-sign-request
@@ -134,6 +96,4 @@ systemctl enable --now packages-sync.timer
 
 mkdir -p /opt/fluent-bit-stats
 git clone https://github.com/niedbalski/fluent-bit-stats.git /opt/fluent-bit-stats
-pushd /opt/fluent-bit-stats
-    docker compose up -d 
-popd
+( cd /opt/fluent-bit-stats; docker compose up -d )
