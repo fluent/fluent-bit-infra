@@ -16,6 +16,9 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 4.31"
     }
+    equinix = {
+      source = "equinix/equinix"
+    }
   }
   backend "remote" {
     organization = "calyptia"
