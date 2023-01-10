@@ -230,3 +230,12 @@ variable "grafana-cloud-prometheus-apikey" {
   type      = string
   sensitive = true
 }
+
+variable "public-readonly-dockerhub-username" {
+  type = string
+}
+
+variable "public-readonly-dockerhub-token" {
+  type      = string
+  sensitive = true
+}

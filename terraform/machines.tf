@@ -259,7 +259,15 @@ resource "metal_device" "packages-fluent-bit" {
   operating_system = "ubuntu_20_04"
   billing_cycle    = "hourly"
   project_id       = local.project_id
-  user_data        = templatefile("${path.module}/provision/package-server-provision.sh.tftpl", { grafana-cloud-prometheus-username = var.grafana-cloud-prometheus-username, grafana-cloud-prometheus-apikey = var.grafana-cloud-prometheus-apikey })
+  user_data = templatefile(
+    "${path.module}/provision/package-server-provision.sh.tftpl",
+    {
+      grafana-cloud-prometheus-username = var.grafana-cloud-prometheus-username,
+      grafana-cloud-prometheus-apikey   = var.grafana-cloud-prometheus-apikey,
+      dockerhub-username                = var.public-readonly-dockerhub-username,
+      dockerhub-token                   = var.public-readonly-dockerhub-token
+    }
+  )
 
   connection {
     host     = self.access_public_ipv4

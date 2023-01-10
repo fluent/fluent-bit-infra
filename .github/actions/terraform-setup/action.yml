@@ -118,6 +118,12 @@ inputs:
   grafana-cloud-prometheus-apikey:
     description: The Grafana Cloud API key for Prometheus remote writing of metrics.
     required: true
+  public-readonly-dockerhub-username:
+    description: The DockerHub username for authentication when pulling public images, prevents rate-limiting.
+    required: true
+  public-readonly-dockerhub-token:
+    description: The DockerHub token for authentication when pulling public images, prevents rate-limiting.
+    required: true
 runs:
   using: "composite"
   steps:
@@ -127,28 +133,30 @@ runs:
         exitCode=0
 
         # Check single line variables are not-empty/unset
-        [[ -z "${{ inputs.aws_s3_bucket_releases }}" ]]            && echo "aws_s3_bucket_releases empty" && exitCode=1
-        [[ -z "${{ inputs.aws_s3_bucket_staging }}" ]]             && echo "aws_s3_bucket_staging empty" && exitCode=1
-        [[ -z "${{ inputs.repo_full_name }}" ]]                    && echo "repo_full_name empty" && exitCode=1
-        [[ -z "${{ inputs.terraform-api-host }}" ]]                && echo "terraform-api-host empty" && exitCode=1
-        [[ -z "${{ inputs.release_server_hostname }}" ]]           && echo "release_server_hostname empty" && exitCode=1
-        [[ -z "${{ inputs.terraform_cloud_api_token }}" ]]         && echo "terraform_cloud_api_token empty" && exitCode=1
-        [[ -z "${{ inputs.cloudflare_token }}" ]]                  && echo "cloudflare_token empty" && exitCode=1
-        [[ -z "${{ inputs.metal_token }}" ]]                       && echo "metal_token empty" && exitCode=1
-        [[ -z "${{ inputs.github_personal_access_token }}" ]]      && echo "github_personal_access_token empty" && exitCode=1
-        [[ -z "${{ inputs.aws_s3_access_id_staging }}" ]]          && echo "aws_s3_access_id_staging empty" && exitCode=1
-        [[ -z "${{ inputs.aws_s3_secret_access_key_staging }}" ]]  && echo "aws_s3_secret_access_key_staging empty" && exitCode=1
-        [[ -z "${{ inputs.aws_s3_access_id_releases }}" ]]         && echo "aws_s3_access_id_releases empty" && exitCode=1
-        [[ -z "${{ inputs.aws_s3_secret_access_key_releases }}" ]] && echo "aws_s3_secret_access_key_releases empty" && exitCode=1
-        [[ -z "${{ inputs.release_server_username }}" ]]           && echo "release_server_username empty" && exitCode=1
-        [[ -z "${{ inputs.release_dockerhub_username }}" ]]        && echo "release_dockerhub_username empty" && exitCode=1
-        [[ -z "${{ inputs.release_dockerhub_token }}" ]]           && echo "release_dockerhub_token empty" && exitCode=1
-        [[ -z "${{ inputs.release_dockerhub_org }}" ]]             && echo "release_dockerhub_org empty" && exitCode=1
-        [[ -z "${{ inputs.appveyor-account }}" ]]                  && echo "appveyor-account empty" && exitCode=1
-        [[ -z "${{ inputs.appveyor-token }}" ]]                    && echo "appveyor-token empty" && exitCode=1
-        [[ -z "${{ inputs.unstable-release-token }}" ]]            && echo "unstable-release-token empty" && exitCode=1
-        [[ -z "${{ inputs.grafana-cloud-prometheus-username }}" ]] && echo "grafana-cloud-prometheus-username empty" && exitCode=1
-        [[ -z "${{ inputs.grafana-cloud-prometheus-apikey }}" ]]   && echo "grafana-cloud-prometheus-apikey empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_bucket_releases }}" ]]             && echo "aws_s3_bucket_releases empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_bucket_staging }}" ]]              && echo "aws_s3_bucket_staging empty" && exitCode=1
+        [[ -z "${{ inputs.repo_full_name }}" ]]                     && echo "repo_full_name empty" && exitCode=1
+        [[ -z "${{ inputs.terraform-api-host }}" ]]                 && echo "terraform-api-host empty" && exitCode=1
+        [[ -z "${{ inputs.release_server_hostname }}" ]]            && echo "release_server_hostname empty" && exitCode=1
+        [[ -z "${{ inputs.terraform_cloud_api_token }}" ]]          && echo "terraform_cloud_api_token empty" && exitCode=1
+        [[ -z "${{ inputs.cloudflare_token }}" ]]                   && echo "cloudflare_token empty" && exitCode=1
+        [[ -z "${{ inputs.metal_token }}" ]]                        && echo "metal_token empty" && exitCode=1
+        [[ -z "${{ inputs.github_personal_access_token }}" ]]       && echo "github_personal_access_token empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_access_id_staging }}" ]]           && echo "aws_s3_access_id_staging empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_secret_access_key_staging }}" ]]   && echo "aws_s3_secret_access_key_staging empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_access_id_releases }}" ]]          && echo "aws_s3_access_id_releases empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_secret_access_key_releases }}" ]]  && echo "aws_s3_secret_access_key_releases empty" && exitCode=1
+        [[ -z "${{ inputs.release_server_username }}" ]]            && echo "release_server_username empty" && exitCode=1
+        [[ -z "${{ inputs.release_dockerhub_username }}" ]]         && echo "release_dockerhub_username empty" && exitCode=1
+        [[ -z "${{ inputs.release_dockerhub_token }}" ]]            && echo "release_dockerhub_token empty" && exitCode=1
+        [[ -z "${{ inputs.release_dockerhub_org }}" ]]              && echo "release_dockerhub_org empty" && exitCode=1
+        [[ -z "${{ inputs.appveyor-account }}" ]]                   && echo "appveyor-account empty" && exitCode=1
+        [[ -z "${{ inputs.appveyor-token }}" ]]                     && echo "appveyor-token empty" && exitCode=1
+        [[ -z "${{ inputs.unstable-release-token }}" ]]             && echo "unstable-release-token empty" && exitCode=1
+        [[ -z "${{ inputs.grafana-cloud-prometheus-username }}" ]]  && echo "grafana-cloud-prometheus-username empty" && exitCode=1
+        [[ -z "${{ inputs.grafana-cloud-prometheus-apikey }}" ]]    && echo "grafana-cloud-prometheus-apikey empty" && exitCode=1
+        [[ -z "${{ inputs.public-readonly-dockerhub-username }}" ]] && echo "public-readonly-dockerhub-username empty" && exitCode=1
+        [[ -z "${{ inputs.public-readonly-dockerhub-token }}" ]]    && echo "public-readonly-dockerhub-token empty" && exitCode=1
 
         [[ -z "${{ inputs.fluent-bit-ci-opensearch-aws-access-id }}" ]]       && echo "fluent-bit-ci-opensearch-aws-access-id empty" && exitCode=1
         [[ -z "${{ inputs.fluent-bit-ci-opensearch-aws-secret-key }}" ]]      && echo "fluent-bit-ci-opensearch-aws-secret-key empty" && exitCode=1
@@ -315,5 +323,12 @@ runs:
       run: |
         sed -i -e "s/\$GRAFANA_CLOUD_PROM_USERNAME/${{ inputs.grafana-cloud-prometheus-username }}/g" default.auto.tfvars
         sed -i -e "s/\$GRAFANA_CLOUD_PROM_APIKEY/${{ inputs.grafana-cloud-prometheus-apikey }}/g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+
+    - name: Set the Docker Hub secrets
+      run: |
+        sed -i -e "s/\$READONLY_DOCKERHUB_USERNAME/${{ inputs.public-readonly-dockerhub-username }}/g" default.auto.tfvars
+        sed -i -e "s/\$READONLY_DOCKERHUB_TOKEN/${{ inputs.public-readonly-dockerhub-token }}/g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash

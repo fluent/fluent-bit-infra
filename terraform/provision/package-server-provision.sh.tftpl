@@ -16,6 +16,9 @@ apt-get -o DPkg::Lock::Timeout=60 update
 apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git
 usermod -aG docker provisioner
 
+# Prevent pull rate limiting
+docker login -u '${dockerhub-username}' -p '${dockerhub-token}' docker.io
+
 echo "> Configuring Nginx"
 mkdir -p /var/www/apt.fluentbit.io /var/www/releases.fluentbit.io
 
