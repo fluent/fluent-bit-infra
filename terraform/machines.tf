@@ -252,16 +252,6 @@ resource "null_resource" "gh-runners-provision" {
   }
 }
 
-resource "tls_private_key" "packages-fluent-bit-provision-key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "metal_ssh_key" "packages-fluent-bit-provision-ssh-pub-key" {
-  name       = "packages-fluent-bit-provision-ssh-pub-key"
-  public_key = chomp(tls_private_key.packages-fluent-bit-provision-key.public_key_openssh)
-}
-
 resource "metal_device" "packages-fluent-bit" {
   depends_on       = [metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key]
   hostname         = "packages-managed.fluentbit.io"
@@ -290,14 +280,13 @@ EOS
 resource "null_resource" "packages-fluent-bit-provision" {
 
   depends_on = [
-    metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key,
     metal_device.packages-fluent-bit,
   ]
 
   connection {
-    type        = "ssh"
-    host        = metal_device.packages-fluent-bit.access_public_ipv4
-    private_key = chomp(metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key)
+    type     = "ssh"
+    host     = metal_device.packages-fluent-bit.access_public_ipv4
+    password = metal_device.packages-fluent-bit.root_password
   }
 
   provisioner "file" {
