@@ -2,13 +2,6 @@
 exec &> >(tee -a "/tmp/user-data.sh.log")
 set -x
 
-echo "> Creating non-root user..."
-adduser --ingroup sudo --disabled-password --gecos "" provisioner
-# allow for PATH to persist
-sed -i '/Defaults \+secure_path/s/^/#/' /etc/sudoers
-# do not require password
-sed -i '0,/%sudo/s/ALL$/NOPASSWD: ALL/' /etc/sudoers
-
 echo "> Updating and installing dependencies"
 # Add dependencies and allow for other users of apt-get
 # https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
