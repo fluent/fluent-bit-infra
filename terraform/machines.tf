@@ -253,7 +253,6 @@ resource "null_resource" "gh-runners-provision" {
 }
 
 resource "metal_device" "packages-fluent-bit" {
-  depends_on       = [metal_ssh_key.packages-fluent-bit-provision-ssh-pub-key]
   hostname         = "packages-managed.fluentbit.io"
   plan             = "c3.small.x86"
   metro            = "da"
