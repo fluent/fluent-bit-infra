@@ -265,7 +265,8 @@ resource "metal_device" "packages-fluent-bit" {
       grafana-cloud-prometheus-username = var.grafana-cloud-prometheus-username,
       grafana-cloud-prometheus-apikey   = var.grafana-cloud-prometheus-apikey,
       dockerhub-username                = var.public-readonly-dockerhub-username,
-      dockerhub-token                   = var.public-readonly-dockerhub-token
+      dockerhub-token                   = var.public-readonly-dockerhub-token,
+      cloudflare-token                  = var.cloudflare_token,
     }
   )
 
