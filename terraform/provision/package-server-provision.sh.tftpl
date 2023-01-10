@@ -13,7 +13,7 @@ echo "> Updating and installing dependencies"
 # Add dependencies and allow for other users of apt-get
 # https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
 apt-get -o DPkg::Lock::Timeout=60 update
-apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git
+apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git wget
 usermod -aG docker provisioner
 
 # Prevent pull rate limiting
@@ -80,9 +80,6 @@ systemctl restart nginx
 #     ufw status
 # fi
 
-# Sync now - move to the job
-# aws s3 sync s3://fluentbit-releases /var/www/apt.fluentbit.io --no-sign-request
-
 # Set up cron job
 echo "> Setting up S3 sync job"
 cat > /etc/systemd/system/packages-sync.service <<EOF
@@ -92,6 +89,7 @@ Wants=packages-sync.timer
 
 [Service]
 Type=oneshot
+ExecStartPre=mkdir -p /var/www/apt.fluentbit.io
 ExecStart=aws s3 sync s3://fluentbit-releases /var/www/apt.fluentbit.io --no-sign-request
 
 [Install]
@@ -111,8 +109,39 @@ OnCalendar=*-*-* *:00:00
 WantedBy=timers.target
 EOF
 
+echo "> Adding releases sync from existing server"
+mkdir -p /var/www/releases.fluentbit.io
+cat > /etc/systemd/system/releases-sync.service <<EOF
+[Unit]
+Description=Syncs all releases information from the old server.
+Wants=releases-sync.timer
+
+[Service]
+Type=oneshot
+ExecStartPre=mkdir -p /var/www/releases.fluentbit.io
+ExecStart=wget --recursive --level=inf --no-verbose --no-clobber -P /var/www/ http://releases.fluentbit.io
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat > /etc/systemd/system/releases-sync.timer <<EOF
+[Unit]
+Description=Syncs all releases information from the old server.
+Requires=releases-sync.service
+
+[Timer]
+Unit=releases-sync.service
+OnCalendar=*-*-* *:30:00
+
+[Install]
+WantedBy=timers.target
+EOF
+
 systemctl daemon-reload
 systemctl enable --now packages-sync.timer
+# TODO: disable release sync once this server becomes the official one (IP == releases.fluentbit.io)
+systemctl enable --now releases-sync.timer
 
 echo "> Deploying metrics exporter"
 mkdir -p /opt/fluent-bit-stats
