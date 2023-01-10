@@ -7,7 +7,6 @@ echo "> Updating and installing dependencies"
 # https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
 apt-get -o DPkg::Lock::Timeout=60 update
 apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git wget
-usermod -aG docker provisioner
 
 # Prevent pull rate limiting
 docker login -u '${dockerhub-username}' -p '${dockerhub-token}' docker.io
