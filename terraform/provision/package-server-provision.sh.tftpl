@@ -1,6 +1,6 @@
 #!/bin/env bash
 exec &> >(tee -a "/tmp/user-data.sh.log")
-set -ex
+set -x
 
 echo "> Creating non-root user..."
 adduser --ingroup sudo --disabled-password --gecos "" provisioner
@@ -13,7 +13,7 @@ echo "> Updating and installing dependencies"
 # Add dependencies and allow for other users of apt-get
 # https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
 apt-get -o DPkg::Lock::Timeout=60 update
-apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io nginx awscli git
+apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git
 usermod -aG docker provisioner
 
 echo "> Configuring Nginx"
@@ -60,7 +60,6 @@ server {
 }
 EOF
 ln -s /etc/nginx/sites-available/releases-fluentbit.io /etc/nginx/sites-enabled/releases-fluentbit.io
-systemctl restart nginx
 
 # TODO: certificates from certbot
 # snap install core
@@ -114,6 +113,13 @@ systemctl enable --now packages-sync.timer
 echo "> Deploying metrics exporter"
 mkdir -p /opt/fluent-bit-stats
 git clone https://github.com/niedbalski/fluent-bit-stats.git /opt/fluent-bit-stats
-( cd /opt/fluent-bit-stats; docker compose up -d )
+sed -i 's|infinityworks/docker-hub-exporter:latest|ghcr.io/artemkaxboy/docker-hub-exporter:0.0.2|g' /opt/fluent-bit-stats/docker-compose.yml
+# Provided by Terraform variables
+# shellcheck disable=SC2016
+sed -i 's/__GRAFANACLOUD_USERNAME__/${grafana-cloud-prometheus-username}/g' /opt/fluent-bit-stats/config/prometheus.yml
+# shellcheck disable=SC2016
+sed -i 's/__GRAFANACLOUD_PASSWORD__/${grafana-cloud-prometheus-apikey}/g' /opt/fluent-bit-stats/config/prometheus.yml
+
+( cd /opt/fluent-bit-stats; docker-compose pull && docker-compose up -d )
 
 echo "Completed provisioning successfully"

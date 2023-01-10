@@ -45,6 +45,8 @@ jobs:
           fluent-bit-ci-azure-client-secret: ${{ secrets.FLUENT_BIT_CI_AZURE_CLIENT_SECRET }}
           fluent-bit-ci-azure-subscription-id: ${{ secrets.FLUENT_BIT_CI_AZURE_SUBSCRIPTION_ID }}
           fluent-bit-ci-azure-tenant-id: ${{ secrets.FLUENT_BIT_CI_AZURE_TENANT_ID }}
+          grafana-cloud-prometheus-username: ${{ secrets.GRAFANA_CLOUD_PROM_USERNAME }}
+          grafana-cloud-prometheus-apikey: ${{ secrets.GRAFANA_CLOUD_PROM_APIKEY }}
 
       - name: Terraform fmt
         id: fmt
