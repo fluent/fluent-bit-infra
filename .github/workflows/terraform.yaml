@@ -47,6 +47,8 @@ jobs:
           fluent-bit-ci-azure-tenant-id: ${{ secrets.FLUENT_BIT_CI_AZURE_TENANT_ID }}
           grafana-cloud-prometheus-username: ${{ secrets.GRAFANA_CLOUD_PROM_USERNAME }}
           grafana-cloud-prometheus-apikey: ${{ secrets.GRAFANA_CLOUD_PROM_APIKEY }}
+          public-readonly-dockerhub-username: ${{ secrets.READONLY_DOCKERHUB_USERNAME }}
+          public-readonly-dockerhub-token: ${{ secrets.READONLY_DOCKERHUB_TOKEN }}
 
       - name: Terraform fmt
         id: fmt
