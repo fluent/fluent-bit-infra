@@ -1,6 +1,6 @@
 #!/bin/env bash
 exec &> >(tee -a "/tmp/user-data.sh.log")
-set -ex
+set -x
 
 echo "> Creating non-root user..."
 adduser --ingroup sudo --disabled-password --gecos "" provisioner
