@@ -8,6 +8,14 @@ echo "> Updating and installing dependencies"
 apt-get -o DPkg::Lock::Timeout=60 update
 apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git wget
 
+# https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
+snap install core
+snap refresh core
+snap install --classic certbot
+ln -sf /snap/bin/certbot /usr/bin/certbot
+snap set certbot trust-plugin-with-root=ok
+snap install certbot-dns-cloudflare
+
 # Prevent pull rate limiting
 docker login -u '${dockerhub-username}' -p '${dockerhub-token}' docker.io
 
@@ -135,14 +143,6 @@ sed -i 's/__GRAFANACLOUD_PASSWORD__/${grafana-cloud-prometheus-apikey}/g' /opt/f
 ( cd /opt/fluent-bit-stats || exit; docker-compose pull && docker-compose up -d )
 
 echo "> Setting up Certbot"
-# https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
-snap install core
-snap refresh core
-snap install --classic certbot
-ln -sf /snap/bin/certbot /usr/bin/certbot
-snap set certbot trust-plugin-with-root=ok
-snap install certbot-dns-cloudflare
-
 mkdir -p /root/.secrets/certbot/
 # Provided by Terraform variables
 # shellcheck disable=SC2016
@@ -165,6 +165,8 @@ certbot --nginx -n --agree-tos --email 'ci@calyptia.com' \
 	-d www.packages-next.fluentbit.io \
 	-d releases-next.fluentbit.io \
 	-d www.releases-next.fluentbit.io 
+
+rm -f /root/.secrets/certbot/cloudflare.ini
 
 echo "> Reloading Nginx configuration"
 nginx -T && nginx -s reload
