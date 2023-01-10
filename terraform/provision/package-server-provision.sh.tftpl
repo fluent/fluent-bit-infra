@@ -14,7 +14,7 @@ docker login -u '${dockerhub-username}' -p '${dockerhub-token}' docker.io
 echo "> Configuring Nginx"
 mkdir -p /var/www/apt.fluentbit.io /var/www/releases.fluentbit.io
 
-rm -f /etc/nginx/sites-available/default
+rm -f /etc/nginx/sites-enabled/default
 
 # Set up the package serving
 cat > /etc/nginx/sites-available/apt.fluentbit.io <<'EOF'
