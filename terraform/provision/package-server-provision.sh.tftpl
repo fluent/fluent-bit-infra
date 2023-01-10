@@ -13,7 +13,7 @@ echo "> Updating and installing dependencies"
 # Add dependencies and allow for other users of apt-get
 # https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
 apt-get -o DPkg::Lock::Timeout=60 update
-apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git wget
+apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git wget certbot python3-certbot-nginx
 usermod -aG docker provisioner
 
 # Prevent pull rate limiting
@@ -65,20 +65,22 @@ EOF
 ln -s /etc/nginx/sites-available/releases.fluentbit.io /etc/nginx/sites-enabled/releases.fluentbit.io
 systemctl restart nginx
 
-# TODO: certificates from certbot
-# snap install core
-# snap refresh core
-# snap install --classic certbot
-# ln -s /snap/bin/certbot /usr/bin/certbot
-# certbot --nginx # -d packages.fluentbit.io -d www.packages.fluentbit.io
-# systemctl restart nginx
+echo "> Setting up Certbot"
+certbot --nginx -n --agree-tos --email 'ci@calyptia.com' \
+	-d packages.fluentbit.io \
+	-d www.packages.fluentbit.io \
+	-d releases.fluentbit.io \
+	-d www.releases.fluentbit.io
 
-# Ensure firewall is allowing traffic
-# if command -v ufw > /dev/null 2>&1; then
-#     ufw allow 'Nginx Full'
-#     ufw delete allow 'Nginx HTTP'
-#     ufw status
-# fi
+echo "> Reloading Nginx configuration"
+nginx -T && nginx -s reload
+
+echo "> Ensure firewall is allowing traffic"
+if command -v ufw > /dev/null 2>&1; then
+    ufw allow 'Nginx Full'
+    ufw delete allow 'Nginx HTTP'
+    ufw status
+fi
 
 # Set up cron job
 echo "> Setting up S3 sync job"
