@@ -254,49 +254,15 @@ resource "null_resource" "gh-runners-provision" {
 
 resource "metal_device" "packages-fluent-bit" {
   hostname         = "packages-managed.fluentbit.io"
-  plan             = "c3.small.x86"
+  plan             = "c3.medium.x86"
   metro            = "da"
   operating_system = "ubuntu_20_04"
   billing_cycle    = "hourly"
   project_id       = local.project_id
+  user_data        = file("provision/package-server-provision.sh")
+
   connection {
     host     = self.access_public_ipv4
     password = self.root_password
-  }
-
-  # Set up packages to install
-  user_data = <<EOS
-#cloud-config
-package_update: true
-packages:
-  - docker.io
-  - nginx
-  - awscli
-  - git
-EOS
-}
-
-resource "null_resource" "packages-fluent-bit-provision" {
-
-  depends_on = [
-    metal_device.packages-fluent-bit,
-  ]
-
-  connection {
-    type     = "ssh"
-    host     = metal_device.packages-fluent-bit.access_public_ipv4
-    password = metal_device.packages-fluent-bit.root_password
-  }
-
-  provisioner "file" {
-    source      = "provision/package-server-provision.sh"
-    destination = "/tmp/provision-package-server-provision.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/provision-package-server-provision.sh",
-      "sudo -i -u provisioner bash /tmp/provision-package-server-provision.sh",
-    ]
   }
 }
