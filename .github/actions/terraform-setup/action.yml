@@ -310,3 +310,10 @@ runs:
         sed -i -e "s|\$RELEASE_DOCKERHUB_ORGANIZATION|${{ inputs.release_dockerhub_org }}|g" default.auto.tfvars
       working-directory: ${{ inputs.working-directory }}
       shell: bash
+
+    - name: Set the Grafana Cloud secrets
+      run: |
+        sed -i -e "s/\$GRAFANA_CLOUD_PROM_USERNAME/${{ inputs.grafana-cloud-prometheus-username }}/g" default.auto.tfvars
+        sed -i -e "s/\$GRAFANA_CLOUD_PROM_APIKEY/${{ inputs.grafana-cloud-prometheus-apikey }}/g" default.auto.tfvars
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
