@@ -13,7 +13,7 @@ echo "> Updating and installing dependencies"
 # Add dependencies and allow for other users of apt-get
 # https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
 apt-get -o DPkg::Lock::Timeout=60 update
-apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git wget certbot python3-certbot-nginx
+apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git wget
 usermod -aG docker provisioner
 
 # Prevent pull rate limiting
@@ -22,13 +22,15 @@ docker login -u '${dockerhub-username}' -p '${dockerhub-token}' docker.io
 echo "> Configuring Nginx"
 mkdir -p /var/www/apt.fluentbit.io /var/www/releases.fluentbit.io
 
+rm -f /etc/nginx/sites-available/default
+
 # Set up the package serving
 cat > /etc/nginx/sites-available/apt.fluentbit.io <<'EOF'
 server {
 	root /var/www/apt.fluentbit.io;
 	index index.html index.htm index.nginx-debian.html;
 
-	server_name apt.fluentbit.io packages.fluentbit.io;
+	server_name apt-next.fluentbit.io packages-next.fluentbit.io;
 	access_log /var/log/nginx/apt.fluentbit.io.access.log;
 	error_log  /var/log/nginx/apt.fluentbit.io.error.log;
 
@@ -41,7 +43,7 @@ server {
 	listen [::]:80;
 }
 EOF
-ln -s /etc/nginx/sites-available/apt.fluentbit.io /etc/nginx/sites-enabled/apt.fluentbit.io
+ln -sf /etc/nginx/sites-available/apt.fluentbit.io /etc/nginx/sites-enabled/apt.fluentbit.io
 
 # Set up the releases handling - Windows + Source/JSON
 cat > /etc/nginx/sites-available/releases.fluentbit.io <<'EOF'
@@ -49,7 +51,7 @@ server {
 	root /var/www/releases.fluentbit.io/releases;
 	index index.html index.htm index.nginx-debian.html;
 
-	server_name releases.fluentbit.io;
+	server_name releases-next.fluentbit.io;
 	access_log /var/log/nginx/releases.fluentbit.io.access.log;
 	error_log  /var/log/nginx/releases.fluentbit.io.error.log;
 
@@ -62,25 +64,8 @@ server {
 	listen [::]:80;
 }
 EOF
-ln -s /etc/nginx/sites-available/releases.fluentbit.io /etc/nginx/sites-enabled/releases.fluentbit.io
+ln -sf /etc/nginx/sites-available/releases.fluentbit.io /etc/nginx/sites-enabled/releases.fluentbit.io
 systemctl restart nginx
-
-echo "> Setting up Certbot"
-certbot --nginx -n --agree-tos --email 'ci@calyptia.com' \
-	-d packages.fluentbit.io \
-	-d www.packages.fluentbit.io \
-	-d releases.fluentbit.io \
-	-d www.releases.fluentbit.io
-
-echo "> Reloading Nginx configuration"
-nginx -T && nginx -s reload
-
-echo "> Ensure firewall is allowing traffic"
-if command -v ufw > /dev/null 2>&1; then
-    ufw allow 'Nginx Full'
-    ufw delete allow 'Nginx HTTP'
-    ufw status
-fi
 
 # Set up cron job
 echo "> Setting up S3 sync job"
@@ -156,5 +141,47 @@ sed -i 's/__GRAFANACLOUD_USERNAME__/${grafana-cloud-prometheus-username}/g' /opt
 sed -i 's/__GRAFANACLOUD_PASSWORD__/${grafana-cloud-prometheus-apikey}/g' /opt/fluent-bit-stats/config/prometheus.yml
 
 ( cd /opt/fluent-bit-stats || exit; docker-compose pull && docker-compose up -d )
+
+echo "> Setting up Certbot"
+# https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
+snap install core
+snap refresh core
+snap install --classic certbot
+ln -sf /snap/bin/certbot /usr/bin/certbot
+snap set certbot trust-plugin-with-root=ok
+snap install certbot-dns-cloudflare
+
+mkdir -p /root/.secrets/certbot/
+# Provided by Terraform variables
+# shellcheck disable=SC2016
+echo 'dns_cloudflare_api_token = ${cloudflare-token}' > /root/.secrets/certbot/cloudflare.ini
+chmod 600 /root/.secrets/certbot/cloudflare.ini
+
+# First of all use Cloudflare to automatically respond to the challenges and get the certificates.
+certbot certonly -n --agree-tos --email 'ci@calyptia.com' \
+	--dns-cloudflare \
+	--dns-cloudflare-credentials /root/.secrets/certbot/cloudflare.ini \
+	--dns-cloudflare-propagation-seconds 60 \
+	-d packages-next.fluentbit.io \
+	-d www.packages-next.fluentbit.io \
+	-d releases-next.fluentbit.io \
+	-d www.releases-next.fluentbit.io 
+
+# Now configure Nginx to use the certificates we got above.
+certbot --nginx -n --agree-tos --email 'ci@calyptia.com' \
+	-d packages-next.fluentbit.io \
+	-d www.packages-next.fluentbit.io \
+	-d releases-next.fluentbit.io \
+	-d www.releases-next.fluentbit.io 
+
+echo "> Reloading Nginx configuration"
+nginx -T && nginx -s reload
+
+echo "> Ensure firewall is allowing traffic"
+if command -v ufw > /dev/null 2>&1; then
+    ufw allow 'Nginx Full'
+    ufw delete allow 'Nginx HTTP'
+    ufw status
+fi
 
 echo "Completed provisioning successfully"
