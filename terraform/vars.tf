@@ -220,3 +220,13 @@ variable "fluent-bit-ci-azure-tenant-id" {
   type      = string
   sensitive = true
 }
+
+variable "grafana-cloud-prometheus-username" {
+  type      = string
+  sensitive = true
+}
+
+variable "grafana-cloud-prometheus-apikey" {
+  type      = string
+  sensitive = true
+}

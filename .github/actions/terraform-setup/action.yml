@@ -112,6 +112,12 @@ inputs:
   fluent-bit-ci-azure-tenant-id:
     description: The Azure tenant ID to use.
     required: true
+  grafana-cloud-prometheus-username:
+    description: The Grafana Cloud username for Prometheus remote writing of metrics.
+    required: true
+  grafana-cloud-prometheus-apikey:
+    description: The Grafana Cloud API key for Prometheus remote writing of metrics.
+    required: true
 runs:
   using: "composite"
   steps:
@@ -141,6 +147,8 @@ runs:
         [[ -z "${{ inputs.appveyor-account }}" ]]                  && echo "appveyor-account empty" && exitCode=1
         [[ -z "${{ inputs.appveyor-token }}" ]]                    && echo "appveyor-token empty" && exitCode=1
         [[ -z "${{ inputs.unstable-release-token }}" ]]            && echo "unstable-release-token empty" && exitCode=1
+        [[ -z "${{ inputs.grafana-cloud-prometheus-username }}" ]] && echo "grafana-cloud-prometheus-username empty" && exitCode=1
+        [[ -z "${{ inputs.grafana-cloud-prometheus-apikey }}" ]]   && echo "grafana-cloud-prometheus-apikey empty" && exitCode=1
 
         [[ -z "${{ inputs.fluent-bit-ci-opensearch-aws-access-id }}" ]]       && echo "fluent-bit-ci-opensearch-aws-access-id empty" && exitCode=1
         [[ -z "${{ inputs.fluent-bit-ci-opensearch-aws-secret-key }}" ]]      && echo "fluent-bit-ci-opensearch-aws-secret-key empty" && exitCode=1
