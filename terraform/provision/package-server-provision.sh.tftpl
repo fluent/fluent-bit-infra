@@ -70,6 +70,26 @@ cp -f /etc/nginx/sites-available/releases.fluentbit.io /etc/nginx/sites-availabl
 
 systemctl restart nginx
 
+# The existing server is different to the bucket due to some createrepo changes so we mirror it for now so existing users are unaffected.
+echo "> Setting up legacy symlinks"
+mkdir -p /var/www/apt.fluentbit.io/centos/7 /var/www/apt.fluentbit.io/centos/8 /var/www/apt.fluentbit.io/centos/9
+ln -sf /var/www/apt.fluentbit.io/centos/7 /var/www/apt.fluentbit.io/centos/7/x86_64
+ln -sf /var/www/apt.fluentbit.io/centos/7 /var/www/apt.fluentbit.io/centos/7/aarch64
+ln -sf /var/www/apt.fluentbit.io/centos/8 /var/www/apt.fluentbit.io/centos/8/x86_64
+ln -sf /var/www/apt.fluentbit.io/centos/8 /var/www/apt.fluentbit.io/centos/8/aarch64
+ln -sf /var/www/apt.fluentbit.io/centos/9 /var/www/apt.fluentbit.io/centos/9/x86_64
+ln -sf /var/www/apt.fluentbit.io/centos/9 /var/www/apt.fluentbit.io/centos/9/aarch64
+
+mkdir -p /var/www/apt.fluentbit.io/amazonlinux/2 /var/www/apt.fluentbit.io/amazonlinux/2022
+ln -sf /var/www/apt.fluentbit.io/amazonlinux/2 /var/www/apt.fluentbit.io/amazonlinux/2/x86_64
+ln -sf /var/www/apt.fluentbit.io/amazonlinux/2 /var/www/apt.fluentbit.io/amazonlinux/2/aarch64
+ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022/x86_64
+ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022/aarch64
+# It is not GA so releasever is a build date - we hijack it via symlinks for now
+ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221012
+ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221101
+ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221207
+
 # Set up cron job
 echo "> Setting up S3 sync job"
 cat > /etc/systemd/system/packages-sync.service <<EOF
