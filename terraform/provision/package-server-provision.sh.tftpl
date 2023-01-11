@@ -70,25 +70,48 @@ cp -f /etc/nginx/sites-available/releases.fluentbit.io /etc/nginx/sites-availabl
 
 systemctl restart nginx
 
-# The existing server is different to the bucket due to some createrepo changes so we mirror it for now so existing users are unaffected.
 echo "> Setting up legacy symlinks"
-mkdir -p /var/www/apt.fluentbit.io/centos/7 /var/www/apt.fluentbit.io/centos/8 /var/www/apt.fluentbit.io/centos/9
-ln -sf /var/www/apt.fluentbit.io/centos/7 /var/www/apt.fluentbit.io/centos/7/x86_64
-ln -sf /var/www/apt.fluentbit.io/centos/7 /var/www/apt.fluentbit.io/centos/7/aarch64
-ln -sf /var/www/apt.fluentbit.io/centos/8 /var/www/apt.fluentbit.io/centos/8/x86_64
-ln -sf /var/www/apt.fluentbit.io/centos/8 /var/www/apt.fluentbit.io/centos/8/aarch64
-ln -sf /var/www/apt.fluentbit.io/centos/9 /var/www/apt.fluentbit.io/centos/9/x86_64
-ln -sf /var/www/apt.fluentbit.io/centos/9 /var/www/apt.fluentbit.io/centos/9/aarch64
+cat > /usr/local/bin/s3-sync.sh <<EOF
+#!/bin/sh
+set -ex
 
-mkdir -p /var/www/apt.fluentbit.io/amazonlinux/2 /var/www/apt.fluentbit.io/amazonlinux/2022
-ln -sf /var/www/apt.fluentbit.io/amazonlinux/2 /var/www/apt.fluentbit.io/amazonlinux/2/x86_64
-ln -sf /var/www/apt.fluentbit.io/amazonlinux/2 /var/www/apt.fluentbit.io/amazonlinux/2/aarch64
-ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022/x86_64
-ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022/aarch64
+mkdir -p /var/www/apt.fluentbit.io
+
+# Remove before sync to ensure no infinite recursion
+rm -f /var/www/apt.fluentbit.io/centos/7/x86_64
+rm -f /var/www/apt.fluentbit.io/centos/7/aarch64
+rm -f /var/www/apt.fluentbit.io/centos/8/x86_64
+rm -f /var/www/apt.fluentbit.io/centos/8/aarch64
+rm -f /var/www/apt.fluentbit.io/centos/9/x86_64
+rm -f /var/www/apt.fluentbit.io/centos/9/aarch64
+rm -f /var/www/apt.fluentbit.io/amazonlinux/2/x86_64
+rm -f /var/www/apt.fluentbit.io/amazonlinux/2/aarch64
+rm -f /var/www/apt.fluentbit.io/amazonlinux/2022/x86_64
+rm -f /var/www/apt.fluentbit.io/amazonlinux/2022/aarch64
+rm -f /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221012
+rm -f /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221101
+rm -f /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221207
+
+aws s3 sync s3://${packages-bucket} /var/www/apt.fluentbit.io --no-sign-request
+
+# The existing server is different to the bucket due to some createrepo changes so we mirror it for now so existing users are unaffected.
+ln -s /var/www/apt.fluentbit.io/centos/7 /var/www/apt.fluentbit.io/centos/7/x86_64
+ln -s /var/www/apt.fluentbit.io/centos/7 /var/www/apt.fluentbit.io/centos/7/aarch64
+ln -s /var/www/apt.fluentbit.io/centos/8 /var/www/apt.fluentbit.io/centos/8/x86_64
+ln -s /var/www/apt.fluentbit.io/centos/8 /var/www/apt.fluentbit.io/centos/8/aarch64
+ln -s /var/www/apt.fluentbit.io/centos/9 /var/www/apt.fluentbit.io/centos/9/x86_64
+ln -s /var/www/apt.fluentbit.io/centos/9 /var/www/apt.fluentbit.io/centos/9/aarch64
+
+ln -s /var/www/apt.fluentbit.io/amazonlinux/2 /var/www/apt.fluentbit.io/amazonlinux/2/x86_64
+ln -s /var/www/apt.fluentbit.io/amazonlinux/2 /var/www/apt.fluentbit.io/amazonlinux/2/aarch64
+ln -s /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022/x86_64
+ln -s /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022/aarch64
 # It is not GA so releasever is a build date - we hijack it via symlinks for now
-ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221012
-ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221101
-ln -sf /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221207
+ln -s /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221012
+ln -s /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221101
+ln -s /var/www/apt.fluentbit.io/amazonlinux/2022 /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221207
+EOF
+chmod 700 /usr/local/bin/s3-sync.sh
 
 # Set up cron job
 echo "> Setting up S3 sync job"
@@ -99,8 +122,7 @@ Wants=packages-sync.timer
 
 [Service]
 Type=oneshot
-ExecStartPre=mkdir -p /var/www/apt.fluentbit.io
-ExecStart=aws s3 sync s3://${packages-bucket} /var/www/apt.fluentbit.io --no-sign-request
+ExecStart=/usr/local/bin/s3-sync.sh
 
 [Install]
 WantedBy=multi-user.target
