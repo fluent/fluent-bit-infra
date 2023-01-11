@@ -190,7 +190,7 @@ cat > /usr/local/bin/switchover-offical.sh << 'EOF'
 set -eux
 
 # Must run as root
-[ "${EUID:-$(id -u)}" -eq 0 ] && echo "Run as root" && exit 1
+[ "$(id -u)" -eq 0 ] && echo "Run as root" && exit 1
 
 # Disable sync from release server as it becomes this one!
 systemctl daemon-reload
