@@ -9,8 +9,9 @@ terraform {
       version = "~> 3.21"
     }
     github = {
-      source  = "integrations/github"
-      version = "5.12.0"
+      source = "integrations/github"
+      # We need lock_branch fixes from 5.12
+      version = ">= 5.12.0"
     }
     google = {
       source  = "hashicorp/google"

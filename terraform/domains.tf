@@ -165,3 +165,36 @@ resource "cloudflare_record" "short-registry" {
   proxied = false
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
+
+resource "cloudflare_record" "releases-next" {
+  name    = "releases-next"
+  value   = metal_device.packages-fluent-bit.access_public_ipv4
+  type    = "A"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
+resource "cloudflare_record" "packages-next" {
+  name    = "packages-next"
+  value   = metal_device.packages-fluent-bit.access_public_ipv4
+  type    = "A"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
+resource "cloudflare_record" "apt-next" {
+  name    = "apt-next"
+  value   = metal_device.packages-fluent-bit.access_public_ipv4
+  type    = "A"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
+resource "cloudflare_record" "packages-s3-mirror" {
+  name    = "packages-mirror"
+  value   = "fluentbit-releases.s3.amazonaws.com"
+  type    = "CNAME"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
