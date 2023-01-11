@@ -26,7 +26,7 @@ resource "cloudflare_page_rule" "downloads-fluentbitio" {
   }
 }
 
-# For legacy releases, forward the download URL to the old server
+# For source and windows releases, forward the download URL to the server
 resource "cloudflare_page_rule" "releases-fluentbitio" {
   zone_id  = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
   target   = "https://${var.cloudflare_domain}/releases/*"
@@ -35,6 +35,19 @@ resource "cloudflare_page_rule" "releases-fluentbitio" {
   actions {
     forwarding_url {
       url         = "https://releases.${var.cloudflare_domain}/$1"
+      status_code = 301
+    }
+  }
+}
+
+resource "cloudflare_page_rule" "releases-fluentbitio" {
+  zone_id  = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+  target   = "https://${var.cloudflare_domain}/releases-next/*"
+  priority = 4
+
+  actions {
+    forwarding_url {
+      url         = "https://releases-next.${var.cloudflare_domain}/$1"
       status_code = 301
     }
   }
