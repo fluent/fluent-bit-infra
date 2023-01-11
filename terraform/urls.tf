@@ -40,7 +40,7 @@ resource "cloudflare_page_rule" "releases-fluentbitio" {
   }
 }
 
-resource "cloudflare_page_rule" "releases-fluentbitio" {
+resource "cloudflare_page_rule" "releases-next-fluentbitio" {
   zone_id  = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
   target   = "https://${var.cloudflare_domain}/releases-next/*"
   priority = 4
