@@ -30,7 +30,7 @@ server {
 	root /var/www/apt.fluentbit.io;
 	index index.html index.htm index.nginx-debian.html;
 
-	server_name apt-next.fluentbit.io packages-next.fluentbit.io;
+	server_name apt-next.fluentbit.io packages-next.fluentbit.io www.apt-next.fluentbit.io www.packages-next.fluentbit.io;
 	access_log /var/log/nginx/apt.fluentbit.io.access.log;
 	error_log  /var/log/nginx/apt.fluentbit.io.error.log;
 
@@ -44,14 +44,15 @@ server {
 }
 EOF
 ln -sf /etc/nginx/sites-available/apt.fluentbit.io /etc/nginx/sites-enabled/apt.fluentbit.io
+cp -f /etc/nginx/sites-available/apt.fluentbit.io /etc/nginx/sites-available/apt-next.fluentbit.io
 
 # Set up the releases handling - Windows + Source/JSON
 cat > /etc/nginx/sites-available/releases.fluentbit.io <<'EOF'
 server {
-	root /var/www/releases.fluentbit.io/releases;
+	root /var/www/releases.fluentbit.io;
 	index index.html index.htm index.nginx-debian.html;
 
-	server_name releases-next.fluentbit.io;
+	server_name releases-next.fluentbit.io www.releases-next.fluentbit.io;
 	access_log /var/log/nginx/releases.fluentbit.io.access.log;
 	error_log  /var/log/nginx/releases.fluentbit.io.error.log;
 
@@ -65,6 +66,8 @@ server {
 }
 EOF
 ln -sf /etc/nginx/sites-available/releases.fluentbit.io /etc/nginx/sites-enabled/releases.fluentbit.io
+cp -f /etc/nginx/sites-available/releases.fluentbit.io /etc/nginx/sites-available/releases-next.fluentbit.io
+
 systemctl restart nginx
 
 # Set up cron job
@@ -170,8 +173,6 @@ certbot --nginx -n --agree-tos --email 'ci@calyptia.com' \
 	-d releases-next.fluentbit.io \
 	-d www.releases-next.fluentbit.io 
 
-rm -f /root/.secrets/certbot/cloudflare.ini
-
 echo "> Reloading Nginx configuration"
 nginx -T && nginx -s reload
 
@@ -181,5 +182,61 @@ if command -v ufw > /dev/null 2>&1; then
     ufw delete allow 'Nginx HTTP'
     ufw status
 fi
+
+echo "> Setting up switchover script"
+mkdir -p /usr/local/bin
+cat > /usr/local/bin/switchover-offical.sh << 'EOF'
+#!/bin/bash
+set -eux
+
+# Must run as root
+[ "${EUID:-$(id -u)}" -eq 0 ] && echo "Run as root" && exit 1
+
+# Disable sync from release server as it becomes this one!
+systemctl daemon-reload
+systemctl disable --now releases-sync.timer
+
+# Update to use official domains
+sed 's/apt-next/apt/g' /etc/nginx/sites-available/apt-next.fluentbit.io > /etc/nginx/sites-available/apt.fluentbit.io
+sed -i 's/packages-next/packages/g' /etc/nginx/sites-available/apt.fluentbit.io
+sed 's/releases-next/releases/g' /etc/nginx/sites-available/releases-next.fluentbit.io > /etc/nginx/sites-available/releases.fluentbit.io
+nginx -t
+systemctl restart nginx
+
+# Remove the old certs
+certbot delete --cert-name apt-next.fluentbit.io
+certbot delete --cert-name www.apt-next.fluentbit.io
+certbot delete --cert-name packages-next.fluentbit.io
+certbot delete --cert-name www.packages-next.fluentbit.io
+certbot delete --cert-name releases-next.fluentbit.io
+certbot delete --cert-name www.releases-next.fluentbit.io
+
+# Update to request new certs and install them
+certbot certonly -n --agree-tos --email 'ci@calyptia.com' \
+	--dns-cloudflare \
+	--dns-cloudflare-credentials /root/.secrets/certbot/cloudflare.ini \
+	--dns-cloudflare-propagation-seconds 60 \
+	-d apt.fluentbit.io \
+	-d www.apt.fluentbit.io \
+	-d packages.fluentbit.io \
+	-d www.packages.fluentbit.io \
+	-d releases.fluentbit.io \
+	-d www.releases.fluentbit.io 
+
+certbot --nginx -n --agree-tos --email 'ci@calyptia.com' \
+	-d apt.fluentbit.io \
+	-d www.apt.fluentbit.io \
+	-d packages.fluentbit.io \
+	-d www.packages.fluentbit.io \
+	-d releases.fluentbit.io \
+	-d www.releases.fluentbit.io
+
+nginx -T && nginx -s reload
+certbot certificates
+
+rm -f /root/.secrets/certbot/cloudflare.ini
+
+EOF
+chmod 700 /usr/local/bin/switchover-offical.sh
 
 echo "Completed provisioning successfully"
