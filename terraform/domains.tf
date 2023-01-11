@@ -192,7 +192,7 @@ resource "cloudflare_record" "apt-next" {
 
 resource "cloudflare_record" "packages-s3-mirror" {
   name    = "packages-mirror"
-  value   = "fluentbit-releases.s3.amazonaws.com"
+  value   = "packages.fluentbit.io.s3.amazonaws.com"
   type    = "CNAME"
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")

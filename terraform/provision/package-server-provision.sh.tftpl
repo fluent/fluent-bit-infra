@@ -80,7 +80,7 @@ Wants=packages-sync.timer
 [Service]
 Type=oneshot
 ExecStartPre=mkdir -p /var/www/apt.fluentbit.io
-ExecStart=aws s3 sync s3://fluentbit-releases /var/www/apt.fluentbit.io --no-sign-request
+ExecStart=aws s3 sync s3://${packages-bucket} /var/www/apt.fluentbit.io --no-sign-request
 
 [Install]
 WantedBy=multi-user.target
