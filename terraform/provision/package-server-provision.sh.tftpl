@@ -195,10 +195,12 @@ echo 'dns_cloudflare_api_token = ${cloudflare-token}' > /root/.secrets/certbot/c
 chmod 600 /root/.secrets/certbot/cloudflare.ini
 
 # First of all use Cloudflare to automatically respond to the challenges and get the certificates.
+# Use Lets Encrypt staging server (--test-cert) to ensure we do not hit rate limits.
 certbot certonly -n --agree-tos --email 'ci@calyptia.com' \
 	--dns-cloudflare \
 	--dns-cloudflare-credentials /root/.secrets/certbot/cloudflare.ini \
 	--dns-cloudflare-propagation-seconds 60 \
+	--test-cert \
 	-d apt-next.fluentbit.io \
 	-d www.apt-next.fluentbit.io \
 	-d packages-next.fluentbit.io \

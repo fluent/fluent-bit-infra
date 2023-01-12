@@ -132,6 +132,13 @@ resource "github_actions_environment_secret" "release-bucket-secret" {
   plaintext_value = var.release-s3-bucket
 }
 
+resource "github_actions_environment_secret" "release-sources-bucket-secret" {
+  repository      = data.github_repository.fluentbit.name
+  environment     = github_repository_environment.release-environment.environment
+  secret_name     = "AWS_S3_BUCKET_RELEASE_SOURCES"
+  plaintext_value = var.release-sources-s3-bucket
+}
+
 # Release needs to take out of staging and into release bucket
 resource "github_actions_environment_secret" "release-staging-bucket-secret" {
   repository      = data.github_repository.fluentbit.name

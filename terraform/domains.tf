@@ -92,14 +92,6 @@ resource "cloudflare_record" "docs" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
-resource "cloudflare_record" "test-subdomain" {
-  name    = "test-subdomain"
-  value   = data.metal_device.legacy_www.access_public_ipv4
-  type    = "A"
-  proxied = false
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
 resource "cloudflare_record" "gh-runners" {
   for_each = metal_device.gh-runners
 
@@ -150,14 +142,6 @@ resource "cloudflare_record" "registry" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
-resource "cloudflare_record" "packages-test" {
-  name    = "packages-test"
-  value   = "packages-test.fluentbit.io.s3.amazonaws.com"
-  type    = "CNAME"
-  proxied = true
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
 resource "cloudflare_record" "short-registry" {
   name    = "cr"
   value   = "gateway.scarf.sh"
@@ -192,9 +176,16 @@ resource "cloudflare_record" "apt-next" {
 
 resource "cloudflare_record" "packages-s3-mirror" {
   name    = "packages-mirror"
-  value   = "packages.fluentbit.io.s3.amazonaws.com"
+  value   = "${var.release-s3-bucket}.s3.amazonaws.com"
   type    = "CNAME"
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
+resource "cloudflare_record" "releases-s3-mirror" {
+  name    = "releases-mirror"
+  value   = "${var.release-sources-s3-bucket}.s3.amazonaws.com"
+  type    = "CNAME"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
