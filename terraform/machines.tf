@@ -268,6 +268,7 @@ resource "metal_device" "packages-fluent-bit" {
       dockerhub-token                   = var.public-readonly-dockerhub-token,
       cloudflare-token                  = var.cloudflare_token,
       packages-bucket                   = var.release-s3-bucket
+      releases-bucket                   = var.release-sources-s3-bucket
     }
   )
 
