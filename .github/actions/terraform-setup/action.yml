@@ -5,6 +5,10 @@ inputs:
     description: The S3 bucket to use for releases.
     default: packages.fluentbit.io
     required: false
+  aws_s3_bucket_release_sources:
+    description: The S3 bucket to use for source and windows packages.
+    default: releases.fluentbit.io
+    required: false
   aws_s3_bucket_staging:
     description: The S3 bucket to use for staging builds.
     default: fluentbit-staging
@@ -134,6 +138,7 @@ runs:
 
         # Check single line variables are not-empty/unset
         [[ -z "${{ inputs.aws_s3_bucket_releases }}" ]]             && echo "aws_s3_bucket_releases empty" && exitCode=1
+        [[ -z "${{ inputs.aws_s3_bucket_release_sources }}" ]]      && echo "aws_s3_bucket_release_sources empty" && exitCode=1
         [[ -z "${{ inputs.aws_s3_bucket_staging }}" ]]              && echo "aws_s3_bucket_staging empty" && exitCode=1
         [[ -z "${{ inputs.repo_full_name }}" ]]                     && echo "repo_full_name empty" && exitCode=1
         [[ -z "${{ inputs.terraform-api-host }}" ]]                 && echo "terraform-api-host empty" && exitCode=1
@@ -243,6 +248,7 @@ runs:
     - name: Set the release secrets
       run: |
         sed -i -e "s/\$AWS_S3_BUCKET_RELEASES/${{ inputs.aws_s3_bucket_releases }}/g" default.auto.tfvars
+        sed -i -e "s/\$AWS_S3_BUCKET_RELEASE_SOURCES/${{ inputs.aws_s3_bucket_release_sources }}/g" default.auto.tfvars
         sed -i -e "s/\$AWS_S3_ACCESS_ID_RELEASES/${{ inputs.aws_s3_access_id_releases }}/g" default.auto.tfvars
         sed -i -e "s|\$AWS_S3_SECRET_ACCESS_KEY_RELEASES|${{ inputs.aws_s3_secret_access_key_releases }}|g" default.auto.tfvars
         sed -i -e "s/\$RELEASE_SERVER_HOSTNAME/${{ inputs.release_server_hostname }}/g" default.auto.tfvars

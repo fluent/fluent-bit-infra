@@ -65,6 +65,11 @@ variable "release-s3-bucket" {
   default = "packages.fluentbit.io"
 }
 
+variable "release-sources-s3-bucket" {
+  type    = string
+  default = "releases.fluentbit.io"
+}
+
 variable "release-s3-access-id" {
   type      = string
   sensitive = true

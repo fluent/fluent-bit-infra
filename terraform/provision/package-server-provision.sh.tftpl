@@ -6,7 +6,7 @@ echo "> Updating and installing dependencies"
 # Add dependencies and allow for other users of apt-get
 # https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
 apt-get -o DPkg::Lock::Timeout=60 update
-apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git wget
+apt-get -o DPkg::Lock::Timeout=-1 install -y docker.io docker-compose nginx awscli git
 
 # https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
 snap install core
@@ -151,7 +151,7 @@ Wants=releases-sync.timer
 [Service]
 Type=oneshot
 ExecStartPre=mkdir -p /var/www/releases.fluentbit.io
-ExecStart=wget --recursive --level=inf --no-verbose --no-clobber -P /var/www/ http://releases.fluentbit.io
+ExecStart=aws s3 sync s3://${releases-bucket} /var/www/releases.fluentbit.io --no-sign-request
 
 [Install]
 WantedBy=multi-user.target
@@ -233,10 +233,6 @@ set -eux
 
 # Must run as root
 [ "$(id -u)" -eq 0 ] && echo "Run as root" && exit 1
-
-# Disable sync from release server as it becomes this one!
-systemctl daemon-reload
-systemctl disable --now releases-sync.timer
 
 # Update to use official domains
 sed 's/apt-next/apt/g' /etc/nginx/sites-available/apt-next.fluentbit.io > /etc/nginx/sites-available/apt.fluentbit.io
