@@ -176,7 +176,7 @@ resource "cloudflare_record" "apt-next" {
 
 resource "cloudflare_record" "packages-s3-mirror" {
   name    = "packages-mirror"
-  value   = "${release-s3-bucket}.s3.amazonaws.com"
+  value   = "${var.release-s3-bucket}.s3.amazonaws.com"
   type    = "CNAME"
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
@@ -184,7 +184,7 @@ resource "cloudflare_record" "packages-s3-mirror" {
 
 resource "cloudflare_record" "releases-s3-mirror" {
   name    = "releases-mirror"
-  value   = "${release-sources-s3-bucket}.s3.amazonaws.com"
+  value   = "${var.release-sources-s3-bucket}.s3.amazonaws.com"
   type    = "CNAME"
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
