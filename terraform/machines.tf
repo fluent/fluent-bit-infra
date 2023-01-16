@@ -2,11 +2,6 @@ locals {
   project_id = var.metal_net_project_id
 }
 
-data "metal_device" "legacy_www" {
-  project_id = local.project_id
-  hostname   = "fluentbit.io"
-}
-
 provider "google" {
   project     = var.gcp-project-id
   region      = var.gcp-default-region
@@ -254,6 +249,32 @@ resource "null_resource" "gh-runners-provision" {
 
 resource "metal_device" "packages-fluent-bit" {
   hostname         = "packages-managed.fluentbit.io"
+  plan             = "c3.medium.x86"
+  metro            = "da"
+  operating_system = "ubuntu_20_04"
+  billing_cycle    = "hourly"
+  project_id       = local.project_id
+  user_data = templatefile(
+    "${path.module}/provision/package-server-provision.sh.tftpl",
+    {
+      grafana-cloud-prometheus-username = var.grafana-cloud-prometheus-username,
+      grafana-cloud-prometheus-apikey   = var.grafana-cloud-prometheus-apikey,
+      dockerhub-username                = var.public-readonly-dockerhub-username,
+      dockerhub-token                   = var.public-readonly-dockerhub-token,
+      cloudflare-token                  = var.cloudflare_token,
+      packages-bucket                   = var.release-s3-bucket
+      releases-bucket                   = var.release-sources-s3-bucket
+    }
+  )
+
+  connection {
+    host     = self.access_public_ipv4
+    password = self.root_password
+  }
+}
+
+resource "metal_device" "packages-next-fluent-bit" {
+  hostname         = "packages-next.fluentbit.io"
   plan             = "c3.medium.x86"
   metro            = "da"
   operating_system = "ubuntu_20_04"
