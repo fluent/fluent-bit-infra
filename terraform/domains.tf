@@ -28,22 +28,6 @@ resource "cloudflare_record" "backup" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
-resource "cloudflare_record" "packages" {
-  name    = "packages"
-  value   = data.metal_device.legacy_www.access_public_ipv4
-  type    = "A"
-  proxied = false
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
-resource "cloudflare_record" "apt" {
-  name    = "apt"
-  value   = data.metal_device.legacy_www.access_public_ipv4
-  type    = "A"
-  proxied = false
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
 resource "cloudflare_record" "config-validator-dev" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
   name    = "config-validator-dev"
@@ -110,30 +94,6 @@ resource "cloudflare_record" "test" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
-resource "cloudflare_record" "legacy-releases" {
-  name    = "releases"
-  value   = data.metal_device.legacy_www.access_public_ipv4
-  type    = "A"
-  proxied = true
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
-resource "cloudflare_record" "legacy-server" {
-  name    = "legacy"
-  value   = data.metal_device.legacy_www.access_public_ipv4
-  type    = "A"
-  proxied = true
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
-resource "cloudflare_record" "www-old" {
-  name    = "www-old"
-  value   = "legacy.fluentbit.io"
-  type    = "CNAME"
-  proxied = true
-  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
-}
-
 resource "cloudflare_record" "registry" {
   name    = "registry"
   value   = "gateway.scarf.sh"
@@ -150,24 +110,24 @@ resource "cloudflare_record" "short-registry" {
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
-resource "cloudflare_record" "releases-next" {
-  name    = "releases-next"
+resource "cloudflare_record" "releases" {
+  name    = "releases"
   value   = metal_device.packages-fluent-bit.access_public_ipv4
   type    = "A"
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
-resource "cloudflare_record" "packages-next" {
-  name    = "packages-next"
+resource "cloudflare_record" "packages" {
+  name    = "packages"
   value   = metal_device.packages-fluent-bit.access_public_ipv4
   type    = "A"
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
 
-resource "cloudflare_record" "apt-next" {
-  name    = "apt-next"
+resource "cloudflare_record" "apt" {
+  name    = "apt"
   value   = metal_device.packages-fluent-bit.access_public_ipv4
   type    = "A"
   proxied = true
@@ -186,6 +146,30 @@ resource "cloudflare_record" "releases-s3-mirror" {
   name    = "releases-mirror"
   value   = "${var.release-sources-s3-bucket}.s3.amazonaws.com"
   type    = "CNAME"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
+resource "cloudflare_record" "releases-next" {
+  name    = "releases-next"
+  value   = metal_device.packages-next-fluent-bit.access_public_ipv4
+  type    = "A"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
+resource "cloudflare_record" "packages-next" {
+  name    = "packages-next"
+  value   = metal_device.packages-next-fluent-bit.access_public_ipv4
+  type    = "A"
+  proxied = true
+  zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
+}
+
+resource "cloudflare_record" "apt-next" {
+  name    = "apt-next"
+  value   = metal_device.packages-next-fluent-bit.access_public_ipv4
+  type    = "A"
   proxied = true
   zone_id = lookup(data.cloudflare_zones.fluentbit-io-zone.zones[0], "id")
 }
