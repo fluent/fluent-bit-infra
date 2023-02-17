@@ -32,6 +32,7 @@ resource "github_branch_default" "mirror-default-branch" {
 locals {
   fluent_bit_protected_branches = [
     "master",
+    "2.0",
     "1.9",
     "1.8",
   ]
