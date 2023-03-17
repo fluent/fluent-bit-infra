@@ -92,7 +92,7 @@ rm -f /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221012
 rm -f /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221101
 rm -f /var/www/apt.fluentbit.io/amazonlinux/2022.0.20221207
 
-aws s3 sync s3://${packages-bucket} /var/www/apt.fluentbit.io --no-sign-request
+aws s3 sync s3://${packages-bucket} /var/www/apt.fluentbit.io --no-sign-request --exact-timestamps
 
 # The existing server is different to the bucket due to some createrepo changes so we mirror it for now so existing users are unaffected.
 ln -s /var/www/apt.fluentbit.io/centos/7 /var/www/apt.fluentbit.io/centos/7/x86_64
