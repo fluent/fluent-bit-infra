@@ -122,7 +122,8 @@ variable "release-approvers-usernames" {
     "edsiper",
     "agup006",
     "niedbalski",
-    "patrick-stephens"
+    "patrick-stephens",
+    "celalettin1286"
   ]
 }
 
