@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: tfsec
         if: ${{ github.event_name == 'pull_request' }}
@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: tflint
         if: ${{ github.event_name == 'pull_request' }}
